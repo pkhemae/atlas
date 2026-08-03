@@ -29,11 +29,12 @@ const RIPPLE_BAND = 110;
 const RED: readonly [number, number, number] = [220, 38, 38];
 const BASE_HEAT = 0.2;
 
+// dark-theme grays, like Superset's original palette on a near-black background
 function trailGray(): number {
   const r = Math.random();
-  if (r < 0.7) return 176;
-  if (r < 0.92) return 163;
-  return 148;
+  if (r < 0.7) return 45;
+  if (r < 0.92) return 56;
+  return 68;
 }
 
 function glyphStyle(gray: number, alpha: number, heat: number): string {
@@ -235,7 +236,7 @@ export function AsciiBoidsBackground() {
       drawHead() {
         const cx = Math.round(this.x / cell) * cell;
         const cy = Math.round(this.y / cell) * cell;
-        ctx.fillStyle = glyphStyle(150, 0.4, rippleHeat(cx, cy));
+        ctx.fillStyle = glyphStyle(52, 0.35, rippleHeat(cx, cy));
         ctx.fillText(this.headChar === " " ? "." : this.headChar, cx, cy);
       }
     }

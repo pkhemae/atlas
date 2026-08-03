@@ -2,3 +2,8 @@
 
 /* Make Tailwind scan this app's source. */
 @source "../src";
+
+/* Landing-specific dark palette: near-black neutral background. */
+.dark {
+  --background: #111111;
+}
