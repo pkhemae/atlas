@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 
 Turborepo monorepo (pnpm workspaces):
 
-- `apps/webapp` — TanStack Start frontend (React 19, Vite, Tailwind CSS v4).
+- `apps/marketing` — TanStack Start marketing site (React 19, Vite, Tailwind CSS v4).
 - `packages/ui` — `@atlas/ui`: shared shadcn/ui component library, consumed as source (no build step).
 - `packages/typescript-config` — `@atlas/typescript-config`: shared tsconfig presets (`base.json`, `react-library.json`).
 - `packages/eslint-config` — `@atlas/eslint-config`: shared ESLint flat configs (`base`, `react`).
@@ -17,18 +17,18 @@ Package manager is **pnpm**. Run from the repo root:
 
 ```bash
 pnpm install
-pnpm dev            # turbo run dev — webapp on port 3000
+pnpm dev            # turbo run dev — marketing site on port 3000
 pnpm build          # turbo run build
 pnpm lint           # turbo run lint (ESLint)
 pnpm check-types    # turbo run check-types (tsc --noEmit)
 pnpm format         # prettier --write .
-pnpm dev --filter @atlas/webapp   # scope any turbo task to one workspace
+pnpm dev --filter @atlas/marketing   # scope any turbo task to one workspace
 ```
 
 ### Adding shadcn/ui components
 
 ```bash
-pnpm dlx shadcn@latest add <component> -c apps/webapp
+pnpm dlx shadcn@latest add <component> -c apps/marketing
 ```
 
 Components land in `packages/ui/src/components/`. Never hand-write low-level UI primitives in the app — add them to `@atlas/ui` via the shadcn CLI and import them from there.
@@ -67,7 +67,7 @@ Example: `src/pages/focus/`
 
 ## Development Guidelines
 
-- **Imports**: use the `@/*` alias for `src/*` inside the webapp; cross-package imports go through `@atlas/ui/...` exports.
+- **Imports**: use the `@/*` alias for `src/*` inside each app; cross-package imports go through `@atlas/ui/...` exports.
 - **Naming**: PascalCase for components, kebab-case for files.
 - **Formatting**: Prettier is the source of truth; ESLint (flat config, shared via `@atlas/eslint-config`) for correctness.
 - **TypeScript**: pinned to `^5.9`. Do NOT upgrade to TypeScript 7.x — typescript-eslint requires `<6.1.0`.

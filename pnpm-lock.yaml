@@ -15,7 +15,7 @@ importers:
         specifier: ^2.10.8
         version: 2.10.8
 
-  apps/webapp:
+  apps/marketing:
     dependencies:
       '@atlas/ui':
         specifier: workspace:*
@@ -29,6 +29,9 @@ importers:
       '@tanstack/react-start':
         specifier: ^1.168.34
         version: 1.168.34(crossws@0.4.10(srvx@0.11.22))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rolldown@1.2.1)(vite@8.2.0(jiti@2.7.0))
+      lucide-react:
+        specifier: ^1.28.0
+        version: 1.28.0(react@19.2.8)
       nitro:
         specifier: 3.0.260610-beta
         version: 3.0.260610-beta(chokidar@5.0.0)(dotenv@16.0.3)(jiti@2.7.0)(vite@8.2.0(jiti@2.7.0))
