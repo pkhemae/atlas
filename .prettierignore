@@ -1,5 +1,8 @@
 node_modules
 dist
+apps/api
+apps/desktop/src-tauri/target
+apps/desktop/src-tauri/gen
 .output
 .nitro
 .tanstack

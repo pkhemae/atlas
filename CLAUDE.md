@@ -7,6 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 Turborepo monorepo (pnpm workspaces):
 
 - `apps/marketing` — TanStack Start marketing site (React 19, Vite, Tailwind CSS v4).
+- `apps/api` — `@atlas/api`: AdonisJS v7 API (auth, database). Lucid ORM with SQLite for now, access-tokens auth for the desktop client.
+- `apps/desktop` — `@atlas/desktop`: Tauri 2 desktop app (React 19, Vite, Tailwind CSS v4, consumes `@atlas/ui`). Rust backend lives in `src-tauri/`.
 - `packages/ui` — `@atlas/ui`: shared shadcn/ui component library, consumed as source (no build step).
 - `packages/typescript-config` — `@atlas/typescript-config`: shared tsconfig presets (`base.json`, `react-library.json`).
 - `packages/eslint-config` — `@atlas/eslint-config`: shared ESLint flat configs (`base`, `react`).
@@ -23,6 +25,15 @@ pnpm lint           # turbo run lint (ESLint)
 pnpm check-types    # turbo run check-types (tsc --noEmit)
 pnpm format         # prettier --write .
 pnpm dev --filter @atlas/marketing   # scope any turbo task to one workspace
+```
+
+App-specific:
+
+```bash
+pnpm --filter @atlas/api dev            # API on port 3334 (node ace serve --hmr)
+pnpm --filter @atlas/api test           # japa test suites
+pnpm --filter @atlas/desktop tauri dev  # desktop window (compiles Rust, vite on port 1420)
+pnpm --filter @atlas/desktop bundle     # native release build (tauri build)
 ```
 
 ### Adding shadcn/ui components
@@ -65,6 +76,15 @@ Example: `src/pages/focus/`
 - React 19: use `use` and Action patterns for form submissions.
 - TanStack Query: all server/async state in `feature/` components.
 - TanStack Start: server-side rendering by default; `shellComponent` in `__root.tsx` owns the HTML document.
+
+### Backend Context (`apps/api`)
+
+- AdonisJS v7: controllers in `app/controllers/`, models in `app/models/`, services in `app/services/` (heavy business logic), validators in `app/validators/` (VineJS).
+- Database: Lucid ORM, SQLite via better-sqlite3 for now (file in `tmp/`); switching to Postgres later only changes the dialect + connection config.
+- Auth: `@adonisjs/auth` — use the access-tokens guard for the desktop client.
+- Imports use the `#` subpath aliases defined in `package.json` (`#controllers/*`, `#models/*`, …).
+- The api keeps its own Adonis ESLint/Prettier presets (`apps/api` is excluded from the root Prettier); run its lint/format from the workspace.
+- Business rule: every focus-session computation (durations, streaks, stats) lives in the API or a dedicated lib — single source of truth.
 
 ## Development Guidelines
 
