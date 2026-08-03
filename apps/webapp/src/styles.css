@@ -1,0 +1,4 @@
+@import "@atlas/ui/globals.css";
+
+/* Make Tailwind scan this app's source. */
+@source "../src";

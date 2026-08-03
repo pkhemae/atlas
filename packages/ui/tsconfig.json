@@ -1,0 +1,10 @@
+{
+  "extends": "@atlas/typescript-config/react-library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@atlas/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}
