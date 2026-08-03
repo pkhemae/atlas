@@ -13,10 +13,10 @@ export function HeroSection({ githubUrl }: HeroSectionProps) {
   return (
     <section className="relative flex min-h-[calc(100svh-3.5rem)] flex-col items-center justify-center gap-6 overflow-hidden px-6 py-16 text-center">
       <AsciiBoidsBackground />
-      <h1 className="relative max-w-3xl text-6xl font-light tracking-tight sm:text-7xl">
+      <h1 className="relative max-w-4xl text-7xl font-semibold tracking-tight sm:text-8xl">
         <Typewriter text="Find your focus." startDelay={250} />
       </h1>
-      <p className="animate-in fade-in slide-in-from-bottom-4 fill-mode-backwards delay-100 text-muted-foreground relative max-w-xl text-pretty text-lg font-light duration-700">
+      <p className="animate-in fade-in slide-in-from-bottom-4 fill-mode-backwards delay-100 text-muted-foreground relative max-w-2xl text-pretty text-xl duration-700">
         Atlas helps students study without distractions — focused sessions,
         healthy breaks, and progress you can actually see.
       </p>
@@ -29,7 +29,7 @@ export function HeroSection({ githubUrl }: HeroSectionProps) {
           </a>
         </Button>
       </div>
-      <div className="animate-in fade-in slide-in-from-bottom-4 fill-mode-backwards delay-300 relative mt-12 w-full max-w-6xl duration-700">
+      <div className="animate-in fade-in slide-in-from-bottom-4 fill-mode-backwards delay-300 relative mt-14 w-full max-w-7xl duration-700">
         <AppPreview />
       </div>
     </section>
