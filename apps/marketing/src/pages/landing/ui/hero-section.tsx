@@ -17,8 +17,8 @@ export function HeroSection({ githubUrl }: HeroSectionProps) {
         <Typewriter text="Find your focus." startDelay={250} />
       </h1>
       <p className="animate-in fade-in slide-in-from-bottom-4 fill-mode-backwards delay-100 text-muted-foreground relative max-w-xl text-pretty text-lg font-light duration-700">
-        Atlas helps students study without distractions — focused sessions, healthy breaks, and
-        progress you can actually see.
+        Atlas helps students study without distractions — focused sessions,
+        healthy breaks, and progress you can actually see.
       </p>
       <div className="animate-in fade-in slide-in-from-bottom-4 fill-mode-backwards delay-200 relative mt-2 flex flex-col items-center gap-3 duration-700 sm:flex-row">
         <DownloadButton size="xl" />

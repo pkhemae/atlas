@@ -36,7 +36,9 @@ export function Navbar({ githubUrl, communityUrl, stars }: NavbarProps) {
             className="text-foreground hover:text-foreground/70 flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium transition-colors"
           >
             <GitHubIcon className="size-4" />
-            {stars ? <span className="tabular-nums">{formatStars(stars)}</span> : null}
+            {stars ? (
+              <span className="tabular-nums">{formatStars(stars)}</span>
+            ) : null}
             <span className="sr-only">GitHub</span>
           </a>
           <DownloadButton className="relative ml-1 after:absolute after:-inset-1" />

@@ -43,6 +43,7 @@ For every page in `src/pages/<domain>/`, we apply a strict Feature/UI split:
 2. **UI (`ui/`)**: Pure presentational components. No hooks, no fetch. Receives data and callbacks via props.
 
 Example: `src/pages/focus/`
+
 - `feature/focus-session-feature.tsx`: manages timer state, session persistence, and calls `useQuery`/`useMutation`.
 - `ui/focus-session.tsx`: receives session data and renders the screen. No hooks or data fetching logic.
 

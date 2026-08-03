@@ -21,6 +21,12 @@ export const config = [
   },
   eslintConfigPrettier,
   {
-    ignores: ["dist/**", ".output/**", ".nitro/**", ".tanstack/**", "**/routeTree.gen.ts"],
+    ignores: [
+      "dist/**",
+      ".output/**",
+      ".nitro/**",
+      ".tanstack/**",
+      "**/routeTree.gen.ts",
+    ],
   },
 ];

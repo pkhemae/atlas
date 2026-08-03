@@ -7,7 +7,7 @@ const FONT_SIZE = 11;
 // the source text each boid writes as it flies — trails spell real Atlas "code"
 const CODE =
   'atlas.session.start({mode:"deep",minutes:25})focus.guard({block:["feed","dm"]})' +
-  'streak.update({days:12})await breaks.schedule({every:25,rest:5})stats.review({week:true})' +
+  "streak.update({days:12})await breaks.schedule({every:25,rest:5})stats.review({week:true})" +
   'goals.set({today:"maths",pages:40})timer.tick(1500)distraction.dismiss()';
 
 const NUM_BOIDS = 90;
@@ -161,7 +161,8 @@ export function AsciiBoidsBackground() {
 
         if (sepN > 0) this.steer(sepX, sepY, W_SEPARATION);
         if (aliN > 0) this.steer(aliX / aliN, aliY / aliN, W_ALIGNMENT);
-        if (cohN > 0) this.steer(cohX / cohN - this.x, cohY / cohN - this.y, W_COHESION);
+        if (cohN > 0)
+          this.steer(cohX / cohN - this.x, cohY / cohN - this.y, W_COHESION);
 
         if (mouse.active) {
           const tx = mouse.x - this.x;
@@ -210,7 +211,10 @@ export function AsciiBoidsBackground() {
         if (wrapped) {
           this.sx = this.x;
           this.sy = this.y;
-        } else if (Math.hypot(this.x - this.sx, this.y - this.sy) >= cell * 1.5) {
+        } else if (
+          Math.hypot(this.x - this.sx, this.y - this.sy) >=
+          cell * 1.5
+        ) {
           this.sx = this.x;
           this.sy = this.y;
           const char = CODE.charAt(this.ptr % CODE.length);

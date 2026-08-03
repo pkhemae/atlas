@@ -10,7 +10,13 @@ interface TypewriterProps extends React.ComponentProps<"span"> {
   startDelay?: number;
 }
 
-function Typewriter({ text, speed = 55, startDelay = 0, className, ...props }: TypewriterProps) {
+function Typewriter({
+  text,
+  speed = 55,
+  startDelay = 0,
+  className,
+  ...props
+}: TypewriterProps) {
   const [typed, setTyped] = React.useState({ text, count: 0 });
   const count = typed.text === text ? typed.count : 0;
   const done = count >= text.length;
@@ -19,7 +25,9 @@ function Typewriter({ text, speed = 55, startDelay = 0, className, ...props }: T
     if (done) return;
     const id = setTimeout(
       () => {
-        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const reduceMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
         setTyped({ text, count: reduceMotion ? text.length : count + 1 });
       },
       count === 0 ? startDelay : speed,
@@ -28,7 +36,11 @@ function Typewriter({ text, speed = 55, startDelay = 0, className, ...props }: T
   }, [count, done, text, speed, startDelay]);
 
   return (
-    <span data-slot="typewriter" className={cn("whitespace-pre-wrap", className)} {...props}>
+    <span
+      data-slot="typewriter"
+      className={cn("whitespace-pre-wrap", className)}
+      {...props}
+    >
       <span className="sr-only">{text}</span>
       <span aria-hidden="true">{text.slice(0, count)}</span>
       <span
