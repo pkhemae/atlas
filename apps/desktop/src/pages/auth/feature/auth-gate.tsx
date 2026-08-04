@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Screen } from "@/components/screen";
 import { setAuthToken } from "@/lib/api";
 import { getAuthToken } from "@/lib/secure-storage";
 import { AuthFeature } from "@/pages/auth/feature/auth-feature";
@@ -27,11 +28,11 @@ export function AuthGate() {
 
   if (status === "booting") {
     return (
-      <main className="bg-background flex min-h-svh items-center justify-center">
+      <Screen>
         <p className="text-muted-foreground animate-pulse text-sm">
           Starting Atlas…
         </p>
-      </main>
+      </Screen>
     );
   }
 

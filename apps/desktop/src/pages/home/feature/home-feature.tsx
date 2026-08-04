@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@atlas/ui/components/button";
+import { Screen } from "@/components/screen";
 import { api, setAuthToken, type AuthUser } from "@/lib/api";
 import { deleteAuthToken } from "@/lib/secure-storage";
 import { HomeScreen } from "@/pages/home/ui/home-screen";
@@ -43,32 +44,36 @@ export function HomeFeature({ onLoggedOut }: HomeFeatureProps) {
 
   if (me.isPending || meUnauthorized) {
     return (
-      <main className="bg-background flex min-h-svh items-center justify-center">
+      <Screen>
         <p className="text-muted-foreground animate-pulse text-sm">
           Loading your session…
         </p>
-      </main>
+      </Screen>
     );
   }
 
   if (me.isError) {
     return (
-      <main className="bg-background flex min-h-svh flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground text-sm">
-          Can&apos;t reach the Atlas API. Is it running?
-        </p>
-        <Button variant="secondary" onClick={() => me.refetch()}>
-          Retry
-        </Button>
-      </main>
+      <Screen>
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-muted-foreground text-sm">
+            Can&apos;t reach the Atlas API. Is it running?
+          </p>
+          <Button variant="secondary" onClick={() => me.refetch()}>
+            Retry
+          </Button>
+        </div>
+      </Screen>
     );
   }
 
   return (
-    <HomeScreen
-      user={me.data}
-      loggingOut={logout.isPending}
-      onLogout={() => logout.mutate()}
-    />
+    <Screen>
+      <HomeScreen
+        user={me.data}
+        loggingOut={logout.isPending}
+        onLogout={() => logout.mutate()}
+      />
+    </Screen>
   );
 }

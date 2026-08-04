@@ -13,8 +13,11 @@
     "windows": [
       {
         "title": "Atlas",
-        "width": 800,
-        "height": 600
+        "width": 900,
+        "height": 640,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "backgroundColor": "#111111"
       }
     ],
     "security": {
