@@ -11,5 +11,6 @@ export const controllers = {
     SignIn: () => import('#app/auth/controllers/sign_in_controller'),
     SignOut: () => import('#app/auth/controllers/sign_out_controller'),
     SignUp: () => import('#app/auth/controllers/sign_up_controller'),
+    VerifyResetCode: () => import('#app/auth/controllers/verify_reset_code_controller'),
   },
 }

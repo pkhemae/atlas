@@ -9,9 +9,10 @@ import {
   type ForgotPasswordValues,
 } from "@/pages/auth/ui/forgot-password-form";
 import { LoginForm, type LoginValues } from "@/pages/auth/ui/login-form";
+import { ResetCodeForm } from "@/pages/auth/ui/reset-code-form";
 import {
   ResetPasswordForm,
-  type ResetPasswordValues,
+  type NewPasswordValues,
 } from "@/pages/auth/ui/reset-password-form";
 import { ResetSuccess } from "@/pages/auth/ui/reset-success";
 import { SignupForm, type SignupValues } from "@/pages/auth/ui/signup-form";
@@ -25,7 +26,7 @@ interface AuthPayload {
 }
 
 type AuthMode = "login" | "signup" | "forgot";
-type ForgotStep = "email" | "code" | "done";
+type ForgotStep = "email" | "code" | "password" | "done";
 
 const RESEND_COOLDOWN_MS = 30_000;
 
@@ -38,6 +39,7 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
   const [mode, setMode] = useState<AuthMode>("login");
   const [forgotStep, setForgotStep] = useState<ForgotStep>("email");
   const [forgotEmail, setForgotEmail] = useState("");
+  const [resetCode, setResetCode] = useState("");
   const [resendDisabled, setResendDisabled] = useState(false);
 
   const login = useMutation({
@@ -66,14 +68,26 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
     onSuccess: (_data, values) => {
       setForgotEmail(values.email);
       setForgotStep("code");
+      setResetCode("");
       startResendCooldown();
     },
   });
 
+  const verifyCode = useMutation({
+    mutationFn: (code: string) =>
+      api.post("/api/v1/auth/verify-reset-code", {
+        body: { email: forgotEmail, code },
+      }),
+    onSuccess: (_data, code) => {
+      setResetCode(code);
+      setForgotStep("password");
+    },
+  });
+
   const resetPassword = useMutation({
-    mutationFn: (values: ResetPasswordValues) =>
+    mutationFn: (values: NewPasswordValues) =>
       api.post("/api/v1/auth/reset-password", {
-        body: { ...values, email: forgotEmail },
+        body: { ...values, email: forgotEmail, code: resetCode },
       }),
     onSuccess: () => setForgotStep("done"),
   });
@@ -87,9 +101,11 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
     login.reset();
     signup.reset();
     forgotPassword.reset();
+    verifyCode.reset();
     resetPassword.reset();
     setForgotStep("email");
     setForgotEmail("");
+    setResetCode("");
     setMode(next);
   };
 
@@ -126,17 +142,31 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
           onBackToLogin={() => switchMode("login")}
         />
       ) : forgotStep === "code" ? (
-        <ResetPasswordForm
+        <ResetCodeForm
           email={forgotEmail}
+          code={resetCode}
+          pending={verifyCode.isPending}
+          errorMessage={
+            verifyCode.isError ? extractApiErrorMessage(verifyCode.error) : null
+          }
+          resendDisabled={resendDisabled || forgotPassword.isPending}
+          onCodeChange={(code) => {
+            verifyCode.reset();
+            setResetCode(code);
+          }}
+          onComplete={(code) => verifyCode.mutate(code)}
+          onResend={() => forgotPassword.mutate({ email: forgotEmail })}
+          onBackToLogin={() => switchMode("login")}
+        />
+      ) : forgotStep === "password" ? (
+        <ResetPasswordForm
           pending={resetPassword.isPending}
           errorMessage={
             resetPassword.isError
               ? extractApiErrorMessage(resetPassword.error)
               : null
           }
-          resendDisabled={resendDisabled || forgotPassword.isPending}
           onSubmit={(values) => resetPassword.mutate(values)}
-          onResend={() => forgotPassword.mutate({ email: forgotEmail })}
           onBackToLogin={() => switchMode("login")}
         />
       ) : (

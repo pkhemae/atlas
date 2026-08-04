@@ -24,6 +24,12 @@ const routes = {
     tokens: [{"old":"/api/v1/auth/forgot-password","type":0,"val":"api","end":""},{"old":"/api/v1/auth/forgot-password","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/forgot-password","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/forgot-password","type":0,"val":"forgot-password","end":""}],
     types: placeholder as Registry['forgot_password']['types'],
   },
+  'verify_reset_code': {
+    methods: ["POST"],
+    pattern: '/api/v1/auth/verify-reset-code',
+    tokens: [{"old":"/api/v1/auth/verify-reset-code","type":0,"val":"api","end":""},{"old":"/api/v1/auth/verify-reset-code","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/verify-reset-code","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/verify-reset-code","type":0,"val":"verify-reset-code","end":""}],
+    types: placeholder as Registry['verify_reset_code']['types'],
+  },
   'reset_password': {
     methods: ["POST"],
     pattern: '/api/v1/auth/reset-password',

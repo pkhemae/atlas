@@ -1,31 +1,23 @@
 import { Button } from "@atlas/ui/components/button";
-import { Input } from "@atlas/ui/components/input";
 import { Label } from "@atlas/ui/components/label";
 import { PasswordInput } from "@atlas/ui/components/password-input";
 
-export interface ResetPasswordValues {
-  code: string;
+export interface NewPasswordValues {
   password: string;
   passwordConfirmation: string;
 }
 
 interface ResetPasswordFormProps {
-  email: string;
   pending: boolean;
   errorMessage: string | null;
-  resendDisabled: boolean;
-  onSubmit: (values: ResetPasswordValues) => void;
-  onResend: () => void;
+  onSubmit: (values: NewPasswordValues) => void;
   onBackToLogin: () => void;
 }
 
 export function ResetPasswordForm({
-  email,
   pending,
   errorMessage,
-  resendDisabled,
   onSubmit,
-  onResend,
   onBackToLogin,
 }: ResetPasswordFormProps) {
   return (
@@ -35,12 +27,10 @@ export function ResetPasswordForm({
           Atlas
         </p>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Check your inbox
+          Choose a new password
         </h1>
         <p className="text-muted-foreground text-sm text-pretty">
-          We sent a reset code to{" "}
-          <span className="text-foreground">{email}</span>. It expires in 30
-          minutes.
+          Code verified. Pick a new password for your account.
         </p>
       </header>
       <form
@@ -49,7 +39,6 @@ export function ResetPasswordForm({
           event.preventDefault();
           const form = new FormData(event.currentTarget);
           onSubmit({
-            code: String(form.get("code") ?? ""),
             password: String(form.get("password") ?? ""),
             passwordConfirmation: String(
               form.get("passwordConfirmation") ?? "",
@@ -57,20 +46,6 @@ export function ResetPasswordForm({
           });
         }}
       >
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="code" className="text-muted-foreground text-xs">
-            Reset code
-          </Label>
-          <Input
-            id="code"
-            name="code"
-            autoComplete="one-time-code"
-            placeholder="XXXXX-XXXXX"
-            maxLength={11}
-            className="text-center font-mono text-base tracking-[0.2em] uppercase placeholder:tracking-normal"
-            required
-          />
-        </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="password" className="text-muted-foreground text-xs">
             New password
@@ -80,6 +55,7 @@ export function ResetPasswordForm({
             name="password"
             autoComplete="new-password"
             placeholder="8+ characters"
+            autoFocus
             required
           />
         </div>
@@ -112,23 +88,13 @@ export function ResetPasswordForm({
           {pending ? "Resetting…" : "Reset password"}
         </Button>
       </form>
-      <div className="flex flex-col items-center gap-1">
-        <button
-          type="button"
-          onClick={onResend}
-          disabled={resendDisabled}
-          className="text-muted-foreground hover:text-foreground px-3 py-2 text-sm transition-colors disabled:pointer-events-none disabled:opacity-50"
-        >
-          {resendDisabled ? "Code sent — wait a moment" : "Resend code"}
-        </button>
-        <button
-          type="button"
-          onClick={onBackToLogin}
-          className="text-muted-foreground hover:text-foreground px-3 py-2 text-sm transition-colors"
-        >
-          Back to login
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={onBackToLogin}
+        className="text-muted-foreground hover:text-foreground mx-auto -my-2 px-3 py-2 text-sm transition-colors"
+      >
+        Back to login
+      </button>
     </div>
   );
 }

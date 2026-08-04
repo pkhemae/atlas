@@ -7,6 +7,7 @@ export type ScannedRoutes = {
     'sign_up': { paramsTuple?: []; params?: {} }
     'sign_in': { paramsTuple?: []; params?: {} }
     'forgot_password': { paramsTuple?: []; params?: {} }
+    'verify_reset_code': { paramsTuple?: []; params?: {} }
     'reset_password': { paramsTuple?: []; params?: {} }
     'sign_out': { paramsTuple?: []; params?: {} }
     'me.show': { paramsTuple?: []; params?: {} }
@@ -21,6 +22,7 @@ export type ScannedRoutes = {
     'sign_up': { paramsTuple?: []; params?: {} }
     'sign_in': { paramsTuple?: []; params?: {} }
     'forgot_password': { paramsTuple?: []; params?: {} }
+    'verify_reset_code': { paramsTuple?: []; params?: {} }
     'reset_password': { paramsTuple?: []; params?: {} }
     'sign_out': { paramsTuple?: []; params?: {} }
   }

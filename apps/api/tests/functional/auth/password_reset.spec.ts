@@ -169,6 +169,65 @@ test.group('Auth / password reset', (group) => {
     assert.equal(body.errors[0].code, 'E_TOO_MANY_REQUESTS')
   })
 
+  test('verifies a valid code without consuming it', async ({ client }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    const service = new PasswordResetService()
+    const { code } = await service.generateCode(user)
+
+    const first = await client
+      .post('/api/v1/auth/verify-reset-code')
+      .json({ email: CREDENTIALS.email, code })
+    first.assertStatus(204)
+
+    // verifying must not burn the code: it is consumed by the reset only
+    const second = await client
+      .post('/api/v1/auth/verify-reset-code')
+      .json({ email: CREDENTIALS.email, code })
+    second.assertStatus(204)
+
+    const reset = await client.post('/api/v1/auth/reset-password').json({
+      email: CREDENTIALS.email,
+      code,
+      password: 'brand-new-pass1',
+      passwordConfirmation: 'brand-new-pass1',
+    })
+    reset.assertStatus(204)
+  })
+
+  test('rejects an invalid code on verify', async ({ client, assert }) => {
+    await User.create({ ...CREDENTIALS })
+
+    const response = await client
+      .post('/api/v1/auth/verify-reset-code')
+      .json({ email: CREDENTIALS.email, code: 'AAAAA-AAAAA' })
+
+    response.assertStatus(400)
+    const body = response.body() as unknown as { errors: { code: string }[] }
+    assert.equal(body.errors[0].code, 'E_INVALID_OR_EXPIRED_CODE')
+  })
+
+  test('shares the throttle budget between verify and reset', async ({ client, assert }) => {
+    await User.create({ ...CREDENTIALS })
+
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await client
+        .post('/api/v1/auth/verify-reset-code')
+        .json({ email: CREDENTIALS.email, code: 'AAAAA-AAAAA' })
+    }
+
+    // the 6th failed attempt hits the reset endpoint: same limiter key
+    const response = await client.post('/api/v1/auth/reset-password').json({
+      email: CREDENTIALS.email,
+      code: 'AAAAA-AAAAA',
+      password: 'brand-new-pass1',
+      passwordConfirmation: 'brand-new-pass1',
+    })
+
+    response.assertStatus(400)
+    const body = response.body() as unknown as { errors: { code: string }[] }
+    assert.equal(body.errors[0].code, 'E_TOO_MANY_REQUESTS')
+  })
+
   test('unblocks the login throttle after a successful reset', async ({ client }) => {
     const user = await User.create({ ...CREDENTIALS })
 

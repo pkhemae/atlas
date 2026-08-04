@@ -22,6 +22,11 @@ export const forgotPasswordValidator = vine.create({
   email: email(),
 })
 
+export const verifyResetCodeValidator = vine.create({
+  email: email(),
+  code: vine.string().trim(),
+})
+
 export const resetPasswordValidator = vine.create({
   email: email(),
   code: vine.string().trim(),
