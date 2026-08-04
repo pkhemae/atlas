@@ -4,7 +4,6 @@ import { Button } from "@atlas/ui/components/button";
 interface ProfileCardProps {
   fullName: string;
   handle: string;
-  email: string;
   initials: string;
   memberSince: string | null;
 }
@@ -16,7 +15,6 @@ interface ProfileCardProps {
 export function ProfileCard({
   fullName,
   handle,
-  email,
   initials,
   memberSince,
 }: ProfileCardProps) {
@@ -40,11 +38,8 @@ export function ProfileCard({
         <p className="text-primary text-xs font-semibold tracking-wide uppercase">
           @{handle}
         </p>
-        <p className="text-muted-foreground mt-1.5 text-xs break-all">
-          {email}
-        </p>
         {memberSince && (
-          <p className="text-muted-foreground/70 mt-0.5 text-[11px]">
+          <p className="text-muted-foreground/70 mt-1.5 text-[11px]">
             Member since {memberSince}
           </p>
         )}

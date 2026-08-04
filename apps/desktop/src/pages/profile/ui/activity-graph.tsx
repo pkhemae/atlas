@@ -45,17 +45,14 @@ export function ActivityGraph({ days, loading }: ActivityGraphProps) {
   }, [days, firstShownDate]);
 
   return (
-    <section
-      aria-label="Activity"
-      className="bg-card min-w-0 flex-1 rounded-xl p-4"
-    >
-      <h2 className="text-xs font-medium">
+    <section aria-label="Activity" className="bg-card rounded-xl p-4">
+      <p className="text-xs font-medium">
         {loading
           ? "Loading your activity…"
           : totalSeconds > 0
             ? `${formatTotal(totalSeconds)} of focus in the last 6 months`
             : "No focus time in the last 6 months yet"}
-      </h2>
+      </p>
       {loading ? (
         <div className="bg-foreground/5 mt-3 h-24 animate-pulse rounded-lg" />
       ) : (
