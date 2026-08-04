@@ -13,6 +13,7 @@ export interface ApiDefinition {
   }
   startSession: typeof routes['start_session']
   listSessions: typeof routes['list_sessions']
+  listActivity: typeof routes['list_activity']
   activeSession: typeof routes['active_session']
   abandonActiveSession: typeof routes['abandon_active_session']
   pauseSession: typeof routes['pause_session']

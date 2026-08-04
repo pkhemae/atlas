@@ -60,6 +60,12 @@ const routes = {
     tokens: [{"old":"/api/v1/focus/sessions","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions","type":0,"val":"sessions","end":""}],
     types: placeholder as Registry['list_sessions']['types'],
   },
+  'list_activity': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/focus/activity',
+    tokens: [{"old":"/api/v1/focus/activity","type":0,"val":"api","end":""},{"old":"/api/v1/focus/activity","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/activity","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/activity","type":0,"val":"activity","end":""}],
+    types: placeholder as Registry['list_activity']['types'],
+  },
   'active_session': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/focus/sessions/active',

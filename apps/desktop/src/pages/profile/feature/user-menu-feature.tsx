@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouteContext } from "@tanstack/react-router";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { api, setAuthToken, type AuthUser } from "@/lib/api";
 import { deleteAuthToken } from "@/lib/secure-storage";
 import { UserMenu } from "@/pages/profile/ui/user-menu";
 
 export function UserMenuFeature() {
   const { onLoggedOut } = useRouteContext({ from: "__root__" });
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const me = useQuery({
@@ -59,6 +60,7 @@ export function UserMenuFeature() {
         <UserMenu
           initials={me.data.initials}
           loggingOut={logout.isPending}
+          onOpenProfile={() => navigate({ to: "/profile" })}
           onLogout={() => logout.mutate()}
         />
       )}

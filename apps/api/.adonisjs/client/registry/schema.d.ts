@@ -115,6 +115,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/list_sessions_controller').default['handle']>>>
     }
   }
+  'list_activity': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/focus/activity'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/list_activity_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/list_activity_controller').default['handle']>>>
+    }
+  }
   'active_session': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/focus/sessions/active'
