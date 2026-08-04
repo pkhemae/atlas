@@ -4,6 +4,7 @@ import { Screen } from "@/components/screen";
 import { api, setAuthToken, type AuthUser } from "@/lib/api";
 import { extractApiErrorMessage } from "@/lib/api-errors";
 import { saveAuthToken } from "@/lib/secure-storage";
+import { ForgotPasswordForm } from "@/pages/auth/ui/forgot-password-form";
 import { LoginForm, type LoginValues } from "@/pages/auth/ui/login-form";
 import { SignupForm, type SignupValues } from "@/pages/auth/ui/signup-form";
 
@@ -15,13 +16,16 @@ interface AuthPayload {
   data: { user: AuthUser; token: string };
 }
 
+type AuthMode = "login" | "signup" | "forgot";
+
 async function persistSession(payload: AuthPayload) {
   setAuthToken(payload.data.token);
   await saveAuthToken(payload.data.token);
 }
 
 export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<AuthMode>("login");
+  const [forgotSubmitted, setForgotSubmitted] = useState(false);
 
   const login = useMutation({
     mutationFn: (values: LoginValues) =>
@@ -43,6 +47,13 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
     },
   });
 
+  const switchMode = (next: AuthMode) => {
+    login.reset();
+    signup.reset();
+    setForgotSubmitted(false);
+    setMode(next);
+  };
+
   return (
     <Screen>
       {mode === "login" ? (
@@ -52,22 +63,27 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
             login.isError ? extractApiErrorMessage(login.error) : null
           }
           onSubmit={(values) => login.mutate(values)}
-          onSwitchToSignup={() => {
-            login.reset();
-            setMode("signup");
-          }}
+          onSwitchToSignup={() => switchMode("signup")}
+          onForgotPassword={() => switchMode("forgot")}
         />
-      ) : (
+      ) : mode === "signup" ? (
         <SignupForm
           pending={signup.isPending}
           errorMessage={
             signup.isError ? extractApiErrorMessage(signup.error) : null
           }
           onSubmit={(values) => signup.mutate(values)}
-          onSwitchToLogin={() => {
-            signup.reset();
-            setMode("login");
-          }}
+          onSwitchToLogin={() => switchMode("login")}
+        />
+      ) : (
+        <ForgotPasswordForm
+          pending={false}
+          submitted={forgotSubmitted}
+          errorMessage={null}
+          // UI only for now: the reset-password endpoint comes later, so
+          // submitting just reveals the confirmation state
+          onSubmit={() => setForgotSubmitted(true)}
+          onBackToLogin={() => switchMode("login")}
         />
       )}
     </Screen>

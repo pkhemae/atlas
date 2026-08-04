@@ -1,6 +1,7 @@
 import { Button } from "@atlas/ui/components/button";
 import { Input } from "@atlas/ui/components/input";
 import { Label } from "@atlas/ui/components/label";
+import { PasswordInput } from "@atlas/ui/components/password-input";
 
 export interface SignupValues {
   fullName: string;
@@ -54,7 +55,12 @@ export function SignupForm({
           <Label htmlFor="fullName" className="text-muted-foreground text-xs">
             Full name
           </Label>
-          <Input id="fullName" name="fullName" autoComplete="name" />
+          <Input
+            id="fullName"
+            name="fullName"
+            autoComplete="name"
+            placeholder="Ada Lovelace"
+          />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="email" className="text-muted-foreground text-xs">
@@ -65,6 +71,7 @@ export function SignupForm({
             name="email"
             type="email"
             autoComplete="email"
+            placeholder="you@example.com"
             required
           />
         </div>
@@ -72,11 +79,11 @@ export function SignupForm({
           <Label htmlFor="password" className="text-muted-foreground text-xs">
             Password
           </Label>
-          <Input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             autoComplete="new-password"
+            placeholder="8+ characters"
             required
           />
         </div>
@@ -87,11 +94,11 @@ export function SignupForm({
           >
             Confirm password
           </Label>
-          <Input
+          <PasswordInput
             id="passwordConfirmation"
             name="passwordConfirmation"
-            type="password"
             autoComplete="new-password"
+            placeholder="Repeat your password"
             required
           />
         </div>
@@ -112,7 +119,7 @@ export function SignupForm({
       <button
         type="button"
         onClick={onSwitchToLogin}
-        className="text-muted-foreground hover:text-foreground mx-auto text-sm transition-colors"
+        className="text-muted-foreground hover:text-foreground mx-auto -my-2 px-3 py-2 text-sm transition-colors"
       >
         Already have an account? Log in
       </button>

@@ -1,37 +1,60 @@
+import { MailCheck } from "lucide-react";
 import { Button } from "@atlas/ui/components/button";
 import { Input } from "@atlas/ui/components/input";
 import { Label } from "@atlas/ui/components/label";
-import { PasswordInput } from "@atlas/ui/components/password-input";
 
-export interface LoginValues {
+export interface ForgotPasswordValues {
   email: string;
-  password: string;
 }
 
-interface LoginFormProps {
+interface ForgotPasswordFormProps {
   pending: boolean;
+  submitted: boolean;
   errorMessage: string | null;
-  onSubmit: (values: LoginValues) => void;
-  onSwitchToSignup: () => void;
-  onForgotPassword: () => void;
+  onSubmit: (values: ForgotPasswordValues) => void;
+  onBackToLogin: () => void;
 }
 
-export function LoginForm({
+export function ForgotPasswordForm({
   pending,
+  submitted,
   errorMessage,
   onSubmit,
-  onSwitchToSignup,
-  onForgotPassword,
-}: LoginFormProps) {
+  onBackToLogin,
+}: ForgotPasswordFormProps) {
+  if (submitted) {
+    return (
+      <div className="animate-in fade-in slide-in-from-bottom-2 flex w-full max-w-xs flex-col items-center gap-6 text-center duration-500">
+        <div className="bg-secondary text-foreground flex size-12 items-center justify-center rounded-full">
+          <MailCheck className="size-5" aria-hidden="true" />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Check your inbox
+          </h1>
+          <p className="text-muted-foreground text-sm text-pretty">
+            If an account exists for this email, you will receive a link to
+            reset your password.
+          </p>
+        </div>
+        <Button variant="secondary" onClick={onBackToLogin}>
+          Back to login
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 flex w-full max-w-xs flex-col gap-8 duration-500">
       <header className="flex flex-col items-center gap-1.5 text-center">
         <p className="text-muted-foreground text-xs font-medium tracking-[0.2em] uppercase">
           Atlas
         </p>
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-        <p className="text-muted-foreground text-sm">
-          Log in to continue your focus.
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Reset your password
+        </h1>
+        <p className="text-muted-foreground text-sm text-pretty">
+          Enter your email and we will send you a reset link.
         </p>
       </header>
       <form
@@ -39,10 +62,7 @@ export function LoginForm({
         onSubmit={(event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget);
-          onSubmit({
-            email: String(form.get("email") ?? ""),
-            password: String(form.get("password") ?? ""),
-          });
+          onSubmit({ email: String(form.get("email") ?? "") });
         }}
       >
         <div className="flex flex-col gap-2">
@@ -58,27 +78,6 @@ export function LoginForm({
             required
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-muted-foreground text-xs">
-              Password
-            </Label>
-            <button
-              type="button"
-              onClick={onForgotPassword}
-              className="text-muted-foreground hover:text-foreground -my-2 py-2 text-xs transition-colors"
-            >
-              Forgot password?
-            </button>
-          </div>
-          <PasswordInput
-            id="password"
-            name="password"
-            autoComplete="current-password"
-            placeholder="Your password"
-            required
-          />
-        </div>
         {errorMessage ? (
           <p className="text-destructive text-sm" role="alert">
             {errorMessage}
@@ -90,15 +89,15 @@ export function LoginForm({
           className="mt-2 w-full"
           disabled={pending}
         >
-          {pending ? "Logging in…" : "Log in"}
+          {pending ? "Sending…" : "Send reset link"}
         </Button>
       </form>
       <button
         type="button"
-        onClick={onSwitchToSignup}
+        onClick={onBackToLogin}
         className="text-muted-foreground hover:text-foreground mx-auto -my-2 px-3 py-2 text-sm transition-colors"
       >
-        No account yet? Sign up
+        Back to login
       </button>
     </div>
   );
