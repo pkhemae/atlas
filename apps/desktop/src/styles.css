@@ -3,7 +3,35 @@
 /* Make Tailwind scan this app's source. */
 @source "../src";
 
-/* Same near-black neutral as the marketing landing. */
+/*
+ * Desktop flat theme: warm dark grays, elevated flat surfaces, a single
+ * red accent. Diverges from the marketing landing on purpose.
+ */
 .dark {
-  --background: #111111;
+  --background: #1b1b1c;
+  --foreground: #f4f4f5;
+  --card: #232325;
+  --card-foreground: #f4f4f5;
+  --popover: #232325;
+  --popover-foreground: #f4f4f5;
+  --primary: #dc2626;
+  --primary-foreground: #ffffff;
+  --secondary: #2a2a2c;
+  --secondary-foreground: #e4e4e7;
+  --muted: #2a2a2c;
+  --muted-foreground: #8e8e93;
+  --accent: #2e2e30;
+  --accent-foreground: #f4f4f5;
+  --border: rgba(255, 255, 255, 0.06);
+  --input: #29292b;
+  --ring: rgba(255, 255, 255, 0.25);
+  --radius: 0.75rem;
+}
+
+/* Flat inputs: full fill, no visible border (focus keeps the ring). */
+@layer base {
+  .dark [data-slot="input"] {
+    background-color: var(--input);
+    border-color: transparent;
+  }
 }

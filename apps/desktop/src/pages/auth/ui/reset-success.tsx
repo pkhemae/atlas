@@ -19,9 +19,7 @@ export function ResetSuccess({ onBackToLogin }: ResetSuccessProps) {
           Your password has been changed. You can now log in with it.
         </p>
       </div>
-      <Button variant="relief" onClick={onBackToLogin}>
-        Log in
-      </Button>
+      <Button onClick={onBackToLogin}>Log in</Button>
     </div>
   );
 }

@@ -95,7 +95,7 @@ export function Dock({
             onClick={onStop}
             className={cn(
               CHIP,
-              "bg-linear-to-b from-red-500 to-red-700 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3)] transition-[opacity,scale,filter] duration-300 ease-[cubic-bezier(0.2,0,0,1)] hover:brightness-110",
+              "bg-red-600 text-white transition-[opacity,scale,background-color] duration-300 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-red-500",
               paused ? "scale-100 opacity-100" : "scale-50 opacity-0",
             )}
           >

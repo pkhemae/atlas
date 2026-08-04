@@ -79,12 +79,7 @@ export function ResetPasswordForm({
             {errorMessage}
           </p>
         ) : null}
-        <Button
-          variant="relief"
-          type="submit"
-          className="mt-2 w-full"
-          disabled={pending}
-        >
+        <Button type="submit" className="mt-2 w-full" disabled={pending}>
           {pending ? "Resetting…" : "Reset password"}
         </Button>
       </form>
