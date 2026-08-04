@@ -6,7 +6,7 @@ interface ScreenProps {
   className?: string;
 }
 
-// Full-window centered layout with the landing's subtle red glow up top.
+// Full-window centered layout.
 // pt-10 keeps content clear of the transparent macOS title-bar overlay.
 export function Screen({ children, className }: ScreenProps) {
   return (
@@ -16,10 +16,6 @@ export function Screen({ children, className }: ScreenProps) {
         className,
       )}
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(ellipse_70%_100%_at_50%_0%,rgba(220,38,38,0.14),transparent)]"
-      />
       <div className="relative flex w-full flex-col items-center">
         {children}
       </div>
