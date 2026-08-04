@@ -43,6 +43,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/forgot_password_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'verify_reset_code': {
+    methods: ["POST"]
+    pattern: '/api/v1/auth/verify-reset-code'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#auth/validators/user').verifyResetCodeValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#auth/validators/user').verifyResetCodeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/auth/controllers/verify_reset_code_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/verify_reset_code_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'reset_password': {
     methods: ["POST"]
     pattern: '/api/v1/auth/reset-password'
