@@ -4,8 +4,16 @@ import { Screen } from "@/components/screen";
 import { api, setAuthToken, type AuthUser } from "@/lib/api";
 import { extractApiErrorMessage } from "@/lib/api-errors";
 import { saveAuthToken } from "@/lib/secure-storage";
-import { ForgotPasswordForm } from "@/pages/auth/ui/forgot-password-form";
+import {
+  ForgotPasswordForm,
+  type ForgotPasswordValues,
+} from "@/pages/auth/ui/forgot-password-form";
 import { LoginForm, type LoginValues } from "@/pages/auth/ui/login-form";
+import {
+  ResetPasswordForm,
+  type ResetPasswordValues,
+} from "@/pages/auth/ui/reset-password-form";
+import { ResetSuccess } from "@/pages/auth/ui/reset-success";
 import { SignupForm, type SignupValues } from "@/pages/auth/ui/signup-form";
 
 interface AuthFeatureProps {
@@ -17,6 +25,9 @@ interface AuthPayload {
 }
 
 type AuthMode = "login" | "signup" | "forgot";
+type ForgotStep = "email" | "code" | "done";
+
+const RESEND_COOLDOWN_MS = 30_000;
 
 async function persistSession(payload: AuthPayload) {
   setAuthToken(payload.data.token);
@@ -25,7 +36,9 @@ async function persistSession(payload: AuthPayload) {
 
 export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
   const [mode, setMode] = useState<AuthMode>("login");
-  const [forgotSubmitted, setForgotSubmitted] = useState(false);
+  const [forgotStep, setForgotStep] = useState<ForgotStep>("email");
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [resendDisabled, setResendDisabled] = useState(false);
 
   const login = useMutation({
     mutationFn: (values: LoginValues) =>
@@ -47,10 +60,36 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
     },
   });
 
+  const forgotPassword = useMutation({
+    mutationFn: (values: ForgotPasswordValues) =>
+      api.post("/api/v1/auth/forgot-password", { body: values }),
+    onSuccess: (_data, values) => {
+      setForgotEmail(values.email);
+      setForgotStep("code");
+      startResendCooldown();
+    },
+  });
+
+  const resetPassword = useMutation({
+    mutationFn: (values: ResetPasswordValues) =>
+      api.post("/api/v1/auth/reset-password", {
+        body: { ...values, email: forgotEmail },
+      }),
+    onSuccess: () => setForgotStep("done"),
+  });
+
+  const startResendCooldown = () => {
+    setResendDisabled(true);
+    setTimeout(() => setResendDisabled(false), RESEND_COOLDOWN_MS);
+  };
+
   const switchMode = (next: AuthMode) => {
     login.reset();
     signup.reset();
-    setForgotSubmitted(false);
+    forgotPassword.reset();
+    resetPassword.reset();
+    setForgotStep("email");
+    setForgotEmail("");
     setMode(next);
   };
 
@@ -75,16 +114,33 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
           onSubmit={(values) => signup.mutate(values)}
           onSwitchToLogin={() => switchMode("login")}
         />
-      ) : (
+      ) : forgotStep === "email" ? (
         <ForgotPasswordForm
-          pending={false}
-          submitted={forgotSubmitted}
-          errorMessage={null}
-          // UI only for now: the reset-password endpoint comes later, so
-          // submitting just reveals the confirmation state
-          onSubmit={() => setForgotSubmitted(true)}
+          pending={forgotPassword.isPending}
+          errorMessage={
+            forgotPassword.isError
+              ? extractApiErrorMessage(forgotPassword.error)
+              : null
+          }
+          onSubmit={(values) => forgotPassword.mutate(values)}
           onBackToLogin={() => switchMode("login")}
         />
+      ) : forgotStep === "code" ? (
+        <ResetPasswordForm
+          email={forgotEmail}
+          pending={resetPassword.isPending}
+          errorMessage={
+            resetPassword.isError
+              ? extractApiErrorMessage(resetPassword.error)
+              : null
+          }
+          resendDisabled={resendDisabled || forgotPassword.isPending}
+          onSubmit={(values) => resetPassword.mutate(values)}
+          onResend={() => forgotPassword.mutate({ email: forgotEmail })}
+          onBackToLogin={() => switchMode("login")}
+        />
+      ) : (
+        <ResetSuccess onBackToLogin={() => switchMode("login")} />
       )}
     </Screen>
   );

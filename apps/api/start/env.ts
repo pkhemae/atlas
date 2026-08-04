@@ -30,4 +30,10 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Rate limiting
   LIMITER_STORE: Env.schema.enum(['memory'] as const),
+
+  // Mail
+  MAIL_MAILER: Env.schema.enum(['resend'] as const),
+  MAIL_FROM_ADDRESS: Env.schema.string(),
+  MAIL_FROM_NAME: Env.schema.string(),
+  RESEND_API_KEY: Env.schema.string(),
 })
