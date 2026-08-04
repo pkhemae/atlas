@@ -16,6 +16,7 @@
     "@atlas/api": "workspace:*",
     "@atlas/ui": "workspace:*",
     "@tanstack/react-query": "^5.101.4",
+    "@tanstack/react-router": "^1.170.18",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "@tuyau/core": "^1.2.2",

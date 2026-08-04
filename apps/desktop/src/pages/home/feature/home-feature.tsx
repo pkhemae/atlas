@@ -1,16 +1,14 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouteContext } from "@tanstack/react-router";
 import { Button } from "@atlas/ui/components/button";
 import { Screen } from "@/components/screen";
 import { api, setAuthToken, type AuthUser } from "@/lib/api";
 import { deleteAuthToken } from "@/lib/secure-storage";
 import { HomeScreen } from "@/pages/home/ui/home-screen";
 
-interface HomeFeatureProps {
-  onLoggedOut: () => void;
-}
-
-export function HomeFeature({ onLoggedOut }: HomeFeatureProps) {
+export function HomeFeature() {
+  const { onLoggedOut } = useRouteContext({ from: "__root__" });
   const queryClient = useQueryClient();
 
   const me = useQuery({

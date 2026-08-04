@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import { RouterProvider } from "@tanstack/react-router";
+import { appRouter } from "@/app/router";
 import { Screen } from "@/components/screen";
 import { setAuthToken } from "@/lib/api";
 import { getAuthToken } from "@/lib/secure-storage";
 import { AuthFeature } from "@/pages/auth/feature/auth-feature";
-import { HomeFeature } from "@/pages/home/feature/home-feature";
 
 type AuthStatus = "booting" | "guest" | "authed";
 
@@ -37,7 +38,12 @@ export function AuthGate() {
   }
 
   if (status === "authed") {
-    return <HomeFeature onLoggedOut={handleLoggedOut} />;
+    return (
+      <RouterProvider
+        router={appRouter}
+        context={{ onLoggedOut: handleLoggedOut }}
+      />
+    );
   }
 
   return <AuthFeature onAuthenticated={handleAuthenticated} />;
