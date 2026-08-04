@@ -86,7 +86,9 @@ Example: `src/pages/focus/`
 - Auth: access-tokens guard, tokens named `desktop` with a 30-day expiry. Login is rate limited with `@adonisjs/limiter` (`limiter.penalize`).
 - Database: Lucid ORM, SQLite via better-sqlite3 (file in `tmp/`, `DB_FILE` env switches it); Postgres later is a dialect change.
 - Imports: `#auth/*`, `#core/*`, `#app/*` cross-module aliases (see `package.json#imports`).
-- Tests: japa functional specs in `tests/functional/<module>/`, `testUtils.db().truncate()` per test, groups named `'Auth / login'`. Run with `pnpm --filter @atlas/api test`.
+- Tests: japa functional specs in `tests/functional/<module>/`, `testUtils.db().truncate()` per test, groups named `'Auth / login'`. Run with `pnpm --filter @atlas/api test`. Stop any running API dev server first — the japa HTTP server binds the same port.
+- Mail: `@adonisjs/mail` with the Resend transport (`RESEND_API_KEY` env). Mail classes live in `app/<module>/mails/` (extend `BaseMail`, build the element with `React.createElement` and render with `@react-email/render`); React Email templates live in `resources/emails/*.tsx` (import from the `@react-email/components` barrel, no remote assets). Tests use `mail.fake()` per test + `mail.restore()` in teardown.
+- Password reset: short typed codes (10 hex, shown `XXXXX-XXXXX`), SHA-256 hash at rest, 30 min expiry, single active code, verify endpoint rate limited — never weaken these together, the code is only safe with the throttle.
 - The api keeps its own Adonis ESLint/Prettier presets (`apps/api` is excluded from the root Prettier); run its lint/format from the workspace.
 - Business rule: every focus-session computation (durations, streaks, stats) lives in the API or a dedicated lib — single source of truth.
 

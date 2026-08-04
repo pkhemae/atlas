@@ -22,6 +22,8 @@ router.get('/', () => {
 defineRouteGroup('/api/v1/auth', () => {
   router.post('register', [auth.SignUp, 'handle'])
   router.post('login', [auth.SignIn, 'handle'])
+  router.post('forgot-password', [auth.ForgotPassword, 'handle'])
+  router.post('reset-password', [auth.ResetPassword, 'handle'])
 
   defineRouteGroup(() => {
     router.post('logout', [auth.SignOut, 'handle'])
