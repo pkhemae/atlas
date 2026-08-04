@@ -30,9 +30,14 @@ export function AppNavbar() {
           </TooltipTrigger>
           <TooltipContent>Home</TooltipContent>
         </Tooltip>
-        {/* hero CTA — wired to the focus timer in the next iteration */}
-        <Button variant="relief" className="rounded-full">
-          <Play />
+        {/* hero CTA — wired to the focus timer in the next iteration.
+            hover: a light streak sweeps across (instant invisible reset on
+            leave via duration-0) and the play glyph nudges forward */}
+        <Button
+          variant="relief"
+          className="group relative overflow-hidden rounded-full before:absolute before:inset-0 before:-translate-x-full before:bg-linear-to-r before:from-transparent before:via-white/20 before:to-transparent before:transition-transform before:duration-0 hover:before:translate-x-full hover:before:duration-500"
+        >
+          <Play className="transition-transform duration-200 ease-[cubic-bezier(0.2,0,0,1)] group-hover:translate-x-0.5" />
           Start a session
         </Button>
         <Tooltip>

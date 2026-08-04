@@ -1,4 +1,4 @@
-import { LogOut, User } from "lucide-react";
+import { User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,11 +36,34 @@ export function UserMenu({ initials, loggingOut, onLogout }: UserMenuProps) {
           variant="destructive"
           disabled={loggingOut}
           onSelect={onLogout}
+          className="group"
         >
-          <LogOut />
+          <LogOutIcon />
           {loggingOut ? "Logging out…" : "Log out"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+// lucide's log-out, re-drawn so the arrow lives in its own group and can
+// slide right when the menu item is hovered or keyboard-highlighted
+function LogOutIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <g className="transition-transform duration-200 ease-[cubic-bezier(0.2,0,0,1)] group-hover:translate-x-[2px] group-data-[highlighted]:translate-x-[2px]">
+        <path d="m16 17 5-5-5-5" />
+        <path d="M21 12H9" />
+      </g>
+    </svg>
   );
 }
