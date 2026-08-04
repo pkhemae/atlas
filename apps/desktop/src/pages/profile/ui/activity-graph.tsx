@@ -1,4 +1,10 @@
 import { useEffect, useMemo, useRef } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@atlas/ui/components/tooltip";
 import { cn } from "@atlas/ui/lib/utils";
 
 export interface ActivityDay {
@@ -82,24 +88,37 @@ export function ActivityGraph({ days, loading }: ActivityGraphProps) {
                   </span>
                 ))}
               </div>
-              {weeks.map((week, weekIndex) => (
-                <div key={weekIndex} className="grid grid-rows-7 gap-[3px]">
-                  {week.map((day) => {
-                    const key = localKey(day);
-                    const seconds = totalsByDate.get(key) ?? 0;
-                    return (
-                      <div
-                        key={key}
-                        title={`${seconds > 0 ? formatTotal(seconds) : "No focus"} · ${day.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`}
-                        className={cn(
-                          "size-2.5 rounded-[3px]",
-                          LEVEL_CLASSES[levelFor(seconds)],
-                        )}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
+              <TooltipProvider delayDuration={150}>
+                {weeks.map((week, weekIndex) => (
+                  <div key={weekIndex} className="grid grid-rows-7 gap-[3px]">
+                    {week.map((day) => {
+                      const key = localKey(day);
+                      const seconds = totalsByDate.get(key) ?? 0;
+                      const dateLabel = day.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      });
+                      return (
+                        <Tooltip key={key}>
+                          <TooltipTrigger asChild>
+                            <div
+                              className={cn(
+                                "size-2.5 rounded-[3px]",
+                                LEVEL_CLASSES[levelFor(seconds)],
+                              )}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {seconds > 0
+                              ? `${formatTotal(seconds)} of focus · ${dateLabel}`
+                              : `No session · ${dateLabel}`}
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
+                  </div>
+                ))}
+              </TooltipProvider>
             </div>
             <div className="text-muted-foreground mt-3 flex items-center justify-end gap-1 text-[10px]">
               <span className="mr-1">Less</span>
