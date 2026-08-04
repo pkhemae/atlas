@@ -29,12 +29,13 @@ export function ProfileFeature() {
         {me.data ? (
           <ProfileCard
             fullName={me.data.fullName ?? me.data.email}
+            handle={me.data.email.split("@")[0] ?? me.data.email}
             email={me.data.email}
             initials={me.data.initials}
             memberSince={memberSince(me.data.createdAt)}
           />
         ) : (
-          <div className="bg-card h-52 w-56 shrink-0 animate-pulse rounded-xl" />
+          <div className="bg-card h-[520px] w-80 shrink-0 animate-pulse rounded-xl" />
         )}
         <ActivityGraph
           days={activity.data?.data ?? []}
