@@ -20,7 +20,7 @@ export function UserMenu({ initials, loggingOut, onLogout }: UserMenuProps) {
         <button
           type="button"
           aria-label="Account menu"
-          className="flex size-9 items-center justify-center rounded-full bg-linear-to-b from-red-500 to-red-700 text-xs font-semibold text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3),0_4px_12px_-4px_rgba(220,38,38,0.5)] transition-[scale,filter] hover:brightness-110 active:scale-[0.96]"
+          className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-full text-xs font-semibold transition-[scale,background-color] hover:bg-red-500 active:scale-[0.96]"
         >
           {initials}
         </button>

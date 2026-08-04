@@ -84,12 +84,7 @@ export function LoginForm({
             {errorMessage}
           </p>
         ) : null}
-        <Button
-          variant="relief"
-          type="submit"
-          className="mt-2 w-full"
-          disabled={pending}
-        >
+        <Button type="submit" className="mt-2 w-full" disabled={pending}>
           {pending ? "Logging in…" : "Log in"}
         </Button>
       </form>
