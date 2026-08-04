@@ -8,7 +8,12 @@ import {
   TooltipTrigger,
 } from "@atlas/ui/components/tooltip";
 
-export function AppNavbar() {
+interface AppNavbarProps {
+  onStartSession: () => void;
+  startPending: boolean;
+}
+
+export function AppNavbar({ onStartSession, startPending }: AppNavbarProps) {
   return (
     <TooltipProvider delayDuration={300}>
       {/* blended into the window top: no surface, the empty areas keep
@@ -30,11 +35,12 @@ export function AppNavbar() {
           </TooltipTrigger>
           <TooltipContent>Home</TooltipContent>
         </Tooltip>
-        {/* hero CTA — wired to the focus timer in the next iteration.
-            hover: a light streak sweeps across (instant invisible reset on
-            leave via duration-0) and the play glyph nudges forward */}
+        {/* hero CTA. hover: a light streak sweeps across (instant invisible
+            reset on leave via duration-0) and the play glyph nudges forward */}
         <Button
           variant="relief"
+          disabled={startPending}
+          onClick={onStartSession}
           className="group relative overflow-hidden rounded-full before:absolute before:inset-0 before:-translate-x-full before:bg-linear-to-r before:from-transparent before:via-white/20 before:to-transparent before:transition-transform before:duration-0 hover:before:translate-x-full hover:before:duration-500"
         >
           <Play className="transition-transform duration-200 ease-[cubic-bezier(0.2,0,0,1)] group-hover:translate-x-0.5" />
@@ -44,13 +50,13 @@ export function AppNavbar() {
           <TooltipTrigger asChild>
             <button
               type="button"
-              aria-label="Leaderboards (coming soon)"
+              aria-label="Leaderboards"
               className="text-muted-foreground/60 hover:text-muted-foreground hover:bg-foreground/5 flex size-10 cursor-default items-center justify-center rounded-full transition-colors"
             >
               <Trophy className="size-5" />
             </button>
           </TooltipTrigger>
-          <TooltipContent>Leaderboards — coming soon</TooltipContent>
+          <TooltipContent>Leaderboards</TooltipContent>
         </Tooltip>
       </nav>
     </TooltipProvider>

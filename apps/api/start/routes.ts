@@ -13,7 +13,7 @@ import { middleware } from '#start/kernel'
 import { controllers } from '#generated/controllers'
 import { defineRouteGroup } from '#core/utils/index'
 
-const { auth } = controllers
+const { auth, focus } = controllers
 
 router.get('/', () => {
   return { hello: 'world' }
@@ -31,3 +31,13 @@ defineRouteGroup('/api/v1/auth', () => {
     router.get('me', [auth.Me, 'show'])
   }).use(middleware.auth())
 })
+
+defineRouteGroup('/api/v1/focus', () => {
+  router.post('sessions', [focus.StartSession, 'handle'])
+  router.get('sessions', [focus.ListSessions, 'handle'])
+  router.get('sessions/active', [focus.ActiveSession, 'handle'])
+  router.post('sessions/abandon-active', [focus.AbandonActiveSession, 'handle'])
+  router.post('sessions/:id/pause', [focus.PauseSession, 'handle'])
+  router.post('sessions/:id/resume', [focus.ResumeSession, 'handle'])
+  router.post('sessions/:id/complete', [focus.CompleteSession, 'handle'])
+}).use(middleware.auth())

@@ -10,6 +10,7 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "macOSPrivateApi": true,
     "windows": [
       {
         "title": "Atlas",
@@ -18,6 +19,19 @@
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "backgroundColor": "#111111"
+      },
+      {
+        "label": "dock",
+        "title": "Atlas Focus",
+        "url": "index.html?window=dock",
+        "visible": false,
+        "decorations": false,
+        "transparent": true,
+        "shadow": false,
+        "alwaysOnTop": true,
+        "resizable": false,
+        "width": 208,
+        "height": 44
       }
     ],
     "security": {

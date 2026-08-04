@@ -21,6 +21,7 @@
     "#app/*": "./app/*.js",
     "#auth/*": "./app/auth/*.js",
     "#core/*": "./app/core/*.js",
+    "#focus/*": "./app/focus/*.js",
     "#generated/*": "./.adonisjs/server/*.js",
     "#providers/*": "./providers/*.js",
     "#resources/*": "./resources/*.js",

@@ -91,4 +91,88 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/me_controller').default['show']>>>
     }
   }
+  'start_session': {
+    methods: ["POST"]
+    pattern: '/api/v1/focus/sessions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/start_session_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/start_session_controller').default['handle']>>>
+    }
+  }
+  'list_sessions': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/focus/sessions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/list_sessions_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/list_sessions_controller').default['handle']>>>
+    }
+  }
+  'active_session': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/focus/sessions/active'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/active_session_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/active_session_controller').default['handle']>>>
+    }
+  }
+  'abandon_active_session': {
+    methods: ["POST"]
+    pattern: '/api/v1/focus/sessions/abandon-active'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/abandon_active_session_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/abandon_active_session_controller').default['handle']>>>
+    }
+  }
+  'pause_session': {
+    methods: ["POST"]
+    pattern: '/api/v1/focus/sessions/:id/pause'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/pause_session_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/pause_session_controller').default['handle']>>>
+    }
+  }
+  'resume_session': {
+    methods: ["POST"]
+    pattern: '/api/v1/focus/sessions/:id/resume'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/resume_session_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/resume_session_controller').default['handle']>>>
+    }
+  }
+  'complete_session': {
+    methods: ["POST"]
+    pattern: '/api/v1/focus/sessions/:id/complete'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/complete_session_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/complete_session_controller').default['handle']>>>
+    }
+  }
 }
