@@ -30,8 +30,8 @@
         "shadow": false,
         "alwaysOnTop": true,
         "resizable": false,
-        "width": 224,
-        "height": 56
+        "width": 208,
+        "height": 44
       }
     ],
     "security": {

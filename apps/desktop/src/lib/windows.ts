@@ -1,12 +1,12 @@
 import { currentMonitor, LogicalPosition } from "@tauri-apps/api/window";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
-const DOCK_WIDTH = 224;
-const DOCK_MARGIN = 24;
-const DOCK_TOP = 48;
+const DOCK_WIDTH = 208;
+const DOCK_TOP = 16;
 
 /**
- * Places the dock at the top-right of the current monitor and shows it.
+ * Places the dock horizontally centered near the top of the current
+ * monitor and shows it.
  */
 export async function showDock() {
   const dock = await WebviewWindow.getByLabel("dock");
@@ -17,9 +17,7 @@ export async function showDock() {
     const scale = monitor.scaleFactor;
     const x =
       monitor.position.x / scale +
-      monitor.size.width / scale -
-      DOCK_WIDTH -
-      DOCK_MARGIN;
+      (monitor.size.width / scale - DOCK_WIDTH) / 2;
     const y = monitor.position.y / scale + DOCK_TOP;
     await dock.setPosition(new LogicalPosition(x, y));
   }
