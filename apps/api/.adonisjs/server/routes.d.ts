@@ -13,6 +13,7 @@ export type ScannedRoutes = {
     'me.show': { paramsTuple?: []; params?: {} }
     'start_session': { paramsTuple?: []; params?: {} }
     'list_sessions': { paramsTuple?: []; params?: {} }
+    'list_activity': { paramsTuple?: []; params?: {} }
     'active_session': { paramsTuple?: []; params?: {} }
     'abandon_active_session': { paramsTuple?: []; params?: {} }
     'pause_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -22,11 +23,13 @@ export type ScannedRoutes = {
   GET: {
     'me.show': { paramsTuple?: []; params?: {} }
     'list_sessions': { paramsTuple?: []; params?: {} }
+    'list_activity': { paramsTuple?: []; params?: {} }
     'active_session': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'me.show': { paramsTuple?: []; params?: {} }
     'list_sessions': { paramsTuple?: []; params?: {} }
+    'list_activity': { paramsTuple?: []; params?: {} }
     'active_session': { paramsTuple?: []; params?: {} }
   }
   POST: {

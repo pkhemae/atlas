@@ -35,6 +35,7 @@ defineRouteGroup('/api/v1/auth', () => {
 defineRouteGroup('/api/v1/focus', () => {
   router.post('sessions', [focus.StartSession, 'handle'])
   router.get('sessions', [focus.ListSessions, 'handle'])
+  router.get('activity', [focus.ListActivity, 'handle'])
   router.get('sessions/active', [focus.ActiveSession, 'handle'])
   router.post('sessions/abandon-active', [focus.AbandonActiveSession, 'handle'])
   router.post('sessions/:id/pause', [focus.PauseSession, 'handle'])

@@ -15,7 +15,7 @@ export function AppLayout() {
   // refresh session data whenever the dock finishes a session
   useEffect(() => {
     const unlisten = listen("focus:completed", () => {
-      queryClient.invalidateQueries({ queryKey: ["focus", "sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["focus"] });
     });
     return () => {
       unlisten.then((fn) => fn());
@@ -34,7 +34,7 @@ export function AppLayout() {
       await api
         .post("/api/v1/focus/sessions/abandon-active", {})
         .catch(() => {});
-      queryClient.invalidateQueries({ queryKey: ["focus", "sessions"] });
+      queryClient.invalidateQueries({ queryKey: ["focus"] });
     })();
   }, [queryClient]);
 

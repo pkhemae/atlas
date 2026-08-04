@@ -3,6 +3,11 @@ import { DateTime } from 'luxon'
 import FocusSession from '#focus/models/focus_session'
 import type User from '#auth/models/user'
 
+export interface DailyActivity {
+  date: string
+  totalSeconds: number
+}
+
 export default class FocusSessionService {
   async start(user: User) {
     await this.abandonActive(user)
@@ -18,6 +23,29 @@ export default class FocusSessionService {
       pausedSeconds: 0,
       durationSeconds: null,
     })
+  }
+
+  /**
+   * Total focus seconds per day, for the activity graph. Only settled
+   * sessions count — running/paused ones have no frozen duration yet and
+   * will land in their day's bucket once they end. Days are the server's
+   * local calendar dates; grouping happens here rather than in SQL so the
+   * date math stays in Luxon instead of dialect-specific functions.
+   */
+  async dailyActivity(user: User): Promise<DailyActivity[]> {
+    const sessions = await FocusSession.query()
+      .where('user_id', user.id)
+      .whereNotNull('duration_seconds')
+      .select('started_at', 'duration_seconds')
+      .orderBy('started_at', 'asc')
+
+    const totals = new Map<string, number>()
+    for (const session of sessions) {
+      const date = session.startedAt.toISODate()!
+      totals.set(date, (totals.get(date) ?? 0) + session.durationSeconds!)
+    }
+
+    return [...totals.entries()].map(([date, totalSeconds]) => ({ date, totalSeconds }))
   }
 
   async findActive(user: User) {

@@ -10,10 +10,16 @@ import {
 interface UserMenuProps {
   initials: string;
   loggingOut: boolean;
+  onOpenProfile: () => void;
   onLogout: () => void;
 }
 
-export function UserMenu({ initials, loggingOut, onLogout }: UserMenuProps) {
+export function UserMenu({
+  initials,
+  loggingOut,
+  onOpenProfile,
+  onLogout,
+}: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -26,8 +32,7 @@ export function UserMenu({ initials, loggingOut, onLogout }: UserMenuProps) {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={8} className="min-w-40">
-        {/* future profile screen */}
-        <DropdownMenuItem>
+        <DropdownMenuItem onSelect={onOpenProfile}>
           <User />
           Profile
         </DropdownMenuItem>

@@ -27,6 +27,7 @@ export function AppNavbar({ onStartSession, startPending }: AppNavbarProps) {
           <TooltipTrigger asChild>
             <Link
               to="/"
+              activeOptions={{ exact: true }}
               aria-label="Home"
               className="text-muted-foreground hover:text-foreground hover:bg-foreground/5 data-[status=active]:text-foreground flex size-10 items-center justify-center rounded-full transition-colors"
             >

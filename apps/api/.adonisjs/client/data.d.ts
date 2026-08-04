@@ -6,6 +6,7 @@
 /// <reference path="./manifest.d.ts" />
 import type { InferData, InferVariants } from '@adonisjs/core/types/transformers'
 import type AuthUserTransformer from '#app/auth/transformers/user_transformer'
+import type FocusFocusActivityTransformer from '#app/focus/transformers/focus_activity_transformer'
 import type FocusFocusSessionTransformer from '#app/focus/transformers/focus_session_transformer'
 
 export namespace Data {
@@ -16,6 +17,10 @@ export namespace Data {
     }
   }
   export namespace Focus {
+    export type FocusActivity = InferData<FocusFocusActivityTransformer>
+    export namespace FocusActivity {
+      export type Variants = InferVariants<FocusFocusActivityTransformer>
+    }
     export type FocusSession = InferData<FocusFocusSessionTransformer>
     export namespace FocusSession {
       export type Variants = InferVariants<FocusFocusSessionTransformer>
