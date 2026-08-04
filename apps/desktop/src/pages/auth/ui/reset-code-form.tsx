@@ -59,6 +59,9 @@ export function ResetCodeForm({
           disabled={pending}
           autoFocus
           containerClassName="justify-center"
+          // the emailed code is formatted XXXXX-XXXXX: strip the dash (and
+          // any stray whitespace) so pasting it fills the slots
+          pasteTransformer={(pasted) => pasted.replace(/[^0-9a-fA-F]/g, "")}
         >
           <InputOTPGroup>
             <InputOTPSlot index={0} className="font-mono uppercase" />
