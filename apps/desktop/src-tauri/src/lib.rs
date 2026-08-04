@@ -33,10 +33,42 @@ fn delete_auth_token() -> Result<(), String> {
     }
 }
 
+/// The dock must float over every Space, including fullscreen apps.
+/// `visibleOnAllWorkspaces` only sets canJoinAllSpaces; the
+/// fullScreenAuxiliary bit and the elevated window level need raw AppKit.
+#[cfg(target_os = "macos")]
+fn make_dock_fullscreen_capable(window: &tauri::WebviewWindow) {
+    use objc2::msg_send;
+    use objc2::runtime::AnyObject;
+
+    // NSWindowCollectionBehavior: canJoinAllSpaces | fullScreenAuxiliary
+    const COLLECTION_BEHAVIOR: usize = (1 << 0) | (1 << 8);
+    // NSStatusWindowLevel — above fullscreen app content
+    const LEVEL: isize = 25;
+
+    if let Ok(ns_window) = window.ns_window() {
+        let ns_window = ns_window as *mut AnyObject;
+        unsafe {
+            let _: () = msg_send![ns_window, setCollectionBehavior: COLLECTION_BEHAVIOR];
+            let _: () = msg_send![ns_window, setLevel: LEVEL];
+        }
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .setup(|_app| {
+            #[cfg(target_os = "macos")]
+            {
+                use tauri::Manager;
+                if let Some(dock) = _app.get_webview_window("dock") {
+                    make_dock_fullscreen_capable(&dock);
+                }
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             save_auth_token,
             get_auth_token,
