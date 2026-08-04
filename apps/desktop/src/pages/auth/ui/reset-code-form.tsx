@@ -53,6 +53,9 @@ export function ResetCodeForm({
         <InputOTP
           maxLength={CODE_LENGTH}
           pattern={HEX_PATTERN}
+          // the lib defaults to inputMode="numeric", which makes WebKit lag
+          // on letter keystrokes — our codes are alphanumeric hex
+          inputMode="text"
           value={code}
           onChange={onCodeChange}
           onComplete={onComplete}
