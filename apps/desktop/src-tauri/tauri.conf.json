@@ -16,6 +16,8 @@
         "title": "Atlas",
         "width": 900,
         "height": 640,
+        "minWidth": 800,
+        "minHeight": 560,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "backgroundColor": "#111111"
