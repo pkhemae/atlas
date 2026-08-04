@@ -100,6 +100,7 @@ Example: `src/pages/focus/`
 ### Desktop Context (`apps/desktop`)
 
 - Auth token: stored in the OS keychain via Rust commands (`save_auth_token`, `get_auth_token`, `delete_auth_token` in `src-tauri/src/lib.rs`), mirrored in memory for the API client (`src/lib/api.ts`). Never persist tokens in files or localStorage.
+- Dev quirk: every Rust rebuild re-signs the debug binary ad hoc, so macOS re-prompts for keychain access on the next login ("Toujours autoriser" holds until the next native rebuild). Signed production builds won't prompt — not a bug, don't work around it.
 - API access: typed Tuyau client (`createTuyau` + `@atlas/api/registry`); response types flow from the API's controllers/transformers.
 - Screens follow the same feature/ui split as the marketing app (`src/pages/<domain>/{feature,ui}/`).
 
