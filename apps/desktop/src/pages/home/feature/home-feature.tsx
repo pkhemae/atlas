@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@atlas/ui/components/button";
 import { api, setAuthToken, type AuthUser } from "@/lib/api";
 import { deleteAuthToken } from "@/lib/secure-storage";
 import { HomeScreen } from "@/pages/home/ui/home-screen";
@@ -30,20 +31,35 @@ export function HomeFeature({ onLoggedOut }: HomeFeatureProps) {
     },
   });
 
-  // a stale/expired keychain token means /me fails: clear it and start over
-  const meFailed = me.isError;
+  // only a rejected token means the session is dead — a network failure
+  // (API not running) must NOT destroy a valid keychain token
+  const meUnauthorized =
+    me.isError && (me.error as { status?: number }).status === 401;
   useEffect(() => {
-    if (!meFailed) return;
+    if (!meUnauthorized) return;
     setAuthToken(null);
     deleteAuthToken().finally(() => onLoggedOut());
-  }, [meFailed, onLoggedOut]);
+  }, [meUnauthorized, onLoggedOut]);
 
-  if (me.isPending || me.isError) {
+  if (me.isPending || meUnauthorized) {
     return (
       <main className="bg-background flex min-h-svh items-center justify-center">
         <p className="text-muted-foreground animate-pulse text-sm">
           Loading your session…
         </p>
+      </main>
+    );
+  }
+
+  if (me.isError) {
+    return (
+      <main className="bg-background flex min-h-svh flex-col items-center justify-center gap-4">
+        <p className="text-muted-foreground text-sm">
+          Can&apos;t reach the Atlas API. Is it running?
+        </p>
+        <Button variant="secondary" onClick={() => me.refetch()}>
+          Retry
+        </Button>
       </main>
     );
   }
