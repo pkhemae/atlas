@@ -40,3 +40,9 @@ jobs:
 
       - name: Lint, type-check and build
         run: pnpm exec turbo run lint check-types build
+
+      - name: Prepare API environment
+        run: cp apps/api/.env.example apps/api/.env
+
+      - name: Test
+        run: pnpm exec turbo run test

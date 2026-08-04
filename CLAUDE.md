@@ -79,12 +79,22 @@ Example: `src/pages/focus/`
 
 ### Backend Context (`apps/api`)
 
-- AdonisJS v7: controllers in `app/controllers/`, models in `app/models/`, services in `app/services/` (heavy business logic), validators in `app/validators/` (VineJS).
-- Database: Lucid ORM, SQLite via better-sqlite3 for now (file in `tmp/`); switching to Postgres later only changes the dialect + connection config.
-- Auth: `@adonisjs/auth` — use the access-tokens guard for the desktop client.
-- Imports use the `#` subpath aliases defined in `package.json` (`#controllers/*`, `#models/*`, …).
+- AdonisJS v7, organized by DOMAIN MODULE (not by layer): each module under `app/<module>/` owns its `controllers/`, `models/`, `services/`, `validators/`, `transformers/`, `middleware/`. Current modules: `auth/`, `core/` (exceptions, shared middleware, mixins, utils).
+- Controllers are single-action classes (`SignInController.handle`); routes reference them through the generated `#generated/controllers` registry and use `defineRouteGroup` from `#core/utils/index`. Class names must mirror snake_case filenames (`sign_in_controller.ts` → `SignInController`) — the codegen depends on it.
+- Responses: wrapped `{ data: ... }` via `ctx.serialize(...)`; `serialize.withoutWrapping` for `/me`-style endpoints; `response.noContent()` for bodyless mutations; domain errors are `response.status(400).send({ errors: [{ message, code: 'E_SCREAMING_SNAKE' }] })` — clients switch on the stable codes.
+- Models compose the `#core/mixins` (`WithPrimaryUuid` = UUID v7 pk, `WithTimestamps`) with explicit `@column` declarations.
+- Auth: access-tokens guard, tokens named `desktop` with a 30-day expiry. Login is rate limited with `@adonisjs/limiter` (`limiter.penalize`).
+- Database: Lucid ORM, SQLite via better-sqlite3 (file in `tmp/`, `DB_FILE` env switches it); Postgres later is a dialect change.
+- Imports: `#auth/*`, `#core/*`, `#app/*` cross-module aliases (see `package.json#imports`).
+- Tests: japa functional specs in `tests/functional/<module>/`, `testUtils.db().truncate()` per test, groups named `'Auth / login'`. Run with `pnpm --filter @atlas/api test`.
 - The api keeps its own Adonis ESLint/Prettier presets (`apps/api` is excluded from the root Prettier); run its lint/format from the workspace.
 - Business rule: every focus-session computation (durations, streaks, stats) lives in the API or a dedicated lib — single source of truth.
+
+### Desktop Context (`apps/desktop`)
+
+- Auth token: stored in the OS keychain via Rust commands (`save_auth_token`, `get_auth_token`, `delete_auth_token` in `src-tauri/src/lib.rs`), mirrored in memory for the API client (`src/lib/api.ts`). Never persist tokens in files or localStorage.
+- API access: typed Tuyau client (`createTuyau` + `@atlas/api/registry`); response types flow from the API's controllers/transformers.
+- Screens follow the same feature/ui split as the marketing app (`src/pages/<domain>/{feature,ui}/`).
 
 ## Development Guidelines
 

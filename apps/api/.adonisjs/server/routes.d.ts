@@ -4,21 +4,21 @@ type ParamValue = string | number | bigint | boolean
 
 export type ScannedRoutes = {
   ALL: {
-    'auth.new_account.store': { paramsTuple?: []; params?: {} }
-    'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
-    'profile.profile.show': { paramsTuple?: []; params?: {} }
-    'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
+    'sign_up': { paramsTuple?: []; params?: {} }
+    'sign_in': { paramsTuple?: []; params?: {} }
+    'sign_out': { paramsTuple?: []; params?: {} }
+    'me.show': { paramsTuple?: []; params?: {} }
   }
   GET: {
-    'profile.profile.show': { paramsTuple?: []; params?: {} }
+    'me.show': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
-    'profile.profile.show': { paramsTuple?: []; params?: {} }
+    'me.show': { paramsTuple?: []; params?: {} }
   }
   POST: {
-    'auth.new_account.store': { paramsTuple?: []; params?: {} }
-    'auth.access_tokens.store': { paramsTuple?: []; params?: {} }
-    'profile.access_tokens.destroy': { paramsTuple?: []; params?: {} }
+    'sign_up': { paramsTuple?: []; params?: {} }
+    'sign_in': { paramsTuple?: []; params?: {} }
+    'sign_out': { paramsTuple?: []; params?: {} }
   }
 }
 declare module '@adonisjs/core/types/http' {
