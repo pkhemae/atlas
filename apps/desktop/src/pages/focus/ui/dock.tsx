@@ -14,6 +14,11 @@ interface DockProps {
 const CHIP =
   "flex size-7 items-center justify-center rounded-full transition-[color,background-color,scale] active:scale-[0.96] disabled:pointer-events-none disabled:opacity-50";
 
+const MORPH_ICON =
+  "absolute inset-0 size-3.5 transition-[opacity,scale,filter] duration-200 ease-[cubic-bezier(0.2,0,0,1)]";
+const MORPH_VISIBLE = "scale-100 opacity-100 blur-none";
+const MORPH_HIDDEN = "scale-25 opacity-0 blur-[2px]";
+
 export function Dock({
   elapsed,
   status,
@@ -22,6 +27,8 @@ export function Dock({
   onResume,
   onStop,
 }: DockProps) {
+  const paused = status === "paused";
+
   return (
     // the window itself is transparent: the pill carries the shape
     <div
@@ -37,53 +44,64 @@ export function Dock({
           className={cn(
             // explicit Menlo stack: WKWebView resolves ui-monospace weights
             // to Times through CoreText fallbacks
-            "font-[Menlo,Consolas,monospace] text-sm font-semibold text-red-500 tabular-nums transition-opacity",
-            status === "paused" && "animate-pulse opacity-70",
+            "font-[Menlo,Consolas,monospace] text-sm font-semibold text-red-500 tabular-nums transition-opacity duration-300",
+            paused && "animate-pulse opacity-70",
           )}
         >
           {formatElapsed(elapsed)}
         </span>
-        {status === "running" ? (
+        {/* one button, two glyphs: pause and play morph in place */}
+        <button
+          type="button"
+          aria-label={paused ? "Resume session" : "Pause session"}
+          disabled={pending}
+          onClick={paused ? onResume : onPause}
+          className={cn(
+            CHIP,
+            "text-zinc-400 hover:bg-white/10 hover:text-white",
+          )}
+        >
+          <span className="relative size-3.5" aria-hidden="true">
+            <Pause
+              className={cn(
+                MORPH_ICON,
+                "fill-current",
+                paused ? MORPH_HIDDEN : MORPH_VISIBLE,
+              )}
+            />
+            <Play
+              className={cn(
+                MORPH_ICON,
+                "fill-current",
+                paused ? MORPH_VISIBLE : MORPH_HIDDEN,
+              )}
+            />
+          </span>
+        </button>
+        {/* the stop grows out from behind the toggle while the pill width
+            follows — width + margin animate so nothing ever jumps */}
+        <div
+          className={cn(
+            "overflow-hidden transition-[width,margin-left] duration-300 ease-[cubic-bezier(0.2,0,0,1)]",
+            paused ? "ml-0 w-7" : "-ml-1.5 w-0",
+          )}
+        >
           <button
             type="button"
-            aria-label="Pause session"
-            disabled={pending}
-            onClick={onPause}
+            aria-label="Stop and save session"
+            aria-hidden={!paused}
+            tabIndex={paused ? 0 : -1}
+            disabled={pending || !paused}
+            onClick={onStop}
             className={cn(
               CHIP,
-              "animate-in fade-in text-zinc-400 duration-200 hover:bg-white/10 hover:text-white",
+              "bg-linear-to-b from-red-500 to-red-700 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3)] transition-[opacity,scale,filter] duration-300 ease-[cubic-bezier(0.2,0,0,1)] hover:brightness-110",
+              paused ? "scale-100 opacity-100" : "scale-50 opacity-0",
             )}
           >
-            <Pause className="size-3.5 fill-current" />
+            <Square className="size-3 fill-current" />
           </button>
-        ) : (
-          <div className="animate-in fade-in flex items-center gap-1 duration-200">
-            <button
-              type="button"
-              aria-label="Resume session"
-              disabled={pending}
-              onClick={onResume}
-              className={cn(
-                CHIP,
-                "text-zinc-400 hover:bg-white/10 hover:text-white",
-              )}
-            >
-              <Play className="size-3.5 fill-current" />
-            </button>
-            <button
-              type="button"
-              aria-label="Stop and save session"
-              disabled={pending}
-              onClick={onStop}
-              className={cn(
-                CHIP,
-                "bg-linear-to-b from-red-500 to-red-700 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3)] hover:brightness-110",
-              )}
-            >
-              <Square className="size-3 fill-current" />
-            </button>
-          </div>
-        )}
+        </div>
         {/* future dock settings */}
         <button
           type="button"
