@@ -25,7 +25,7 @@ export function ProfileFeature() {
 
   return (
     <main className="bg-background min-h-svh px-6 pt-16 pb-8">
-      <div className="animate-in fade-in slide-in-from-bottom-2 mx-auto flex w-full max-w-4xl items-start gap-4 duration-500">
+      <div className="animate-in fade-in slide-in-from-bottom-2 mx-auto flex w-full max-w-2xl items-start gap-3 duration-500">
         {me.data ? (
           <ProfileCard
             fullName={me.data.fullName ?? me.data.email}
@@ -35,7 +35,7 @@ export function ProfileFeature() {
             memberSince={memberSince(me.data.createdAt)}
           />
         ) : (
-          <div className="bg-card h-[520px] w-80 shrink-0 animate-pulse rounded-xl" />
+          <div className="bg-card h-96 w-60 shrink-0 animate-pulse rounded-xl" />
         )}
         <ActivityGraph
           days={activity.data?.data ?? []}

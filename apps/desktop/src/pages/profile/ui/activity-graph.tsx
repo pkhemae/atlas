@@ -47,9 +47,9 @@ export function ActivityGraph({ days, loading }: ActivityGraphProps) {
   return (
     <section
       aria-label="Activity"
-      className="bg-card min-w-0 flex-1 rounded-xl p-5"
+      className="bg-card min-w-0 flex-1 rounded-xl p-4"
     >
-      <h2 className="text-sm font-medium">
+      <h2 className="text-xs font-medium">
         {loading
           ? "Loading your activity…"
           : totalSeconds > 0
@@ -57,9 +57,9 @@ export function ActivityGraph({ days, loading }: ActivityGraphProps) {
             : "No focus time in the last 6 months yet"}
       </h2>
       {loading ? (
-        <div className="bg-foreground/5 mt-4 h-28 animate-pulse rounded-lg" />
+        <div className="bg-foreground/5 mt-3 h-24 animate-pulse rounded-lg" />
       ) : (
-        <div className="mt-4">
+        <div className="mt-3">
           <div className="relative ml-7 h-4">
             {monthLabels(weeks).map(({ index, label }) => (
               <span
