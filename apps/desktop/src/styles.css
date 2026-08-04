@@ -27,11 +27,3 @@
   --ring: rgba(255, 255, 255, 0.25);
   --radius: 0.75rem;
 }
-
-/* Flat inputs: full fill, no visible border (focus keeps the ring). */
-@layer base {
-  .dark [data-slot="input"] {
-    background-color: var(--input);
-    border-color: transparent;
-  }
-}
