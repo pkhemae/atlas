@@ -13,7 +13,8 @@ interface ResetCodeFormProps {
   code: string;
   pending: boolean;
   errorMessage: string | null;
-  resendDisabled: boolean;
+  resendCooldown: number;
+  resendPending: boolean;
   onCodeChange: (code: string) => void;
   onComplete: (code: string) => void;
   onResend: () => void;
@@ -25,7 +26,8 @@ export function ResetCodeForm({
   code,
   pending,
   errorMessage,
-  resendDisabled,
+  resendCooldown,
+  resendPending,
   onCodeChange,
   onComplete,
   onResend,
@@ -40,10 +42,11 @@ export function ResetCodeForm({
         <h1 className="text-2xl font-semibold tracking-tight">
           Enter your code
         </h1>
-        <p className="text-muted-foreground text-sm text-pretty">
+        <p className="text-muted-foreground text-sm">
           We sent a reset code to{" "}
-          <span className="text-foreground">{email}</span>. It expires in 30
-          minutes.
+          <span className="text-foreground">{email}</span>.
+          <br />
+          It expires in 30 minutes.
         </p>
       </header>
       <div className="flex flex-col items-center gap-4">
@@ -73,30 +76,30 @@ export function ResetCodeForm({
             <InputOTPSlot index={9} className="font-mono uppercase" />
           </InputOTPGroup>
         </InputOTP>
+        {/* fixed-height status slot so the layout never jumps */}
         <p
           className={
-            pending
-              ? "text-muted-foreground animate-pulse text-sm"
-              : errorMessage
-                ? "text-destructive text-sm"
-                : "text-muted-foreground text-sm"
+            errorMessage && !pending
+              ? "text-destructive min-h-5 text-sm"
+              : "text-muted-foreground min-h-5 animate-pulse text-sm"
           }
-          role={errorMessage ? "alert" : undefined}
+          role={errorMessage && !pending ? "alert" : undefined}
         >
-          {pending
-            ? "Checking your code…"
-            : (errorMessage ??
-              "The code verifies automatically once complete.")}
+          {pending ? "Checking your code…" : (errorMessage ?? "")}
         </p>
       </div>
       <div className="flex flex-col items-center gap-1">
         <button
           type="button"
           onClick={onResend}
-          disabled={resendDisabled}
-          className="text-muted-foreground hover:text-foreground px-3 py-2 text-sm transition-colors disabled:pointer-events-none disabled:opacity-50"
+          disabled={resendCooldown > 0 || resendPending}
+          className="text-muted-foreground hover:text-foreground px-3 py-2 text-sm tabular-nums transition-colors disabled:pointer-events-none disabled:opacity-50"
         >
-          {resendDisabled ? "Code sent — wait a moment" : "Resend code"}
+          {resendPending
+            ? "Sending a new code…"
+            : resendCooldown > 0
+              ? `Resend code in ${resendCooldown}s`
+              : "Resend code"}
         </button>
         <button
           type="button"

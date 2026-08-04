@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Screen } from "@/components/screen";
 import { api, setAuthToken, type AuthUser } from "@/lib/api";
@@ -28,7 +28,7 @@ interface AuthPayload {
 type AuthMode = "login" | "signup" | "forgot";
 type ForgotStep = "email" | "code" | "password" | "done";
 
-const RESEND_COOLDOWN_MS = 30_000;
+const RESEND_COOLDOWN_SECONDS = 30;
 
 async function persistSession(payload: AuthPayload) {
   setAuthToken(payload.data.token);
@@ -40,7 +40,16 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
   const [forgotStep, setForgotStep] = useState<ForgotStep>("email");
   const [forgotEmail, setForgotEmail] = useState("");
   const [resetCode, setResetCode] = useState("");
-  const [resendDisabled, setResendDisabled] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const id = setTimeout(
+      () => setResendCooldown((seconds) => seconds - 1),
+      1000,
+    );
+    return () => clearTimeout(id);
+  }, [resendCooldown]);
 
   const login = useMutation({
     mutationFn: (values: LoginValues) =>
@@ -93,8 +102,7 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
   });
 
   const startResendCooldown = () => {
-    setResendDisabled(true);
-    setTimeout(() => setResendDisabled(false), RESEND_COOLDOWN_MS);
+    setResendCooldown(RESEND_COOLDOWN_SECONDS);
   };
 
   const switchMode = (next: AuthMode) => {
@@ -149,7 +157,8 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
           errorMessage={
             verifyCode.isError ? extractApiErrorMessage(verifyCode.error) : null
           }
-          resendDisabled={resendDisabled || forgotPassword.isPending}
+          resendCooldown={resendCooldown}
+          resendPending={forgotPassword.isPending}
           onCodeChange={(code) => {
             verifyCode.reset();
             setResetCode(code);
