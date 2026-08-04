@@ -27,3 +27,21 @@
   --ring: rgba(255, 255, 255, 0.25);
   --radius: 0.75rem;
 }
+
+/*
+ * Native-app feel: UI text is not selectable like a web page.
+ * Typing surfaces keep normal text selection.
+ */
+@layer base {
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
