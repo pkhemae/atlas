@@ -1,5 +1,5 @@
 import { assert } from '@japa/assert'
-import { apiClient } from '@japa/api-client'
+import { ApiClient, apiClient } from '@japa/api-client'
 import app from '@adonisjs/core/services/app'
 import type { Config } from '@japa/runner/types'
 import { pluginAdonisJS } from '@japa/plugin-adonisjs'
@@ -34,6 +34,14 @@ export const plugins: Config['plugins'] = [
 ]
 
 /**
+ * The API is consumed with an Accept: application/json header; without it,
+ * auth failures content-negotiate into redirects instead of JSON errors.
+ */
+ApiClient.onRequest((request) => {
+  request.accept('json')
+})
+
+/**
  * Configure lifecycle function to run before and after all the
  * tests.
  *
@@ -41,7 +49,7 @@ export const plugins: Config['plugins'] = [
  * The teardown functions are executed after all the tests
  */
 export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
-  setup: [],
+  setup: [() => testUtils.db().migrate()],
   teardown: [],
 }
 

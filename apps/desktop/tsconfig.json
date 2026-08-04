@@ -2,6 +2,9 @@
   "extends": "@atlas/typescript-config/react-library.json",
   "compilerOptions": {
     "types": ["vite/client"],
+    // the typed @atlas/api registry pulls AdonisJS sources (legacy decorators)
+    // into this program
+    "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

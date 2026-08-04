@@ -1,6 +1,8 @@
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/lucid'
 
+import env from '#start/env'
+
 const dbConfig = defineConfig({
   /**
    * Default connection used for all queries.
@@ -15,7 +17,8 @@ const dbConfig = defineConfig({
       client: 'better-sqlite3',
 
       connection: {
-        filename: app.tmpPath('db.sqlite3'),
+        // DB_FILE lets .env.test point at a separate database file
+        filename: app.tmpPath(env.get('DB_FILE', 'db.sqlite3')),
       },
 
       /**
