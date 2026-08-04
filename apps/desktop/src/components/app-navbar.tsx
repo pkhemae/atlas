@@ -30,16 +30,11 @@ export function AppNavbar() {
           </TooltipTrigger>
           <TooltipContent>Home</TooltipContent>
         </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {/* hero CTA — wired to the focus timer in the next iteration */}
-            <Button variant="relief" className="rounded-full">
-              <Play />
-              Start a session
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Coming soon</TooltipContent>
-        </Tooltip>
+        {/* hero CTA — wired to the focus timer in the next iteration */}
+        <Button variant="relief" className="rounded-full">
+          <Play />
+          Start a session
+        </Button>
         <Tooltip>
           <TooltipTrigger asChild>
             <button

@@ -1,77 +1,16 @@
-import { useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouteContext } from "@tanstack/react-router";
-import { Button } from "@atlas/ui/components/button";
 import { Screen } from "@/components/screen";
-import { api, setAuthToken, type AuthUser } from "@/lib/api";
-import { deleteAuthToken } from "@/lib/secure-storage";
-import { HomeScreen } from "@/pages/home/ui/home-screen";
 
 export function HomeFeature() {
-  const { onLoggedOut } = useRouteContext({ from: "__root__" });
-  const queryClient = useQueryClient();
-
-  const me = useQuery({
-    queryKey: ["me"],
-    queryFn: () => api.get("/api/v1/auth/me", {}) as Promise<AuthUser>,
-    retry: false,
-  });
-
-  const logout = useMutation({
-    mutationFn: async () => {
-      // best effort: even if the API is unreachable, drop the local session
-      await api.post("/api/v1/auth/logout", {}).catch(() => {});
-    },
-    onSettled: async () => {
-      setAuthToken(null);
-      await deleteAuthToken();
-      queryClient.removeQueries({ queryKey: ["me"] });
-      onLoggedOut();
-    },
-  });
-
-  // only a rejected token means the session is dead — a network failure
-  // (API not running) must NOT destroy a valid keychain token
-  const meUnauthorized =
-    me.isError && (me.error as { status?: number }).status === 401;
-  useEffect(() => {
-    if (!meUnauthorized) return;
-    setAuthToken(null);
-    deleteAuthToken().finally(() => onLoggedOut());
-  }, [meUnauthorized, onLoggedOut]);
-
-  if (me.isPending || meUnauthorized) {
-    return (
-      <Screen>
-        <p className="text-muted-foreground animate-pulse text-sm">
-          Loading your session…
-        </p>
-      </Screen>
-    );
-  }
-
-  if (me.isError) {
-    return (
-      <Screen>
-        <div className="flex flex-col items-center gap-4">
-          <p className="text-muted-foreground text-sm">
-            Can&apos;t reach the Atlas API. Is it running?
-          </p>
-          <Button variant="secondary" onClick={() => me.refetch()}>
-            Retry
-          </Button>
-        </div>
-      </Screen>
-    );
-  }
-
   return (
     <Screen>
-      <HomeScreen
-        user={me.data}
-        loggingOut={logout.isPending}
-        onLogout={() => logout.mutate()}
-      />
+      <div className="animate-in fade-in slide-in-from-bottom-2 flex flex-col items-center gap-2 text-center duration-500">
+        <p className="text-muted-foreground text-xs font-medium tracking-[0.2em] uppercase">
+          Atlas
+        </p>
+        <p className="text-muted-foreground text-sm">
+          Your focus dashboard is coming soon.
+        </p>
+      </div>
     </Screen>
   );
 }
