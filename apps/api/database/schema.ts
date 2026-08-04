@@ -43,6 +43,42 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class FocusSessionSchema extends BaseModel {
+  static $columns = [
+    'createdAt',
+    'durationSeconds',
+    'endedAt',
+    'id',
+    'lastPausedAt',
+    'pausedSeconds',
+    'startedAt',
+    'status',
+    'updatedAt',
+    'userId',
+  ] as const
+  $columns = FocusSessionSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare durationSeconds: number | null
+  @column.dateTime()
+  declare endedAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column.dateTime()
+  declare lastPausedAt: DateTime | null
+  @column()
+  declare pausedSeconds: number
+  @column.dateTime()
+  declare startedAt: DateTime
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: string
+}
+
 export class ResetPasswordTokenSchema extends BaseModel {
   static $columns = ['createdAt', 'expiresAt', 'id', 'tokenHash', 'updatedAt', 'userId'] as const
   $columns = ResetPasswordTokenSchema.$columns

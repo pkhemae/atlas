@@ -48,6 +48,48 @@ const routes = {
     tokens: [{"old":"/api/v1/auth/me","type":0,"val":"api","end":""},{"old":"/api/v1/auth/me","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/me","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/me","type":0,"val":"me","end":""}],
     types: placeholder as Registry['me.show']['types'],
   },
+  'start_session': {
+    methods: ["POST"],
+    pattern: '/api/v1/focus/sessions',
+    tokens: [{"old":"/api/v1/focus/sessions","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions","type":0,"val":"sessions","end":""}],
+    types: placeholder as Registry['start_session']['types'],
+  },
+  'list_sessions': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/focus/sessions',
+    tokens: [{"old":"/api/v1/focus/sessions","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions","type":0,"val":"sessions","end":""}],
+    types: placeholder as Registry['list_sessions']['types'],
+  },
+  'active_session': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/focus/sessions/active',
+    tokens: [{"old":"/api/v1/focus/sessions/active","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions/active","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions/active","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions/active","type":0,"val":"sessions","end":""},{"old":"/api/v1/focus/sessions/active","type":0,"val":"active","end":""}],
+    types: placeholder as Registry['active_session']['types'],
+  },
+  'abandon_active_session': {
+    methods: ["POST"],
+    pattern: '/api/v1/focus/sessions/abandon-active',
+    tokens: [{"old":"/api/v1/focus/sessions/abandon-active","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions/abandon-active","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions/abandon-active","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions/abandon-active","type":0,"val":"sessions","end":""},{"old":"/api/v1/focus/sessions/abandon-active","type":0,"val":"abandon-active","end":""}],
+    types: placeholder as Registry['abandon_active_session']['types'],
+  },
+  'pause_session': {
+    methods: ["POST"],
+    pattern: '/api/v1/focus/sessions/:id/pause',
+    tokens: [{"old":"/api/v1/focus/sessions/:id/pause","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions/:id/pause","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions/:id/pause","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions/:id/pause","type":0,"val":"sessions","end":""},{"old":"/api/v1/focus/sessions/:id/pause","type":1,"val":"id","end":""},{"old":"/api/v1/focus/sessions/:id/pause","type":0,"val":"pause","end":""}],
+    types: placeholder as Registry['pause_session']['types'],
+  },
+  'resume_session': {
+    methods: ["POST"],
+    pattern: '/api/v1/focus/sessions/:id/resume',
+    tokens: [{"old":"/api/v1/focus/sessions/:id/resume","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions/:id/resume","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions/:id/resume","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions/:id/resume","type":0,"val":"sessions","end":""},{"old":"/api/v1/focus/sessions/:id/resume","type":1,"val":"id","end":""},{"old":"/api/v1/focus/sessions/:id/resume","type":0,"val":"resume","end":""}],
+    types: placeholder as Registry['resume_session']['types'],
+  },
+  'complete_session': {
+    methods: ["POST"],
+    pattern: '/api/v1/focus/sessions/:id/complete',
+    tokens: [{"old":"/api/v1/focus/sessions/:id/complete","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions/:id/complete","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions/:id/complete","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions/:id/complete","type":0,"val":"sessions","end":""},{"old":"/api/v1/focus/sessions/:id/complete","type":1,"val":"id","end":""},{"old":"/api/v1/focus/sessions/:id/complete","type":0,"val":"complete","end":""}],
+    types: placeholder as Registry['complete_session']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }

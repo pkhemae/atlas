@@ -1,13 +1,11 @@
 import {
-  Outlet,
   createMemoryHistory,
   createRootRouteWithContext,
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
-import { AppNavbar } from "@/components/app-navbar";
+import { AppLayout } from "@/app/app-layout";
 import { HomeFeature } from "@/pages/home/feature/home-feature";
-import { UserMenuFeature } from "@/pages/profile/feature/user-menu-feature";
 
 interface AppRouterContext {
   onLoggedOut: () => void;
@@ -16,16 +14,6 @@ interface AppRouterContext {
 const rootRoute = createRootRouteWithContext<AppRouterContext>()({
   component: AppLayout,
 });
-
-function AppLayout() {
-  return (
-    <>
-      <Outlet />
-      <AppNavbar />
-      <UserMenuFeature />
-    </>
-  );
-}
 
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,

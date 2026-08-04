@@ -92,6 +92,11 @@ Example: `src/pages/focus/`
 - The api keeps its own Adonis ESLint/Prettier presets (`apps/api` is excluded from the root Prettier); run its lint/format from the workspace.
 - Business rule: every focus-session computation (durations, streaks, stats) lives in the API or a dedicated lib — single source of truth.
 
+### Focus sessions
+
+- API module `app/focus/`: `FocusSession` model (`running | paused | completed | abandoned`), the server owns all time math (`FocusSessionService` — start auto-abandons any active session, pause/resume fold into `pausedSeconds`, complete freezes `durationSeconds` excluding pauses).
+- Desktop: the dock is a second webview window (label `dock`, transparent + always-on-top, selected via `index.html?window=dock`). Windows talk through Tauri events (`focus:start`, `focus:completed` via `emitTo`); the dock also recovers state from `GET focus/sessions/active`. Window permissions are declared per label in `src-tauri/capabilities/default.json`.
+
 ### Desktop Context (`apps/desktop`)
 
 - Auth token: stored in the OS keychain via Rust commands (`save_auth_token`, `get_auth_token`, `delete_auth_token` in `src-tauri/src/lib.rs`), mirrored in memory for the API client (`src/lib/api.ts`). Never persist tokens in files or localStorage.

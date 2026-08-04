@@ -1,0 +1,140 @@
+import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { listen } from "@tauri-apps/api/event";
+import { emitTo } from "@tauri-apps/api/event";
+import { api, setAuthToken } from "@/lib/api";
+import { elapsedSeconds, type FocusSession } from "@/lib/focus";
+import { getAuthToken } from "@/lib/secure-storage";
+import { showMainHideDock } from "@/lib/windows";
+import { Dock } from "@/pages/focus/ui/dock";
+
+interface SessionPayload {
+  data: FocusSession;
+}
+
+export function DockFeature() {
+  const [booted, setBooted] = useState(false);
+  const [session, setSession] = useState<FocusSession | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+
+  // the dock window is its own webview: transparent chrome + own token
+  useEffect(() => {
+    document.documentElement.style.background = "transparent";
+    document.body.style.background = "transparent";
+    getAuthToken()
+      .then((token) => {
+        if (token) setAuthToken(token);
+      })
+      .finally(() => setBooted(true));
+  }, []);
+
+  // fast path: the main window hands the session over on start. This
+  // webview booted before the user logged in, so re-read the keychain
+  // token here — without it every dock mutation would 401 silently
+  useEffect(() => {
+    const unlisten = listen<FocusSession>("focus:start", async (event) => {
+      const token = await getAuthToken().catch(() => null);
+      if (token) setAuthToken(token);
+      setSession(event.payload);
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+
+  // if a control fails (network blip, expired token), re-sync with the
+  // server instead of keeping a lying timer on screen
+  const resync = async () => {
+    const token = await getAuthToken().catch(() => null);
+    if (token) setAuthToken(token);
+    try {
+      const payload = (await api.get("/api/v1/focus/sessions/active", {})) as
+        SessionPayload | string;
+      if (payload && typeof payload === "object" && "data" in payload) {
+        setSession(payload.data);
+      } else {
+        setSession(null);
+        await showMainHideDock();
+      }
+    } catch {
+      // keep the current state; the next interaction retries
+    }
+  };
+
+  // fallback: recover the active session after a reload/HMR of this webview
+  useEffect(() => {
+    if (!booted || session) return;
+    (
+      api.get("/api/v1/focus/sessions/active", {}) as Promise<
+        SessionPayload | string
+      >
+    )
+      .then((payload) => {
+        if (payload && typeof payload === "object" && "data" in payload) {
+          setSession(payload.data);
+        }
+      })
+      .catch(() => {});
+  }, [booted, session]);
+
+  // display tick — elapsed is always recomputed from server timestamps
+  useEffect(() => {
+    if (!session || session.status !== "running") return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [session]);
+
+  const pause = useMutation({
+    mutationFn: (id: string) =>
+      api.post("/api/v1/focus/sessions/:id/pause", {
+        params: { id },
+      }) as Promise<SessionPayload>,
+    onSuccess: ({ data }) => setSession(data),
+    onError: resync,
+  });
+
+  const resume = useMutation({
+    mutationFn: (id: string) =>
+      api.post("/api/v1/focus/sessions/:id/resume", {
+        params: { id },
+      }) as Promise<SessionPayload>,
+    onSuccess: ({ data }) => {
+      setSession(data);
+      setNow(Date.now());
+    },
+    onError: resync,
+  });
+
+  const stop = useMutation({
+    mutationFn: (id: string) =>
+      api.post("/api/v1/focus/sessions/:id/complete", {
+        params: { id },
+      }) as Promise<SessionPayload>,
+    onSuccess: async () => {
+      setSession(null);
+      await emitTo("main", "focus:completed", null);
+      await showMainHideDock();
+    },
+    onError: resync,
+  });
+
+  if (
+    !session ||
+    (session.status !== "running" && session.status !== "paused")
+  ) {
+    return null;
+  }
+
+  const pending = pause.isPending || resume.isPending || stop.isPending;
+
+  return (
+    <Dock
+      elapsed={elapsedSeconds(session, now)}
+      status={session.status}
+      pending={pending}
+      onPause={() => pause.mutate(session.id)}
+      onResume={() => resume.mutate(session.id)}
+      onStop={() => stop.mutate(session.id)}
+    />
+  );
+}
