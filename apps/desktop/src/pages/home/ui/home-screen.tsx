@@ -1,11 +1,4 @@
 import { Button } from "@atlas/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@atlas/ui/components/card";
 import type { AuthUser } from "@/lib/api";
 
 interface HomeScreenProps {
@@ -16,24 +9,22 @@ interface HomeScreenProps {
 
 export function HomeScreen({ user, loggingOut, onLogout }: HomeScreenProps) {
   return (
-    <main className="bg-background flex min-h-svh items-center justify-center p-6">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="items-center text-center">
-          <div className="bg-primary text-primary-foreground mb-2 flex size-14 items-center justify-center self-center rounded-full text-lg font-semibold">
-            {user.initials}
-          </div>
-          <CardTitle>{user.fullName ?? user.email}</CardTitle>
-          <CardDescription>{user.email}</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center gap-4 text-center">
-          <p className="text-muted-foreground text-sm">
-            You are signed in. Focus sessions are coming soon.
-          </p>
-          <Button variant="secondary" onClick={onLogout} disabled={loggingOut}>
-            {loggingOut ? "Logging out…" : "Log out"}
-          </Button>
-        </CardContent>
-      </Card>
-    </main>
+    <div className="animate-in fade-in slide-in-from-bottom-2 flex w-full max-w-xs flex-col items-center gap-6 text-center duration-500">
+      <div className="flex size-16 items-center justify-center rounded-full bg-linear-to-b from-red-500 to-red-700 text-xl font-semibold text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.3),0_8px_24px_-8px_rgba(220,38,38,0.5)]">
+        {user.initials}
+      </div>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-xl font-semibold tracking-tight">
+          {user.fullName ?? user.email}
+        </h1>
+        <p className="text-muted-foreground text-sm">{user.email}</p>
+      </div>
+      <p className="text-muted-foreground text-sm text-pretty">
+        You are signed in. Focus sessions are coming soon.
+      </p>
+      <Button variant="secondary" onClick={onLogout} disabled={loggingOut}>
+        {loggingOut ? "Logging out…" : "Log out"}
+      </Button>
+    </div>
   );
 }

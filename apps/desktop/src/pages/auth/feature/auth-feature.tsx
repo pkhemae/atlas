@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { Screen } from "@/components/screen";
 import { api, setAuthToken, type AuthUser } from "@/lib/api";
 import { extractApiErrorMessage } from "@/lib/api-errors";
 import { saveAuthToken } from "@/lib/secure-storage";
@@ -43,7 +44,7 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
   });
 
   return (
-    <main className="bg-background flex min-h-svh items-center justify-center p-6">
+    <Screen>
       {mode === "login" ? (
         <LoginForm
           pending={login.isPending}
@@ -69,6 +70,6 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
           }}
         />
       )}
-    </main>
+    </Screen>
   );
 }

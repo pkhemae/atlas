@@ -2,3 +2,8 @@
 
 /* Make Tailwind scan this app's source. */
 @source "../src";
+
+/* Same near-black neutral as the marketing landing. */
+.dark {
+  --background: #111111;
+}
