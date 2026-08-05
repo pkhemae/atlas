@@ -182,7 +182,7 @@ export function Dock({
                   </div>
                   {/* per-sound volume, revealed when the sound is on */}
                   {sound.enabled && (
-                    <div className="animate-in fade-in slide-in-from-top-1 flex items-center gap-2 pt-0.5 pb-2 pl-[22px] duration-200">
+                    <div className="animate-in fade-in slide-in-from-top-1 flex items-center gap-2 pb-0.5 pl-[22px] duration-200">
                       <Volume2
                         aria-hidden="true"
                         className="size-3 shrink-0 text-zinc-500"
@@ -193,7 +193,8 @@ export function Dock({
                           onVolumeChange(id, volume ?? 0)
                         }
                         aria-label={t("dock.volumeFor", { sound: t(labelKey) })}
-                        className="[&_[data-slot=slider-track]]:bg-white/15 **:data-[slot=slider-thumb]:size-3 **:data-[slot=slider-thumb]:border-0"
+                        // py grows the grab zone to ~32px without moving the visual track
+                        className="py-2.5 [&_[data-slot=slider-track]]:bg-white/15 **:data-[slot=slider-thumb]:size-3 **:data-[slot=slider-thumb]:border-0"
                       />
                     </div>
                   )}
