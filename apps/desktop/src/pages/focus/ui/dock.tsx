@@ -1,6 +1,13 @@
 import { useTranslation } from "react-i18next";
-import { Pause, Play, Settings, Square } from "lucide-react";
+import { Pause, Play, Settings, Square, Volume2 } from "lucide-react";
+import { Slider } from "@atlas/ui/components/slider";
+import { Switch } from "@atlas/ui/components/switch";
 import { cn } from "@atlas/ui/lib/utils";
+import {
+  AMBIENT_SOUNDS,
+  type AmbientSoundId,
+  type AmbientState,
+} from "@/lib/ambient";
 import { formatElapsed } from "@/lib/focus";
 
 interface DockProps {
@@ -8,9 +15,14 @@ interface DockProps {
   status: "running" | "paused";
   pending: boolean;
   error: boolean;
+  settingsOpen: boolean;
+  ambient: AmbientState;
   onPause: () => void;
   onResume: () => void;
   onStop: () => void;
+  onToggleSettings: () => void;
+  onToggleSound: (id: AmbientSoundId) => void;
+  onVolumeChange: (id: AmbientSoundId, volume: number) => void;
 }
 
 const CHIP =
@@ -26,22 +38,29 @@ export function Dock({
   status,
   pending,
   error,
+  settingsOpen,
+  ambient,
   onPause,
   onResume,
   onStop,
+  onToggleSettings,
+  onToggleSound,
+  onVolumeChange,
 }: DockProps) {
   const { t } = useTranslation();
   const paused = status === "paused";
 
   return (
-    // the window itself is transparent: the pill carries the shape
+    // the window itself is transparent: the pill carries the shape. Column
+    // layout with pt-1 keeps the pill exactly where the centered 44px
+    // window used to put it, while the settings panel grows below.
     <div
       data-tauri-drag-region
-      className="flex h-svh w-svw items-center justify-center"
+      className="flex h-svh w-svw flex-col items-center pt-1"
     >
       <div
         data-tauri-drag-region
-        className="animate-in fade-in zoom-in-95 flex h-9 items-center gap-1.5 rounded-full bg-zinc-900/95 py-1 pr-1 pl-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)] duration-300"
+        className="animate-in fade-in zoom-in-95 flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-zinc-900/95 py-1 pr-1 pl-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)] duration-300"
       >
         <span
           data-tauri-drag-region
@@ -114,18 +133,76 @@ export function Dock({
             <Square className="size-3 fill-current" />
           </button>
         </div>
-        {/* future dock settings */}
         <button
           type="button"
-          aria-label={t("dock.settingsSoon")}
+          aria-label={t("dock.settings")}
+          aria-expanded={settingsOpen}
+          onClick={onToggleSettings}
           className={cn(
             CHIP,
-            "cursor-default text-zinc-500 hover:bg-white/10 hover:text-zinc-300",
+            "text-zinc-500 hover:bg-white/10 hover:text-zinc-300",
+            settingsOpen && "bg-white/10 text-zinc-200",
           )}
         >
-          <Settings className="size-3.5" />
+          <Settings
+            className={cn(
+              "size-3.5 transition-transform duration-300 ease-[cubic-bezier(0.2,0,0,1)]",
+              settingsOpen && "rotate-90",
+            )}
+          />
         </button>
       </div>
+
+      {/* ambient sounds panel — the window grows to make room for it */}
+      {settingsOpen && (
+        <div className="animate-in fade-in slide-in-from-top-1 zoom-in-95 mt-2 w-52 rounded-2xl bg-zinc-900/95 p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)] duration-200">
+          <p className="text-[10px] font-semibold tracking-wide text-zinc-500 uppercase">
+            {t("dock.ambientTitle")}
+          </p>
+          <div className="mt-1.5 flex flex-col">
+            {AMBIENT_SOUNDS.map(({ id, labelKey, Icon }) => {
+              const sound = ambient[id];
+              return (
+                <div key={id}>
+                  <div className="flex h-8 items-center gap-2">
+                    <Icon
+                      aria-hidden="true"
+                      className="size-3.5 text-zinc-400"
+                    />
+                    <span className="flex-1 text-xs font-medium text-zinc-200">
+                      {t(labelKey)}
+                    </span>
+                    <Switch
+                      size="sm"
+                      checked={sound.enabled}
+                      onCheckedChange={() => onToggleSound(id)}
+                      aria-label={t(labelKey)}
+                      className="data-[state=unchecked]:bg-white/15"
+                    />
+                  </div>
+                  {/* per-sound volume, revealed when the sound is on */}
+                  {sound.enabled && (
+                    <div className="animate-in fade-in slide-in-from-top-1 flex items-center gap-2 pt-0.5 pb-2 pl-[22px] duration-200">
+                      <Volume2
+                        aria-hidden="true"
+                        className="size-3 shrink-0 text-zinc-500"
+                      />
+                      <Slider
+                        value={[sound.volume]}
+                        onValueChange={([volume]) =>
+                          onVolumeChange(id, volume ?? 0)
+                        }
+                        aria-label={t("dock.volumeFor", { sound: t(labelKey) })}
+                        className="[&_[data-slot=slider-track]]:bg-white/15 **:data-[slot=slider-thumb]:size-3 **:data-[slot=slider-thumb]:border-0"
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

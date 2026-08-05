@@ -149,7 +149,10 @@ export default {
     pause: "Pause session",
     resume: "Resume session",
     stop: "Stop and save session",
-    settingsSoon: "Session settings (coming soon)",
+    settings: "Session settings",
+    ambientTitle: "Ambient sounds",
+    rain: "Rain",
+    volumeFor: "{{sound}} volume",
     resyncError: "Last action failed — the timer re-synced with the server",
   },
   comingSoon: {
