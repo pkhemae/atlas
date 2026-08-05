@@ -25,7 +25,7 @@ export default class SignInController {
       })
 
       if (throttleError) {
-        return response.status(400).send({
+        return response.badRequest({
           errors: [
             { message: 'Too many login attempts. Try again shortly.', code: 'E_TOO_MANY_REQUESTS' },
           ],
@@ -33,7 +33,7 @@ export default class SignInController {
       }
       user = verifiedUser!
     } catch {
-      return response.status(400).send({
+      return response.badRequest({
         errors: [
           {
             message: 'Invalid credentials. Check your email and password.',

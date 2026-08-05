@@ -19,7 +19,7 @@ export default class PauseSessionController {
       .firstOrFail()
 
     if (session.status !== 'running') {
-      return response.status(400).send({
+      return response.badRequest({
         errors: [
           { message: 'Only a running session can be paused.', code: 'E_INVALID_SESSION_STATE' },
         ],

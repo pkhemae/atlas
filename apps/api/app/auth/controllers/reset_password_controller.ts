@@ -36,14 +36,14 @@ export default class ResetPasswordController {
       })
 
       if (throttleError) {
-        return response.status(400).send({
+        return response.badRequest({
           errors: [
             { message: 'Too many attempts. Try again shortly.', code: 'E_TOO_MANY_REQUESTS' },
           ],
         })
       }
     } catch {
-      return response.status(400).send({
+      return response.badRequest({
         errors: [
           {
             message: 'This code is invalid or has expired.',

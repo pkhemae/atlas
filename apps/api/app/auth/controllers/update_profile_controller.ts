@@ -5,6 +5,9 @@ import drive from '@adonisjs/drive/services/main'
 import UserTransformer from '#auth/transformers/user_transformer'
 import { updateProfileValidator } from '#auth/validators/user'
 
+// SQLite-specific message — revisit on a dialect change (Postgres says
+// `duplicate key value violates unique constraint`), or the race would
+// surface as a 500 instead of the 422 the client renders inline
 function isUsernameConflict(error: unknown) {
   return (
     error instanceof Error && error.message.includes('UNIQUE constraint failed: users.username')
@@ -62,7 +65,7 @@ export default class UpdateProfileController {
             .use()
             .delete(user.bannerPath)
             .catch(() => {})
-        return response.status(422).send({
+        return response.unprocessableEntity({
           errors: [{ message: 'This username is already taken.', field: 'username' }],
         })
       }

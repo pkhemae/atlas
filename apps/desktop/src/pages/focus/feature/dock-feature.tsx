@@ -16,6 +16,7 @@ export function DockFeature() {
   const [booted, setBooted] = useState(false);
   const [session, setSession] = useState<FocusSession | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [actionFailed, setActionFailed] = useState(false);
 
   // the dock window is its own webview: transparent chrome + own token
   useEffect(() => {
@@ -45,6 +46,7 @@ export function DockFeature() {
   // if a control fails (network blip, expired token), re-sync with the
   // server instead of keeping a lying timer on screen
   const resync = async () => {
+    setActionFailed(true);
     const token = await getAuthToken().catch(() => null);
     if (token) setAuthToken(token);
     try {
@@ -88,7 +90,8 @@ export function DockFeature() {
     mutationFn: (id: string) =>
       api.post("/api/v1/focus/sessions/:id/pause", {
         params: { id },
-      }) as Promise<SessionPayload>,
+      }),
+    onMutate: () => setActionFailed(false),
     onSuccess: ({ data }) => setSession(data),
     onError: resync,
   });
@@ -97,7 +100,8 @@ export function DockFeature() {
     mutationFn: (id: string) =>
       api.post("/api/v1/focus/sessions/:id/resume", {
         params: { id },
-      }) as Promise<SessionPayload>,
+      }),
+    onMutate: () => setActionFailed(false),
     onSuccess: ({ data }) => {
       setSession(data);
       setNow(Date.now());
@@ -109,7 +113,8 @@ export function DockFeature() {
     mutationFn: (id: string) =>
       api.post("/api/v1/focus/sessions/:id/complete", {
         params: { id },
-      }) as Promise<SessionPayload>,
+      }),
+    onMutate: () => setActionFailed(false),
     onSuccess: async () => {
       setSession(null);
       await emitTo("main", "focus:completed", null);
@@ -132,6 +137,7 @@ export function DockFeature() {
       elapsed={elapsedSeconds(session, now)}
       status={session.status}
       pending={pending}
+      error={actionFailed}
       onPause={() => pause.mutate(session.id)}
       onResume={() => resume.mutate(session.id)}
       onStop={() => stop.mutate(session.id)}

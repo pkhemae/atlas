@@ -1,10 +1,12 @@
 import { useEffect } from "react";
+import { TuyauHTTPError } from "@tuyau/core/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Outlet, useRouteContext } from "@tanstack/react-router";
 import { listen } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { AppSidebar } from "@/components/app-sidebar";
 import { api, setAuthToken } from "@/lib/api";
+import { extractApiErrorMessage } from "@/lib/api-errors";
 import { deleteAuthToken } from "@/lib/secure-storage";
 import { useMe } from "@/app/use-me";
 import { useStartSession } from "@/pages/focus/feature/use-start-session";
@@ -23,7 +25,9 @@ export function AppLayout() {
     onSettled: async () => {
       setAuthToken(null);
       await deleteAuthToken();
-      queryClient.removeQueries({ queryKey: ["me"] });
+      // full wipe: cached activity/profile data must never leak into
+      // the next account's session
+      queryClient.clear();
       onLoggedOut();
     },
   });
@@ -31,7 +35,7 @@ export function AppLayout() {
   // only a rejected token means the session is dead — a network failure
   // (API not running) must NOT destroy a valid keychain token
   const meUnauthorized =
-    me.isError && (me.error as { status?: number }).status === 401;
+    me.isError && me.error instanceof TuyauHTTPError && me.error.status === 401;
   useEffect(() => {
     if (!meUnauthorized) return;
     setAuthToken(null);
@@ -81,6 +85,11 @@ export function AppLayout() {
         onRetryMe={() => me.refetch()}
         onStartSession={() => startSession.mutate()}
         startPending={startSession.isPending}
+        startError={
+          startSession.isError
+            ? extractApiErrorMessage(startSession.error)
+            : null
+        }
         onLogout={() => logout.mutate()}
         loggingOut={logout.isPending}
       />

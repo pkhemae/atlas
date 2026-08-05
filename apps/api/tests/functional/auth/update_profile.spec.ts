@@ -199,6 +199,52 @@ test.group('Auth / update profile', (group) => {
     fakeDisk.assertMissing(key)
   })
 
+  test('accepts a pure JSON body — the client sends JSON when no file is attached', async ({
+    client,
+    assert,
+  }) => {
+    const user = await User.create({ ...CREDENTIALS })
+
+    const response = await client
+      .patch('/api/v1/auth/me')
+      .loginAs(user)
+      .json({ fullName: 'Ada JSON', bio: 'json path', avatar: null })
+
+    response.assertStatus(200)
+    const body = response.body() as unknown as { fullName: string; bio: string }
+    assert.equal(body.fullName, 'Ada JSON')
+    assert.equal(body.bio, 'json path')
+  })
+
+  test('mixed multipart: removes the avatar while uploading a banner', async ({
+    client,
+    assert,
+  }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    const upload = await client
+      .patch('/api/v1/auth/me')
+      .loginAs(user)
+      .file('avatar', AVATAR_FIXTURE)
+    const avatarKey = keyFromUrl((upload.body() as unknown as { avatarUrl: string }).avatarUrl)
+
+    // tuyau serializes { avatar: null, banner: File } as multipart with an
+    // empty avatar field — three libraries' defaults have to line up here
+    const response = await client
+      .patch('/api/v1/auth/me')
+      .loginAs(user)
+      .fields({ avatar: '' })
+      .file('banner', AVATAR_FIXTURE)
+
+    response.assertStatus(200)
+    const body = response.body() as unknown as {
+      avatarUrl: string | null
+      bannerUrl: string | null
+    }
+    assert.isNull(body.avatarUrl)
+    assert.include(body.bannerUrl!, '/uploads/')
+    fakeDisk.assertMissing(avatarKey)
+  })
+
   test('rejects an oversized or non-image file by extension', async ({ client, assert }) => {
     const user = await User.create({ ...CREDENTIALS })
 

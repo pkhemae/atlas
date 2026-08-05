@@ -1,12 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { emitTo } from "@tauri-apps/api/event";
 import { api } from "@/lib/api";
-import type { FocusSession } from "@/lib/focus";
 import { hideMain, showDock } from "@/lib/windows";
-
-interface StartPayload {
-  data: FocusSession;
-}
 
 /**
  * Starts a session then swaps windows: dock in, main out. The dock also
@@ -15,12 +10,14 @@ interface StartPayload {
  */
 export function useStartSession() {
   return useMutation({
-    mutationFn: () =>
-      api.post("/api/v1/focus/sessions", {}) as Promise<StartPayload>,
+    mutationFn: () => api.post("/api/v1/focus/sessions", {}),
     onSuccess: async ({ data }) => {
       await emitTo("dock", "focus:start", data);
-      await showDock();
-      await hideMain();
+      // never hide the last visible window: main only goes away once
+      // the dock is actually up
+      if (await showDock()) {
+        await hideMain();
+      }
     },
   });
 }

@@ -5,18 +5,28 @@ import {
   ChartTooltip,
   type ChartConfig,
 } from "@atlas/ui/components/chart";
-import { type ActivityDay, formatTotal, weeklyTotals } from "@/lib/focus";
+import {
+  type ActivityDay,
+  formatTotal,
+  weekLabel,
+  weeklyTotals,
+} from "@/lib/focus";
 
 interface WeeklyFocusChartProps {
   days: ActivityDay[];
   loading: boolean;
+  error: boolean;
 }
 
 const CHART_CONFIG = {
   focus: { label: "Focus", color: "var(--chart-1)" },
 } satisfies ChartConfig;
 
-export function WeeklyFocusChart({ days, loading }: WeeklyFocusChartProps) {
+export function WeeklyFocusChart({
+  days,
+  loading,
+  error,
+}: WeeklyFocusChartProps) {
   const gradientId = useId();
   const data = useMemo(
     () =>
@@ -34,9 +44,11 @@ export function WeeklyFocusChart({ days, loading }: WeeklyFocusChartProps) {
       <p className="text-xs font-medium">
         {loading
           ? "Loading your week…"
-          : thisWeekSeconds > 0
-            ? `${formatTotal(thisWeekSeconds)} of focus this week`
-            : "No focus time this week yet"}
+          : error
+            ? "Couldn't load your week."
+            : thisWeekSeconds > 0
+              ? `${formatTotal(thisWeekSeconds)} of focus this week`
+              : "No focus time this week yet"}
       </p>
       {loading ? (
         <div className="bg-foreground/5 mt-3 h-28 animate-pulse rounded-lg" />
@@ -118,12 +130,4 @@ function WeeklyFocusTooltip({
       {label}
     </div>
   );
-}
-
-function weekLabel(weekStart: string): string {
-  const [year, month, day] = weekStart.split("-").map(Number);
-  return new Date(year!, month! - 1, day!).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
 }

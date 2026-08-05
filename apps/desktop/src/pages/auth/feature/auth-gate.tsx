@@ -24,7 +24,12 @@ export function AuthGate() {
       .catch(() => setStatus("guest"));
   }, []);
 
-  const handleLoggedOut = useCallback(() => setStatus("guest"), []);
+  const handleLoggedOut = useCallback(() => {
+    // the memory history outlives the session — the next account must
+    // not land on the previous one's route
+    appRouter.navigate({ to: "/" });
+    setStatus("guest");
+  }, []);
   const handleAuthenticated = useCallback(() => setStatus("authed"), []);
 
   if (status === "booting") {

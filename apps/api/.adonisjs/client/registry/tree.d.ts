@@ -18,7 +18,6 @@ export interface ApiDefinition {
   }
   updateProfile: typeof routes['update_profile']
   startSession: typeof routes['start_session']
-  listSessions: typeof routes['list_sessions']
   listActivity: typeof routes['list_activity']
   activeSession: typeof routes['active_session']
   abandonActiveSession: typeof routes['abandon_active_session']

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { api, type AuthUser } from "@/lib/api";
+import { api } from "@/lib/api";
 
 /**
  * The authenticated user, shared cache-wise by the sidebar footer, the
@@ -8,7 +8,7 @@ import { api, type AuthUser } from "@/lib/api";
 export function useMe() {
   return useQuery({
     queryKey: ["me"],
-    queryFn: () => api.get("/api/v1/auth/me", {}) as Promise<AuthUser>,
+    queryFn: () => api.get("/api/v1/auth/me", {}),
     retry: false,
   });
 }
