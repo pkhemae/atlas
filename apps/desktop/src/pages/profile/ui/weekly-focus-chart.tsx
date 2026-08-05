@@ -27,14 +27,23 @@ export function WeeklyFocusChart({ days, loading }: WeeklyFocusChartProps) {
     [days],
   );
 
+  const thisWeekSeconds = data[data.length - 1]?.totalSeconds ?? 0;
+
   return (
     <section aria-label="Weekly focus" className="p-4">
+      <p className="text-xs font-medium">
+        {loading
+          ? "Loading your week…"
+          : thisWeekSeconds > 0
+            ? `${formatTotal(thisWeekSeconds)} of focus this week`
+            : "No focus time this week yet"}
+      </p>
       {loading ? (
-        <div className="bg-foreground/5 h-28 animate-pulse rounded-lg" />
+        <div className="bg-foreground/5 mt-3 h-28 animate-pulse rounded-lg" />
       ) : (
         <ChartContainer
           config={CHART_CONFIG}
-          className="aspect-auto h-28 w-full"
+          className="mt-3 aspect-auto h-28 w-full"
         >
           <AreaChart
             data={data}
