@@ -5,7 +5,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@atlas/ui/components/avatar";
-import { Button } from "@atlas/ui/components/button";
+import { cn } from "@atlas/ui/lib/utils";
 
 interface SidebarUser {
   name: string;
@@ -50,17 +50,23 @@ export function AppSidebar({
       data-tauri-drag-region
       className="animate-in fade-in slide-in-from-left-2 fixed inset-y-0 left-0 z-40 flex w-44 flex-col px-3 pt-12 pb-4 duration-500"
     >
-      <Button
-        size="sm"
-        disabled={startPending}
-        onClick={onStartSession}
-        className="group w-full rounded-full"
-      >
-        <Play className="transition-transform duration-200 ease-[cubic-bezier(0.2,0,0,1)] group-hover:translate-x-0.5" />
-        Start a session
-      </Button>
-
-      <nav data-tauri-drag-region className="mt-6 flex flex-1 flex-col gap-0.5">
+      <nav data-tauri-drag-region className="mt-1 flex flex-1 flex-col gap-0.5">
+        {/* same clothes as the nav items — only the red glyph says "action" */}
+        <button
+          type="button"
+          disabled={startPending}
+          onClick={onStartSession}
+          className={cn(
+            NAV_ITEM,
+            "group mb-2 disabled:pointer-events-none disabled:opacity-50",
+          )}
+        >
+          <Play
+            aria-hidden="true"
+            className="text-primary size-4 transition-transform duration-200 ease-[cubic-bezier(0.2,0,0,1)] group-hover:translate-x-0.5"
+          />
+          Start a session
+        </button>
         <Link to="/" activeOptions={{ exact: true }} className={NAV_ITEM}>
           <House aria-hidden="true" className="size-4" />
           Home
