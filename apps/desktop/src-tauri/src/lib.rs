@@ -1,5 +1,4 @@
 use keyring::Entry;
-#[cfg(target_os = "macos")]
 use tauri::Manager;
 
 // The auth token lives in the OS keychain (macOS Keychain, Windows
@@ -11,15 +10,17 @@ fn keychain_entry() -> Result<Entry, String> {
     Entry::new(KEYCHAIN_SERVICE, KEYCHAIN_ACCOUNT).map_err(|e| e.to_string())
 }
 
+// async: keyring calls block (and may show a keychain prompt) — they must
+// stay off the webview's main thread
 #[tauri::command]
-fn save_auth_token(token: String) -> Result<(), String> {
+async fn save_auth_token(token: String) -> Result<(), String> {
     keychain_entry()?
         .set_password(&token)
         .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-fn get_auth_token() -> Result<Option<String>, String> {
+async fn get_auth_token() -> Result<Option<String>, String> {
     match keychain_entry()?.get_password() {
         Ok(token) => Ok(Some(token)),
         Err(keyring::Error::NoEntry) => Ok(None),
@@ -28,7 +29,7 @@ fn get_auth_token() -> Result<Option<String>, String> {
 }
 
 #[tauri::command]
-fn delete_auth_token() -> Result<(), String> {
+async fn delete_auth_token() -> Result<(), String> {
     match keychain_entry()?.delete_credential() {
         Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
         Err(e) => Err(e.to_string()),
@@ -54,30 +55,42 @@ tauri_nspanel::tauri_panel! {
 fn make_dock_fullscreen_capable(window: &tauri::WebviewWindow) {
     use tauri_nspanel::{CollectionBehavior, PanelLevel, StyleMask, WebviewWindowExt};
 
-    if let Ok(panel) = window.to_panel::<DockPanel>() {
-        panel.set_level(PanelLevel::Floating.value());
-        panel.set_style_mask(StyleMask::empty().nonactivating_panel().into());
-        panel.set_collection_behavior(
-            CollectionBehavior::new()
-                .can_join_all_spaces()
-                .full_screen_auxiliary()
-                .into(),
-        );
+    match window.to_panel::<DockPanel>() {
+        Ok(panel) => {
+            panel.set_level(PanelLevel::Floating.value());
+            panel.set_style_mask(StyleMask::empty().nonactivating_panel().into());
+            panel.set_collection_behavior(
+                CollectionBehavior::new()
+                    .can_join_all_spaces()
+                    .full_screen_auxiliary()
+                    .into(),
+            );
+        }
+        // a silent failure would quietly regress the over-fullscreen dock
+        Err(error) => eprintln!("dock: NSPanel conversion failed: {error:?}"),
+    }
+}
+
+fn show_main_window(app: &tauri::AppHandle) {
+    if let Some(main) = app.get_webview_window("main") {
+        let _ = main.show();
+        let _ = main.set_focus();
     }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let builder = tauri::Builder::default().plugin(tauri_plugin_opener::init());
-
-    #[cfg(target_os = "macos")]
-    let builder = builder.plugin(tauri_nspanel::init());
-
-    builder
+    // single-instance must be the first registered plugin: a second launch
+    // would otherwise spawn a second dock panel racing the first
+    tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            show_main_window(app)
+        }))
         .setup(|_app| {
             #[cfg(target_os = "macos")]
-            if let Some(dock) = _app.get_webview_window("dock") {
-                make_dock_fullscreen_capable(&dock);
+            match _app.get_webview_window("dock") {
+                Some(dock) => make_dock_fullscreen_capable(&dock),
+                None => eprintln!("dock: window not found — fullscreen overlay disabled"),
             }
             Ok(())
         })
@@ -86,6 +99,15 @@ pub fn run() {
             get_auth_token,
             delete_auth_token
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|_app, _event| {
+            // re-clicking the Dock icon must always bring the app back —
+            // without this, closing the main window leaves a live process
+            // with no reachable UI (the hidden dock keeps it alive)
+            #[cfg(target_os = "macos")]
+            if let tauri::RunEvent::Reopen { .. } = _event {
+                show_main_window(_app);
+            }
+        });
 }
