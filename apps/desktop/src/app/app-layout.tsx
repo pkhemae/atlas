@@ -1,16 +1,42 @@
 import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { Outlet } from "@tanstack/react-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Outlet, useRouteContext } from "@tanstack/react-router";
 import { listen } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { AppNavbar } from "@/components/app-navbar";
-import { api } from "@/lib/api";
+import { AppSidebar } from "@/components/app-sidebar";
+import { api, setAuthToken } from "@/lib/api";
+import { deleteAuthToken } from "@/lib/secure-storage";
+import { useMe } from "@/app/use-me";
 import { useStartSession } from "@/pages/focus/feature/use-start-session";
-import { UserMenuFeature } from "@/pages/profile/feature/user-menu-feature";
 
 export function AppLayout() {
+  const { onLoggedOut } = useRouteContext({ from: "__root__" });
   const queryClient = useQueryClient();
   const startSession = useStartSession();
+  const me = useMe();
+
+  const logout = useMutation({
+    mutationFn: async () => {
+      // best effort: even if the API is unreachable, drop the local session
+      await api.post("/api/v1/auth/logout", {}).catch(() => {});
+    },
+    onSettled: async () => {
+      setAuthToken(null);
+      await deleteAuthToken();
+      queryClient.removeQueries({ queryKey: ["me"] });
+      onLoggedOut();
+    },
+  });
+
+  // only a rejected token means the session is dead — a network failure
+  // (API not running) must NOT destroy a valid keychain token
+  const meUnauthorized =
+    me.isError && (me.error as { status?: number }).status === 401;
+  useEffect(() => {
+    if (!meUnauthorized) return;
+    setAuthToken(null);
+    deleteAuthToken().finally(() => onLoggedOut());
+  }, [meUnauthorized, onLoggedOut]);
 
   // refresh session data whenever the dock finishes a session
   useEffect(() => {
@@ -40,12 +66,27 @@ export function AppLayout() {
 
   return (
     <>
-      <Outlet />
-      <AppNavbar
+      <AppSidebar
+        user={
+          me.data
+            ? {
+                name: me.data.fullName ?? me.data.email,
+                initials: me.data.initials,
+                avatarUrl: me.data.avatarUrl,
+              }
+            : null
+        }
+        mePending={me.isPending || meUnauthorized}
+        meError={me.isError && !meUnauthorized}
+        onRetryMe={() => me.refetch()}
         onStartSession={() => startSession.mutate()}
         startPending={startSession.isPending}
+        onLogout={() => logout.mutate()}
+        loggingOut={logout.isPending}
       />
-      <UserMenuFeature />
+      <div className="pl-44">
+        <Outlet />
+      </div>
     </>
   );
 }

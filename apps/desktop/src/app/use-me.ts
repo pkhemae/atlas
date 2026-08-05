@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { api, type AuthUser } from "@/lib/api";
 
 /**
- * The authenticated user, shared cache-wise by the navbar menu, the
- * profile page and the edit-profile modal (single ["me"] entry).
+ * The authenticated user, shared cache-wise by the sidebar footer, the
+ * home page and the edit-profile modal (single ["me"] entry).
  */
 export function useMe() {
   return useQuery({
