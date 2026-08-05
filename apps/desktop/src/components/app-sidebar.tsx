@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
 import {
+  History,
   House,
   LogOut,
   Play,
@@ -96,6 +97,10 @@ export function AppSidebar({
         <Link to="/levels" className={NAV_ITEM}>
           <TrendingUp aria-hidden="true" className="size-4" />
           {t("sidebar.levels")}
+        </Link>
+        <Link to="/sessions" className={NAV_ITEM}>
+          <History aria-hidden="true" className="size-4" />
+          {t("sidebar.sessions")}
         </Link>
         <Link to="/settings" className={NAV_ITEM}>
           <Settings aria-hidden="true" className="size-4" />

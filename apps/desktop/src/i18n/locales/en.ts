@@ -70,6 +70,7 @@ export default {
     home: "Home",
     leaderboards: "Leaderboards",
     levels: "Levels",
+    sessions: "Sessions",
     settings: "Settings",
     retryTitle: "Can't reach the Atlas API — click to retry",
     logOut: "Log out",
@@ -158,6 +159,7 @@ export default {
   comingSoon: {
     levels: "Track your progression soon.",
     leaderboards: "Compete with other students soon.",
+    sessions: "Browse your session history soon.",
   },
   errors: {
     apiUnreachable: "Something went wrong. Is the Atlas API running?",

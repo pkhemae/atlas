@@ -80,6 +80,7 @@ export default {
     home: "Accueil",
     leaderboards: "Classements",
     levels: "Niveaux",
+    sessions: "Sessions",
     settings: "Réglages",
     retryTitle: "Impossible de joindre l'API Atlas — cliquez pour réessayer",
     logOut: "Se déconnecter",
@@ -168,6 +169,7 @@ export default {
   comingSoon: {
     levels: "Suivez bientôt votre progression.",
     leaderboards: "Affrontez d'autres étudiants bientôt.",
+    sessions: "Parcourez bientôt l'historique de vos sessions.",
   },
   errors: {
     apiUnreachable: "Une erreur est survenue. L'API Atlas est-elle lancée ?",
