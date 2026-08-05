@@ -16,6 +16,12 @@ interface SettingsPageProps {
   onThemeChange: (theme: ThemeId) => void;
 }
 
+const THEME_LABEL_KEYS = {
+  atlas: "settings.themeAtlas",
+  midnight: "settings.themeMidnight",
+  daylight: "settings.themeDaylight",
+} as const satisfies Record<ThemeId, string>;
+
 export function SettingsPage({
   language,
   onLanguageChange,
@@ -70,9 +76,7 @@ export function SettingsPage({
                 {THEMES.map((id) => (
                   <SelectItem key={id} value={id}>
                     <ThemeSwatch theme={id} />
-                    {id === "atlas"
-                      ? t("settings.themeAtlas")
-                      : t("settings.themeMidnight")}
+                    {t(THEME_LABEL_KEYS[id])}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -94,7 +98,7 @@ function ThemeSwatch({ theme }: { theme: ThemeId }) {
     <span
       data-theme={theme}
       aria-hidden="true"
-      className="bg-background text-foreground relative flex size-6 shrink-0 items-center justify-center rounded-md text-[10px] font-semibold shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+      className="bg-background text-foreground relative flex size-6 shrink-0 items-center justify-center rounded-md text-[10px] font-semibold shadow-[inset_0_0_0_1px_var(--surface-ring)]"
     >
       Aa
       <span className="bg-primary absolute right-0.5 bottom-0.5 size-1.5 rounded-full" />

@@ -9,6 +9,7 @@
     "core:window:allow-show",
     "core:window:allow-hide",
     "core:window:allow-set-position",
+    "core:window:allow-set-background-color",
     "allow-get-auth-token",
     "allow-save-auth-token",
     "allow-delete-auth-token"

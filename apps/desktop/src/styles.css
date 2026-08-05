@@ -80,6 +80,41 @@
   --chart-1: var(--color-cyan-400);
 }
 
+/* Daylight — warm light, same red brand accent: Atlas in daytime. */
+[data-theme="daylight"] {
+  --background: #f6f6f7;
+  --foreground: #1c1c1e;
+  --card: #ffffff;
+  --card-foreground: #1c1c1e;
+  --popover: #ffffff;
+  --popover-foreground: #1c1c1e;
+  --primary: #dc2626;
+  --primary-foreground: #ffffff;
+  --secondary: #ececee;
+  --secondary-foreground: #3f3f46;
+  --muted: #ececee;
+  --muted-foreground: #71717a;
+  --accent: #e4e4e7;
+  --accent-foreground: #1c1c1e;
+  --border: rgba(0, 0, 0, 0.08);
+  /* feeds both border-input (full) and the field fill (/30) — keep soft */
+  --input: #d4d4d8;
+  --ring: rgba(0, 0, 0, 0.35);
+  --radius: 0.75rem;
+  color-scheme: light;
+  --nav-active-bar: linear-gradient(
+    to bottom,
+    var(--color-red-500),
+    var(--color-orange-500)
+  );
+  /* light ramp runs pale → saturated (GitHub-light style) */
+  --activity-1: var(--color-green-200);
+  --activity-2: var(--color-green-400);
+  --activity-3: var(--color-green-600);
+  --activity-4: var(--color-green-800);
+  --chart-1: var(--color-green-600);
+}
+
 /* Text selection follows the theme accent (the shared red stays for
    marketing — this override is desktop-only). */
 ::selection {
