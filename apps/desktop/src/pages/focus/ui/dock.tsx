@@ -35,16 +35,17 @@ const MORPH_VISIBLE = "scale-100 opacity-100 blur-none";
 const MORPH_HIDDEN = "scale-25 opacity-0 blur-[2px]";
 
 /*
- * Window-level enter/exit. The native window shows/hides instantly, so
- * the DOM plays the transition: slide down from the screen edge on
- * enter, softer/faster retreat on exit (fill-mode holds the final frame
- * until the window actually hides — keep the duration in sync with
- * EXIT_MS in feature/dock-feature.tsx).
+ * Window-level enter/exit (keyframes in src/styles.css). The native
+ * window shows/hides instantly, so the DOM plays the transition: after
+ * a half-second beat the pill unfolds from its center in both
+ * directions, and folds back onto itself on exit. `backwards` keeps the
+ * pill invisible through the enter delay; `forwards` holds the folded
+ * frame until the window actually hides — keep the exit duration in
+ * sync with EXIT_MS in feature/dock-feature.tsx.
  */
 const ENTER =
-  "animate-in fade-in slide-in-from-top-2 zoom-in-95 duration-300 ease-[cubic-bezier(0.2,0,0,1)]";
-const EXIT =
-  "animate-out fade-out slide-out-to-top-2 zoom-out-95 fill-mode-forwards duration-200 ease-in";
+  "animate-[dock-unfold_350ms_cubic-bezier(0.2,0,0,1)_500ms_backwards]";
+const EXIT = "animate-[dock-fold_250ms_cubic-bezier(0.4,0,1,1)_forwards]";
 
 export function Dock({
   elapsed,

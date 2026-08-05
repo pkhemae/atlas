@@ -36,10 +36,13 @@ export async function hideMain() {
   await main?.hide();
 }
 
-export async function showMainHideDock() {
+export async function hideDock() {
+  const dock = await WebviewWindow.getByLabel("dock");
+  await dock?.hide();
+}
+
+export async function showMain() {
   const main = await WebviewWindow.getByLabel("main");
   await main?.show();
   await main?.setFocus();
-  const dock = await WebviewWindow.getByLabel("dock");
-  await dock?.hide();
 }

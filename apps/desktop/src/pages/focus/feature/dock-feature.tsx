@@ -16,7 +16,7 @@ import {
   type AmbientState,
 } from "@/lib/ambient";
 import { stopAllAmbient, syncAmbient } from "@/lib/ambient-engine";
-import { showMainHideDock } from "@/lib/windows";
+import { hideDock, showMain } from "@/lib/windows";
 import { Dock } from "@/pages/focus/ui/dock";
 
 interface SessionPayload {
@@ -24,7 +24,9 @@ interface SessionPayload {
 }
 
 /** Keep in sync with the exit animation duration in ui/dock.tsx. */
-const EXIT_MS = 200;
+const EXIT_MS = 250;
+/** Beat of nothing between the dock folding away and main returning. */
+const MAIN_RETURN_MS = 400;
 
 export function DockFeature() {
   const [booted, setBooted] = useState(false);
@@ -109,12 +111,16 @@ export function DockFeature() {
     setLeaving(true);
     if (notifyMain) await emitTo("main", "focus:completed", null);
     await new Promise((resolve) => setTimeout(resolve, EXIT_MS));
-    await showMainHideDock();
+    await hideDock();
     // reset only once hidden — closing the panel earlier would shrink
     // the window and clip its own exit animation
     setSettingsOpen(false);
     setSession(null);
     setLeaving(false);
+    // the swap reads as two moments, not a hard cut: a beat of nothing,
+    // then the main window comes back
+    await new Promise((resolve) => setTimeout(resolve, MAIN_RETURN_MS));
+    await showMain();
   };
 
   // if a control fails (network blip, expired token), re-sync with the
