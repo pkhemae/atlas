@@ -33,3 +33,40 @@ export const resetPasswordValidator = vine.create({
   password: password(),
   passwordConfirmation: password().sameAs('password'),
 })
+
+/**
+ * The unique() check must exclude the requesting user (re-submitting your
+ * own username never conflicts with yourself) — the id arrives through
+ * validation metadata so the validator itself stays a static compile
+ * (a factory would break Tuyau's request-type inference).
+ */
+export const updateProfileValidator = vine.withMetaData<{ userId: string }>().create({
+  fullName: vine.string().trim().minLength(1).maxLength(100).nullable().optional(),
+  username: vine
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(/^[a-z0-9_]{3,20}$/)
+    .unique({
+      table: 'users',
+      column: 'username',
+      caseInsensitive: true,
+      filter: (query, _value, field) => {
+        query.whereNot('id', (field.meta as { userId: string }).userId)
+      },
+    })
+    // deliberately NOT nullable: every account keeps a username, an empty
+    // value must 422 instead of unclaiming
+    .optional(),
+  bio: vine.string().trim().maxLength(160).nullable().optional(),
+  location: vine.string().trim().maxLength(100).nullable().optional(),
+  // nullable: an empty multipart field arrives as null and removes the image
+  avatar: vine
+    .file({ size: '2mb', extnames: ['jpg', 'jpeg', 'png', 'webp'] })
+    .nullable()
+    .optional(),
+  banner: vine
+    .file({ size: '4mb', extnames: ['jpg', 'jpeg', 'png', 'webp'] })
+    .nullable()
+    .optional(),
+})

@@ -18,7 +18,7 @@ test.group('Auth / me', (group) => {
     const response = await client.get('/api/v1/auth/me').loginAs(user)
 
     response.assertStatus(200)
-    const body = response.body()
+    const body = response.body() as unknown as { email: string; initials: string }
     assert.equal(body.email, CREDENTIALS.email)
     assert.equal(body.initials, 'AL')
     assert.notProperty(body, 'data')

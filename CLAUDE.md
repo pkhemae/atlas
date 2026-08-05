@@ -51,7 +51,7 @@ Components land in `packages/ui/src/components/`. Never hand-write low-level UI 
 For every page in `src/pages/<domain>/`, we apply a strict Feature/UI split:
 
 1. **Feature (`feature/`)**: Business logic, data fetching (TanStack Query), state management, and side effects.
-2. **UI (`ui/`)**: Pure presentational components. No hooks, no fetch. Receives data and callbacks via props.
+2. **UI (`ui/`)**: Pure presentational components. No data fetching, no API semantics (payload shaping lives in `feature/`); local view state for inputs/previews is fine. Receives data and callbacks via props.
 
 Example: `src/pages/focus/`
 
@@ -89,6 +89,8 @@ Example: `src/pages/focus/`
 - Tests: japa functional specs in `tests/functional/<module>/`, `testUtils.db().truncate()` per test, groups named `'Auth / login'`. Run with `pnpm --filter @atlas/api test`. Stop any running API dev server first — the japa HTTP server binds the same port.
 - Mail: `@adonisjs/mail` with the Resend transport (`RESEND_API_KEY` env). Mail classes live in `app/<module>/mails/` (extend `BaseMail`, build the element with `React.createElement` and render with `@react-email/render`); React Email templates live in `resources/emails/*.tsx` (import from the `@react-email/components` barrel, no remote assets). Tests use `mail.fake()` per test + `mail.restore()` in teardown.
 - Password reset: short typed codes (10 hex, shown `XXXXX-XXXXX`), SHA-256 hash at rest, 30 min expiry, single active code, verify endpoint rate limited — never weaken these together, the code is only safe with the throttle.
+- File uploads: `@adonisjs/drive` fs disk — files under `storage/` (gitignored), served publicly at `/uploads/*` (`serveFiles`), absolute URLs built with `APP_URL` in model getters (`avatarUrl`, `bannerUrl`). Update flow: move the new file, save the row, then best-effort delete the old one — never delete first. Tests use `drive.fake('fs')` + `fakeDisk.assertExists/assertMissing` (fake location configured in `config/drive.ts`).
+- Usernames: unique, stored lowercase (`^[a-z0-9_]{3,20}$`), a default is generated from the email at signup (`UsernameService`). Unique-on-update excludes the current user via validation `meta` — keep validators static (`vine.withMetaData<…>().create`), a validator factory breaks Tuyau request-type inference.
 - The api keeps its own Adonis ESLint/Prettier presets (`apps/api` is excluded from the root Prettier); run its lint/format from the workspace.
 - Business rule: every focus-session computation (durations, streaks, stats) lives in the API or a dedicated lib — single source of truth.
 
@@ -101,7 +103,8 @@ Example: `src/pages/focus/`
 
 - Auth token: stored in the OS keychain via Rust commands (`save_auth_token`, `get_auth_token`, `delete_auth_token` in `src-tauri/src/lib.rs`), mirrored in memory for the API client (`src/lib/api.ts`). Never persist tokens in files or localStorage.
 - Dev quirk: every Rust rebuild re-signs the debug binary ad hoc, so macOS re-prompts for keychain access on the next login ("Toujours autoriser" holds until the next native rebuild). Signed production builds won't prompt — not a bug, don't work around it.
-- API access: typed Tuyau client (`createTuyau` + `@atlas/api/registry`); response types flow from the API's controllers/transformers.
+- API access: typed Tuyau client (`createTuyau` + `@atlas/api/registry`); response types flow from the API's controllers/transformers. Tuyau auto-switches to multipart when the body contains a `File`; `null` serializes as an empty field, which the API reads as "remove" for images.
+- Modals use the shared `dialog.tsx` (borderless, layered shadows, `z-[80]` — above the `z-[60]` navbar); avatars use the shared `Avatar` with the initials medallion as automatic fallback.
 - Screens follow the same feature/ui split as the marketing app (`src/pages/<domain>/{feature,ui}/`).
 
 ## Development Guidelines

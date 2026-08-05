@@ -29,6 +29,7 @@ defineRouteGroup('/api/v1/auth', () => {
   defineRouteGroup(() => {
     router.post('logout', [auth.SignOut, 'handle'])
     router.get('me', [auth.Me, 'show'])
+    router.patch('me', [auth.UpdateProfile, 'handle'])
   }).use(middleware.auth())
 })
 

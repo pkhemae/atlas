@@ -2,6 +2,11 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
+  drive: {
+    fs: {
+      serve: typeof routes['drive.fs.serve']
+    }
+  }
   signUp: typeof routes['sign_up']
   signIn: typeof routes['sign_in']
   forgotPassword: typeof routes['forgot_password']
@@ -11,6 +16,7 @@ export interface ApiDefinition {
   me: {
     show: typeof routes['me.show']
   }
+  updateProfile: typeof routes['update_profile']
   startSession: typeof routes['start_session']
   listSessions: typeof routes['list_sessions']
   listActivity: typeof routes['list_activity']

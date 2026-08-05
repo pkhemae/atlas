@@ -1,5 +1,10 @@
 import { User } from "lucide-react";
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@atlas/ui/components/avatar";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -9,6 +14,7 @@ import {
 
 interface UserMenuProps {
   initials: string;
+  avatarUrl: string | null;
   loggingOut: boolean;
   onOpenProfile: () => void;
   onLogout: () => void;
@@ -16,6 +22,7 @@ interface UserMenuProps {
 
 export function UserMenu({
   initials,
+  avatarUrl,
   loggingOut,
   onOpenProfile,
   onLogout,
@@ -26,9 +33,14 @@ export function UserMenu({
         <button
           type="button"
           aria-label="Account menu"
-          className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-full text-xs font-semibold transition-[scale,background-color] hover:bg-red-500 active:scale-[0.96]"
+          className="group rounded-full transition-[scale] active:scale-[0.96]"
         >
-          {initials}
+          <Avatar className="size-9">
+            <AvatarImage src={avatarUrl ?? undefined} alt="" />
+            <AvatarFallback className="group-hover:bg-red-500 text-xs transition-colors">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={8} className="min-w-40">
