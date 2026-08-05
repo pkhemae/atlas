@@ -79,6 +79,7 @@ export default {
     startSession: "Démarrer une session",
     home: "Accueil",
     leaderboards: "Classements",
+    levels: "Niveaux",
     settings: "Réglages",
     retryTitle: "Impossible de joindre l'API Atlas — cliquez pour réessayer",
     logOut: "Se déconnecter",
@@ -162,6 +163,7 @@ export default {
       "La dernière action a échoué — le minuteur s'est resynchronisé avec le serveur",
   },
   comingSoon: {
+    levels: "Suivez bientôt votre progression.",
     leaderboards: "Affrontez d'autres étudiants bientôt.",
   },
   errors: {

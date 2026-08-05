@@ -69,6 +69,7 @@ export default {
     startSession: "Start a session",
     home: "Home",
     leaderboards: "Leaderboards",
+    levels: "Levels",
     settings: "Settings",
     retryTitle: "Can't reach the Atlas API — click to retry",
     logOut: "Log out",
@@ -152,6 +153,7 @@ export default {
     resyncError: "Last action failed — the timer re-synced with the server",
   },
   comingSoon: {
+    levels: "Track your progression soon.",
     leaderboards: "Compete with other students soon.",
   },
   errors: {

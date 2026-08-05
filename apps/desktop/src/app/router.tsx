@@ -7,6 +7,7 @@ import {
 import { AppLayout } from "@/app/app-layout";
 import { HomeFeature } from "@/pages/home/feature/home-feature";
 import { LeaderboardsFeature } from "@/pages/leaderboards/feature/leaderboards-feature";
+import { LevelsFeature } from "@/pages/levels/feature/levels-feature";
 import { SettingsFeature } from "@/pages/settings/feature/settings-feature";
 
 interface AppRouterContext {
@@ -29,6 +30,12 @@ const leaderboardsRoute = createRoute({
   component: LeaderboardsFeature,
 });
 
+const levelsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/levels",
+  component: LevelsFeature,
+});
+
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/settings",
@@ -38,6 +45,7 @@ const settingsRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   homeRoute,
   leaderboardsRoute,
+  levelsRoute,
   settingsRoute,
 ]);
 

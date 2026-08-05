@@ -1,6 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
-import { House, LogOut, Play, Settings, Trophy } from "lucide-react";
+import {
+  House,
+  LogOut,
+  Play,
+  Settings,
+  TrendingUp,
+  Trophy,
+} from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -85,6 +92,10 @@ export function AppSidebar({
         <Link to="/leaderboards" className={NAV_ITEM}>
           <Trophy aria-hidden="true" className="size-4" />
           {t("sidebar.leaderboards")}
+        </Link>
+        <Link to="/levels" className={NAV_ITEM}>
+          <TrendingUp aria-hidden="true" className="size-4" />
+          {t("sidebar.levels")}
         </Link>
         <Link to="/settings" className={NAV_ITEM}>
           <Settings aria-hidden="true" className="size-4" />
