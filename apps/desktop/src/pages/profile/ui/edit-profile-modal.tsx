@@ -26,15 +26,15 @@ import type { AuthUser } from "@/lib/api";
 const ACCEPTED_IMAGES = "image/png,image/jpeg,image/webp";
 const BIO_MAX = 160;
 
-export interface EditProfileValues {
+// raw form state — the feature layer turns it into the API payload
+export interface EditProfileFormState {
   fullName: string;
+  username: string;
   bio: string;
   location: string;
-  username?: string;
-  // File replaces, null removes, absent leaves untouched (tuyau
-  // serializes null as an empty field, which the API reads as removal)
-  avatar?: File | null;
-  banner?: File | null;
+  avatar: File | null;
+  removeAvatar: boolean;
+  banner: File | null;
 }
 
 interface EditProfileModalProps {
@@ -44,7 +44,7 @@ interface EditProfileModalProps {
   pending: boolean;
   errorMessage: string | null;
   fieldErrors: Record<string, string>;
-  onSubmit: (values: EditProfileValues) => void;
+  onSubmit: (state: EditProfileFormState) => void;
 }
 
 interface PickedImage {
@@ -113,6 +113,8 @@ function EditProfileForm({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (file) setter({ file, url: URL.createObjectURL(file) });
+      // else the webview won't fire change when re-picking the same file
+      event.target.value = "";
     };
 
   const bannerSrc = banner?.url ?? user.bannerUrl;
@@ -132,17 +134,12 @@ function EditProfileForm({
         setUsernameError(null);
         onSubmit({
           fullName: String(form.get("fullName") ?? "").trim(),
+          username,
           bio: bio.trim(),
           location: String(form.get("location") ?? "").trim(),
-          // absent keys stay absent: never unclaim a username, never
-          // send an empty file field
-          ...(username ? { username } : {}),
-          ...(avatar
-            ? { avatar: avatar.file }
-            : removeAvatar && user.avatarUrl
-              ? { avatar: null }
-              : {}),
-          ...(banner ? { banner: banner.file } : {}),
+          avatar: avatar?.file ?? null,
+          removeAvatar,
+          banner: banner?.file ?? null,
         });
       }}
     >

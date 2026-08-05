@@ -5,8 +5,14 @@ import drive from '@adonisjs/drive/services/main'
 import UserTransformer from '#auth/transformers/user_transformer'
 import { updateProfileValidator } from '#auth/validators/user'
 
+function isUsernameConflict(error: unknown) {
+  return (
+    error instanceof Error && error.message.includes('UNIQUE constraint failed: users.username')
+  )
+}
+
 export default class UpdateProfileController {
-  async handle({ auth, request, serialize }: HttpContext) {
+  async handle({ auth, request, response, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
     const payload = await request.validateUsing(updateProfileValidator, {
       meta: { userId: user.id },
@@ -40,7 +46,28 @@ export default class UpdateProfileController {
       user.bannerPath = null
     }
 
-    await user.save()
+    try {
+      await user.save()
+    } catch (error) {
+      if (isUsernameConflict(error)) {
+        // the vine check passed but a concurrent writer won the unique
+        // index — drop the freshly moved files, answer as a 422
+        if (payload.avatar && user.avatarPath)
+          await drive
+            .use()
+            .delete(user.avatarPath)
+            .catch(() => {})
+        if (payload.banner && user.bannerPath)
+          await drive
+            .use()
+            .delete(user.bannerPath)
+            .catch(() => {})
+        return response.status(422).send({
+          errors: [{ message: 'This username is already taken.', field: 'username' }],
+        })
+      }
+      throw error
+    }
 
     if (oldAvatar)
       await drive

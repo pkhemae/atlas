@@ -12,7 +12,7 @@ import {
 } from "@/pages/profile/ui/activity-graph";
 import {
   EditProfileModal,
-  type EditProfileValues,
+  type EditProfileFormState,
 } from "@/pages/profile/ui/edit-profile-modal";
 import { ProfileCard } from "@/pages/profile/ui/profile-card";
 
@@ -31,10 +31,25 @@ export function ProfileFeature() {
       api.get("/api/v1/focus/activity", {}) as Promise<ActivityResponse>,
   });
 
-  // tuyau switches to multipart on its own when a File is in the body
+  // API contract: absent key = untouched, File = replace, null = remove
+  // (tuyau serializes null as an empty field and switches to multipart
+  // on its own when the body holds a File)
   const updateProfile = useMutation({
-    mutationFn: (values: EditProfileValues) =>
-      api.patch("/api/v1/auth/me", { body: values }) as Promise<AuthUser>,
+    mutationFn: (state: EditProfileFormState) => {
+      const body = {
+        fullName: state.fullName,
+        username: state.username,
+        bio: state.bio,
+        location: state.location,
+        ...(state.avatar
+          ? { avatar: state.avatar }
+          : state.removeAvatar
+            ? { avatar: null }
+            : {}),
+        ...(state.banner ? { banner: state.banner } : {}),
+      };
+      return api.patch("/api/v1/auth/me", { body }) as Promise<AuthUser>;
+    },
     onSuccess: (user) => {
       // one cache entry feeds the card, the modal and the navbar menu
       queryClient.setQueryData(["me"], user);
@@ -46,6 +61,10 @@ export function ProfileFeature() {
     updateProfile.reset();
     setEditing(true);
   };
+
+  const fieldErrors = updateProfile.isError
+    ? extractApiFieldErrors(updateProfile.error)
+    : {};
 
   return (
     <main className="bg-background min-h-svh px-6 pt-20 pb-8">
@@ -81,17 +100,14 @@ export function ProfileFeature() {
           onOpenChange={setEditing}
           user={me.data}
           pending={updateProfile.isPending}
+          // a field-level error already shows inline — no double display
           errorMessage={
-            updateProfile.isError
+            updateProfile.isError && Object.keys(fieldErrors).length === 0
               ? extractApiErrorMessage(updateProfile.error)
               : null
           }
-          fieldErrors={
-            updateProfile.isError
-              ? extractApiFieldErrors(updateProfile.error)
-              : {}
-          }
-          onSubmit={(values) => updateProfile.mutate(values)}
+          fieldErrors={fieldErrors}
+          onSubmit={(state) => updateProfile.mutate(state)}
         />
       )}
     </main>

@@ -55,7 +55,8 @@ export const updateProfileValidator = vine.withMetaData<{ userId: string }>().cr
         query.whereNot('id', (field.meta as { userId: string }).userId)
       },
     })
-    .nullable()
+    // deliberately NOT nullable: every account keeps a username, an empty
+    // value must 422 instead of unclaiming
     .optional(),
   bio: vine.string().trim().maxLength(160).nullable().optional(),
   location: vine.string().trim().maxLength(100).nullable().optional(),

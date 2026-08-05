@@ -116,6 +116,16 @@ test.group('Auth / update profile', (group) => {
     assert.equal(body.errors[0]!.field, 'username')
   })
 
+  test('an empty username never unclaims the current one', async ({ client, assert }) => {
+    const user = await User.create({ ...CREDENTIALS, username: 'ada' })
+
+    const response = await client.patch('/api/v1/auth/me').loginAs(user).fields({ username: '' })
+
+    response.assertStatus(200)
+    await user.refresh()
+    assert.equal(user.username, 'ada')
+  })
+
   test('re-submitting your own username succeeds', async ({ client }) => {
     const user = await User.create({ ...CREDENTIALS, username: 'ada' })
 

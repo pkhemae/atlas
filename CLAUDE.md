@@ -51,7 +51,7 @@ Components land in `packages/ui/src/components/`. Never hand-write low-level UI 
 For every page in `src/pages/<domain>/`, we apply a strict Feature/UI split:
 
 1. **Feature (`feature/`)**: Business logic, data fetching (TanStack Query), state management, and side effects.
-2. **UI (`ui/`)**: Pure presentational components. No hooks, no fetch. Receives data and callbacks via props.
+2. **UI (`ui/`)**: Pure presentational components. No data fetching, no API semantics (payload shaping lives in `feature/`); local view state for inputs/previews is fine. Receives data and callbacks via props.
 
 Example: `src/pages/focus/`
 
