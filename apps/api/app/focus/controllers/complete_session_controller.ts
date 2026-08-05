@@ -18,7 +18,7 @@ export default class CompleteSessionController {
       .firstOrFail()
 
     if (session.status !== 'running' && session.status !== 'paused') {
-      return response.status(400).send({
+      return response.badRequest({
         errors: [
           {
             message: 'Only an active session can be completed.',

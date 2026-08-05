@@ -2,7 +2,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthGate } from "@/pages/auth/feature/auth-gate";
 import { DockFeature } from "@/pages/focus/feature/dock-feature";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30_000,
+      // session start/stop hides and re-shows the windows constantly —
+      // focus-driven refetches would stack on the explicit invalidations
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 // the dock is a second webview of the same app, selected by query param
 const isDockWindow =

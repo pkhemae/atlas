@@ -20,6 +20,7 @@ interface AppSidebarProps {
   onRetryMe: () => void;
   onStartSession: () => void;
   startPending: boolean;
+  startError: string | null;
   onLogout: () => void;
   loggingOut: boolean;
 }
@@ -41,6 +42,7 @@ export function AppSidebar({
   onRetryMe,
   onStartSession,
   startPending,
+  startError,
   onLogout,
   loggingOut,
 }: AppSidebarProps) {
@@ -68,6 +70,11 @@ export function AppSidebar({
           />
           Start a session
         </button>
+        {startError && (
+          <p className="text-destructive mb-2 px-2.5 text-xs" role="alert">
+            {startError}
+          </p>
+        )}
         <Link to="/" activeOptions={{ exact: true }} className={NAV_ITEM}>
           <House aria-hidden="true" className="size-4" />
           Home

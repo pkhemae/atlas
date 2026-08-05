@@ -18,7 +18,7 @@ export default class ResumeSessionController {
       .firstOrFail()
 
     if (session.status !== 'paused') {
-      return response.status(400).send({
+      return response.badRequest({
         errors: [
           { message: 'Only a paused session can be resumed.', code: 'E_INVALID_SESSION_STATE' },
         ],

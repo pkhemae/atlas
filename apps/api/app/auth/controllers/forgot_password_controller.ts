@@ -27,7 +27,7 @@ export default class ForgotPasswordController {
     try {
       await this.sendLimiter.consume(`forgot_${request.ip()}_${email}`)
     } catch {
-      return response.status(400).send({
+      return response.badRequest({
         errors: [
           { message: 'Too many reset requests. Try again later.', code: 'E_TOO_MANY_REQUESTS' },
         ],

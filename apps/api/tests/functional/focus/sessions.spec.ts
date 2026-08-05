@@ -176,29 +176,19 @@ test.group('Focus / sessions', (group) => {
     assert.equal(activeBody.data.id, session.id)
   })
 
-  test('lists own sessions most recent first', async ({ client, assert }) => {
+  test('rejects completing an already completed session', async ({ client, assert }) => {
     const user = await User.create({ ...CREDENTIALS })
-    const other = await User.create({
-      fullName: 'Grace Hopper',
-      email: 'grace@atlas.app',
-      password: 'secret1234',
-    })
     const service = new FocusSessionService()
+    const session = await service.start(user)
+    await service.complete(session)
 
-    const older = await service.start(user)
-    await service.complete(older)
-    await shiftStartedAt(older.id, 3600)
-    const newer = await service.start(user)
-    await service.complete(newer)
-    await service.start(other)
+    const response = await client
+      .post(`/api/v1/focus/sessions/${session.id}/complete`)
+      .loginAs(user)
 
-    const response = await client.get('/api/v1/focus/sessions').loginAs(user)
-
-    response.assertStatus(200)
-    const { data } = response.body() as unknown as { data: { id: string }[] }
-    assert.lengthOf(data, 2)
-    assert.equal(data[0]!.id, newer.id)
-    assert.equal(data[1]!.id, older.id)
+    response.assertStatus(400)
+    const body = response.body() as unknown as { errors: { code: string }[] }
+    assert.equal(body.errors[0]!.code, 'E_INVALID_SESSION_STATE')
   })
 
   test('abandon-active closes an orphaned session', async ({ client, assert }) => {

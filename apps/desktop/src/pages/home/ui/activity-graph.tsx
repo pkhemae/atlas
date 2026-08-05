@@ -6,11 +6,20 @@ import {
   TooltipTrigger,
 } from "@atlas/ui/components/tooltip";
 import { cn } from "@atlas/ui/lib/utils";
-import { type ActivityDay, formatTotal, localKey } from "@/lib/focus";
+import {
+  type ActivityDay,
+  buildWeeks,
+  formatTotal,
+  levelFor,
+  localKey,
+  monthLabels,
+  totalSince,
+} from "@/lib/focus";
 
 interface ActivityGraphProps {
   days: ActivityDay[];
   loading: boolean;
+  error: boolean;
 }
 
 // intensity ramp: none, <30min, <1h30, <3h, 3h+ — green like a
@@ -23,10 +32,9 @@ const LEVEL_CLASSES = [
   "bg-green-400",
 ];
 
-const MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
 const DAY_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
 
-export function ActivityGraph({ days, loading }: ActivityGraphProps) {
+export function ActivityGraph({ days, loading, error }: ActivityGraphProps) {
   const weeks = useMemo(() => buildWeeks(new Date()), []);
   const totalsByDate = useMemo(
     () => new Map(days.map((day) => [day.date, day.totalSeconds])),
@@ -34,21 +42,21 @@ export function ActivityGraph({ days, loading }: ActivityGraphProps) {
   );
   // only count what the graph shows — the API returns the full history
   const firstShownDate = weeks[0]?.[0];
-  const totalSeconds = useMemo(() => {
-    const firstKey = firstShownDate ? localKey(firstShownDate) : "";
-    return days
-      .filter((day) => day.date >= firstKey)
-      .reduce((sum, day) => sum + day.totalSeconds, 0);
-  }, [days, firstShownDate]);
+  const totalSeconds = useMemo(
+    () => totalSince(days, firstShownDate ? localKey(firstShownDate) : ""),
+    [days, firstShownDate],
+  );
 
   return (
     <section aria-label="Activity" className="p-4">
       <p className="text-xs font-medium">
         {loading
           ? "Loading your activity…"
-          : totalSeconds > 0
-            ? `${formatTotal(totalSeconds)} of focus in the last 6 months`
-            : "No focus time in the last 6 months yet"}
+          : error
+            ? "Couldn't load your activity."
+            : totalSeconds > 0
+              ? `${formatTotal(totalSeconds)} of focus in the last 6 months`
+              : "No focus time in the last 6 months yet"}
       </p>
       {loading ? (
         <div className="bg-foreground/5 mt-3 h-24 animate-pulse rounded-lg" />
@@ -127,55 +135,4 @@ export function ActivityGraph({ days, loading }: ActivityGraphProps) {
       )}
     </section>
   );
-}
-
-/**
- * Sunday-started weeks covering the last 6 months, GitHub-style:
- * full first week, last one cut at today.
- */
-function buildWeeks(now: Date): Date[][] {
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const start = new Date(today);
-  start.setMonth(start.getMonth() - 6);
-  start.setDate(start.getDate() + 1);
-  start.setDate(start.getDate() - start.getDay());
-
-  const weeks: Date[][] = [];
-  let current: Date[] = [];
-  for (const d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
-    const day = new Date(d);
-    if (day.getDay() === 0 && current.length > 0) {
-      weeks.push(current);
-      current = [];
-    }
-    current.push(day);
-  }
-  if (current.length > 0) weeks.push(current);
-  return weeks;
-}
-
-function monthLabels(weeks: Date[][]) {
-  const labels: { index: number; label: string }[] = [];
-  weeks.forEach((week, index) => {
-    const first = week[0];
-    if (!first) return;
-    const month = first.getMonth();
-    if (month !== weeks[index - 1]?.[0]?.getMonth()) {
-      labels.push({ index, label: MONTHS[month] ?? "" });
-    }
-  });
-  // a label hugging the left edge gets overlapped by the next one — drop it
-  const [first, second] = labels;
-  if (first && second && second.index - first.index < 3) {
-    labels.shift();
-  }
-  return labels;
-}
-
-function levelFor(seconds: number): number {
-  if (seconds <= 0) return 0;
-  if (seconds < 30 * 60) return 1;
-  if (seconds < 90 * 60) return 2;
-  if (seconds < 180 * 60) return 3;
-  return 4;
 }

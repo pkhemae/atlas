@@ -6,6 +6,7 @@ interface DockProps {
   elapsed: number;
   status: "running" | "paused";
   pending: boolean;
+  error: boolean;
   onPause: () => void;
   onResume: () => void;
   onStop: () => void;
@@ -23,6 +24,7 @@ export function Dock({
   elapsed,
   status,
   pending,
+  error,
   onPause,
   onResume,
   onStop,
@@ -50,6 +52,14 @@ export function Dock({
         >
           {formatElapsed(elapsed)}
         </span>
+        {error && (
+          <span
+            role="alert"
+            aria-label="Last action failed — the timer re-synced with the server"
+            title="Last action failed — the timer re-synced with the server"
+            className="size-1.5 shrink-0 animate-pulse rounded-full bg-red-500"
+          />
+        )}
         {/* one button, two glyphs: pause and play morph in place */}
         <button
           type="button"

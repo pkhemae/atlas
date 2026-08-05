@@ -5,7 +5,7 @@ import {
   extractApiErrorMessage,
   extractApiFieldErrors,
 } from "@/lib/api-errors";
-import { type ActivityDay } from "@/lib/focus";
+import { memberSince } from "@/lib/focus";
 import { useMe } from "@/app/use-me";
 import { ActivityGraph } from "@/pages/home/ui/activity-graph";
 import { WeeklyFocusChart } from "@/pages/home/ui/weekly-focus-chart";
@@ -15,10 +15,6 @@ import {
 } from "@/pages/home/ui/edit-profile-modal";
 import { ProfileCard } from "@/pages/home/ui/profile-card";
 
-interface ActivityResponse {
-  data: ActivityDay[];
-}
-
 export function HomeFeature() {
   const me = useMe();
   const queryClient = useQueryClient();
@@ -26,8 +22,8 @@ export function HomeFeature() {
 
   const activity = useQuery({
     queryKey: ["focus", "activity"],
-    queryFn: () =>
-      api.get("/api/v1/focus/activity", {}) as Promise<ActivityResponse>,
+    queryFn: () => api.get("/api/v1/focus/activity", {}),
+    retry: false,
   });
 
   // API contract: absent key = untouched, File = replace, null = remove
@@ -36,7 +32,8 @@ export function HomeFeature() {
   const updateProfile = useMutation({
     mutationFn: (state: EditProfileFormState) => {
       const body = {
-        fullName: state.fullName,
+        // "" would linger in the DB while null is the real "no name"
+        fullName: state.fullName || null,
         username: state.username,
         bio: state.bio,
         location: state.location,
@@ -47,7 +44,9 @@ export function HomeFeature() {
             : {}),
         ...(state.banner ? { banner: state.banner } : {}),
       };
-      return api.patch("/api/v1/auth/me", { body }) as Promise<AuthUser>;
+      // body cast: the registry types file fields as server-side
+      // MultipartFile — the client legitimately sends File/null
+      return api.patch("/api/v1/auth/me", { body: body as never });
     },
     onSuccess: (user) => {
       // one cache entry feeds the card, the modal and the navbar menu
@@ -91,11 +90,13 @@ export function HomeFeature() {
             <ActivityGraph
               days={activity.data?.data ?? []}
               loading={activity.isPending}
+              error={activity.isError}
             />
             <div aria-hidden="true" className="bg-foreground/5 h-px" />
             <WeeklyFocusChart
               days={activity.data?.data ?? []}
               loading={activity.isPending}
+              error={activity.isError}
             />
           </div>
         </div>
@@ -106,9 +107,11 @@ export function HomeFeature() {
           onOpenChange={setEditing}
           user={me.data}
           pending={updateProfile.isPending}
-          // a field-level error already shows inline — no double display
+          // suppress the banner only for errors the modal renders inline
+          // (username) — an avatar/banner/location 422 must stay visible
           errorMessage={
-            updateProfile.isError && Object.keys(fieldErrors).length === 0
+            updateProfile.isError &&
+            !Object.keys(fieldErrors).some((field) => field === "username")
               ? extractApiErrorMessage(updateProfile.error)
               : null
           }
@@ -118,10 +121,4 @@ export function HomeFeature() {
       )}
     </main>
   );
-}
-
-function memberSince(createdAt: string | null): string | null {
-  const parsed = createdAt ? new Date(createdAt) : null;
-  if (!parsed || Number.isNaN(parsed.getTime())) return null;
-  return parsed.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }

@@ -53,7 +53,7 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
 
   const login = useMutation({
     mutationFn: (values: LoginValues) =>
-      api.post("/api/v1/auth/login", { body: values }) as Promise<AuthPayload>,
+      api.post("/api/v1/auth/login", { body: values }),
     onSuccess: async (payload) => {
       await persistSession(payload);
       onAuthenticated();
@@ -64,7 +64,7 @@ export function AuthFeature({ onAuthenticated }: AuthFeatureProps) {
     mutationFn: (values: SignupValues) =>
       api.post("/api/v1/auth/register", {
         body: { ...values, fullName: values.fullName || null },
-      }) as Promise<AuthPayload>,
+      }),
     onSuccess: async (payload) => {
       await persistSession(payload);
       onAuthenticated();
