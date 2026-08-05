@@ -17,13 +17,14 @@ interface ActivityGraphProps {
   loading: boolean;
 }
 
-// intensity ramp: none, <30min, <1h30, <3h, 3h+
+// intensity ramp: none, <30min, <1h30, <3h, 3h+ — green like a
+// contribution graph, deliberately apart from the app's red accent
 const LEVEL_CLASSES = [
   "bg-foreground/[0.06]",
-  "bg-primary/25",
-  "bg-primary/45",
-  "bg-primary/70",
-  "bg-primary",
+  "bg-green-950",
+  "bg-green-800",
+  "bg-green-600",
+  "bg-green-400",
 ];
 
 const MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
