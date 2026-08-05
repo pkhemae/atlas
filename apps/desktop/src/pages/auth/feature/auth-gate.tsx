@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { RouterProvider } from "@tanstack/react-router";
 import { appRouter } from "@/app/router";
 import { Screen } from "@/components/screen";
@@ -9,6 +10,7 @@ import { AuthFeature } from "@/pages/auth/feature/auth-feature";
 type AuthStatus = "booting" | "guest" | "authed";
 
 export function AuthGate() {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<AuthStatus>("booting");
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export function AuthGate() {
     return (
       <Screen>
         <p className="text-muted-foreground animate-pulse text-sm">
-          Starting Atlas…
+          {t("auth.gate.starting")}
         </p>
       </Screen>
     );

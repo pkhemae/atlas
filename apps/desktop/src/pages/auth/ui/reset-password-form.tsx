@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@atlas/ui/components/button";
 import { Label } from "@atlas/ui/components/label";
 import { PasswordInput } from "@atlas/ui/components/password-input";
@@ -20,6 +21,8 @@ export function ResetPasswordForm({
   onSubmit,
   onBackToLogin,
 }: ResetPasswordFormProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 flex w-full max-w-xs flex-col gap-8 duration-500">
       <header className="flex flex-col items-center gap-1.5 text-center">
@@ -27,10 +30,10 @@ export function ResetPasswordForm({
           Atlas
         </p>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Choose a new password
+          {t("auth.resetPassword.title")}
         </h1>
         <p className="text-muted-foreground text-sm text-pretty">
-          Code verified. Pick a new password for your account.
+          {t("auth.resetPassword.subtitle")}
         </p>
       </header>
       <form
@@ -48,13 +51,15 @@ export function ResetPasswordForm({
       >
         <div className="flex flex-col gap-2">
           <Label htmlFor="password" className="text-muted-foreground text-xs">
-            New password
+            {t("auth.resetPassword.newPassword")}
           </Label>
           <PasswordInput
             id="password"
             name="password"
             autoComplete="new-password"
-            placeholder="8+ characters"
+            placeholder={t("auth.signup.passwordPlaceholder")}
+            showLabel={t("common.showPassword")}
+            hideLabel={t("common.hidePassword")}
             autoFocus
             required
           />
@@ -64,13 +69,15 @@ export function ResetPasswordForm({
             htmlFor="passwordConfirmation"
             className="text-muted-foreground text-xs"
           >
-            Confirm new password
+            {t("auth.resetPassword.confirmNewPassword")}
           </Label>
           <PasswordInput
             id="passwordConfirmation"
             name="passwordConfirmation"
             autoComplete="new-password"
-            placeholder="Repeat your password"
+            placeholder={t("auth.signup.confirmPasswordPlaceholder")}
+            showLabel={t("common.showPassword")}
+            hideLabel={t("common.hidePassword")}
             required
           />
         </div>
@@ -80,7 +87,9 @@ export function ResetPasswordForm({
           </p>
         ) : null}
         <Button type="submit" className="mt-2 w-full" disabled={pending}>
-          {pending ? "Resetting…" : "Reset password"}
+          {pending
+            ? t("auth.resetPassword.submitting")
+            : t("auth.resetPassword.submit")}
         </Button>
       </form>
       <button
@@ -88,7 +97,7 @@ export function ResetPasswordForm({
         onClick={onBackToLogin}
         className="text-muted-foreground hover:text-foreground mx-auto -my-2 px-3 py-2 text-sm transition-colors"
       >
-        Back to login
+        {t("common.backToLogin")}
       </button>
     </div>
   );

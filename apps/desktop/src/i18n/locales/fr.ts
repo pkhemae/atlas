@@ -2,9 +2,11 @@ import type en from "./en";
 
 // widen every leaf to string — without this, satisfies would demand the
 // English literals themselves
-type Catalog<T> = { [K in keyof T]: T[K] extends string ? string : Catalog<T[K]> };
+type Catalog<T> = {
+  [K in keyof T]: T[K] extends string ? string : Catalog<T[K]>;
+};
 
-//   (narrow no-break space) before units, %, ? and ! — French typography
+// U+202F narrow no-break spaces sit before units, ? and ! (French typography)
 export default {
   common: {
     backToLogin: "Retour à la connexion",
@@ -49,7 +51,8 @@ export default {
     },
     resetCode: {
       title: "Saisissez votre code",
-      sentTo: "Nous avons envoyé un code de réinitialisation à <1>{{email}}</1>.",
+      sentTo:
+        "Nous avons envoyé un code de réinitialisation à <1>{{email}}</1>.",
       expires_one: "Il expire dans {{count}} minute.",
       expires_other: "Il expire dans {{count}} minutes.",
       checking: "Vérification du code…",
@@ -126,7 +129,8 @@ export default {
       username: "Nom d'utilisateur",
       usernamePlaceholder: "nomdutilisateur",
       usernameEmpty: "Votre nom d'utilisateur ne peut pas être vide.",
-      usernameHelp: "3 à 20 caractères. Lettres minuscules, chiffres et tirets bas.",
+      usernameHelp:
+        "3 à 20 caractères. Lettres minuscules, chiffres et tirets bas.",
       bio: "Bio",
       bioPlaceholder: "Dites aux autres sur quoi vous vous concentrez",
       bioCounter: "{{length}}/{{max}}",

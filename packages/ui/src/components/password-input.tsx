@@ -7,9 +7,18 @@ import { cn } from "@atlas/ui/lib/utils";
 const ICON_TRANSITION =
   "absolute inset-0 size-4 transition-[opacity,scale,filter] duration-200 ease-[cubic-bezier(0.2,0,0,1)]";
 
-type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, "type">;
+type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, "type"> & {
+  /** Accessible labels for the visibility toggle — override to localize. */
+  showLabel?: string;
+  hideLabel?: string;
+};
 
-function PasswordInput({ className, ...props }: PasswordInputProps) {
+function PasswordInput({
+  className,
+  showLabel = "Show password",
+  hideLabel = "Hide password",
+  ...props
+}: PasswordInputProps) {
   const [visible, setVisible] = React.useState(false);
 
   return (
@@ -23,7 +32,7 @@ function PasswordInput({ className, ...props }: PasswordInputProps) {
       <button
         type="button"
         onClick={() => setVisible((current) => !current)}
-        aria-label={visible ? "Hide password" : "Show password"}
+        aria-label={visible ? hideLabel : showLabel}
         aria-pressed={visible}
         className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 flex w-10 items-center justify-center transition-colors"
       >

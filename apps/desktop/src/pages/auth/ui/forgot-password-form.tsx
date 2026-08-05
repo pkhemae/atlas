@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@atlas/ui/components/button";
 import { Input } from "@atlas/ui/components/input";
 import { Label } from "@atlas/ui/components/label";
@@ -19,6 +20,8 @@ export function ForgotPasswordForm({
   onSubmit,
   onBackToLogin,
 }: ForgotPasswordFormProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 flex w-full max-w-xs flex-col gap-8 duration-500">
       <header className="flex flex-col items-center gap-1.5 text-center">
@@ -26,10 +29,10 @@ export function ForgotPasswordForm({
           Atlas
         </p>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Reset your password
+          {t("auth.forgot.title")}
         </h1>
         <p className="text-muted-foreground text-sm text-pretty">
-          Enter your email and we will send you a reset code.
+          {t("auth.forgot.subtitle")}
         </p>
       </header>
       <form
@@ -42,14 +45,14 @@ export function ForgotPasswordForm({
       >
         <div className="flex flex-col gap-2">
           <Label htmlFor="email" className="text-muted-foreground text-xs">
-            Email
+            {t("common.email")}
           </Label>
           <Input
             id="email"
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="you@example.com"
+            placeholder={t("common.emailPlaceholder")}
             required
           />
         </div>
@@ -59,7 +62,7 @@ export function ForgotPasswordForm({
           </p>
         ) : null}
         <Button type="submit" className="mt-2 w-full" disabled={pending}>
-          {pending ? "Sending…" : "Send reset code"}
+          {pending ? t("auth.forgot.submitting") : t("auth.forgot.submit")}
         </Button>
       </form>
       <button
@@ -67,7 +70,7 @@ export function ForgotPasswordForm({
         onClick={onBackToLogin}
         className="text-muted-foreground hover:text-foreground mx-auto -my-2 px-3 py-2 text-sm transition-colors"
       >
-        Back to login
+        {t("common.backToLogin")}
       </button>
     </div>
   );

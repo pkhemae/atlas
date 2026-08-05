@@ -119,7 +119,8 @@ export default {
       username: "Username",
       usernamePlaceholder: "username",
       usernameEmpty: "Your username can't be empty.",
-      usernameHelp: "3–20 characters. Lowercase letters, numbers and underscores.",
+      usernameHelp:
+        "3–20 characters. Lowercase letters, numbers and underscores.",
       bio: "Bio",
       bioPlaceholder: "Tell others what you're focusing on",
       bioCounter: "{{length}}/{{max}}",
