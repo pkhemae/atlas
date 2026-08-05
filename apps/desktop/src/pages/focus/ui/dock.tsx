@@ -16,7 +16,6 @@ interface DockProps {
   pending: boolean;
   error: boolean;
   settingsOpen: boolean;
-  leaving: boolean;
   ambient: AmbientState;
   onPause: () => void;
   onResume: () => void;
@@ -35,17 +34,14 @@ const MORPH_VISIBLE = "scale-100 opacity-100 blur-none";
 const MORPH_HIDDEN = "scale-25 opacity-0 blur-[2px]";
 
 /*
- * Window-level enter/exit (keyframes in src/styles.css). The native
- * window shows/hides instantly, so the DOM plays the transition: after
- * a half-second beat the pill unfolds from its center in both
- * directions, and folds back onto itself on exit. `backwards` keeps the
- * pill invisible through the enter delay; `forwards` holds the folded
- * frame until the window actually hides — keep the exit duration in
- * sync with EXIT_MS in feature/dock-feature.tsx.
+ * Window-level enter (keyframes in src/styles.css). The native window
+ * shows instantly, so the DOM plays the transition: after a half-second
+ * beat the pill unfolds from its center in both directions (`backwards`
+ * keeps it invisible through the delay). Dismissal is deliberately
+ * instant — no exit animation.
  */
 const ENTER =
   "animate-[dock-unfold_350ms_cubic-bezier(0.2,0,0,1)_500ms_backwards]";
-const EXIT = "animate-[dock-fold_250ms_cubic-bezier(0.4,0,1,1)_forwards]";
 
 export function Dock({
   elapsed,
@@ -53,7 +49,6 @@ export function Dock({
   pending,
   error,
   settingsOpen,
-  leaving,
   ambient,
   onPause,
   onResume,
@@ -71,16 +66,13 @@ export function Dock({
     // window used to put it, while the settings panel grows below.
     <div
       data-tauri-drag-region
-      className={cn(
-        "flex h-svh w-svw flex-col items-center pt-1",
-        leaving && "pointer-events-none",
-      )}
+      className="flex h-svh w-svw flex-col items-center pt-1"
     >
       <div
         data-tauri-drag-region
         className={cn(
           "flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-zinc-900/95 py-1 pr-1 pl-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)]",
-          leaving ? EXIT : ENTER,
+          ENTER,
         )}
       >
         <span
@@ -176,14 +168,7 @@ export function Dock({
 
       {/* ambient sounds panel — the window grows to make room for it */}
       {settingsOpen && (
-        <div
-          className={cn(
-            "mt-2 w-52 rounded-2xl bg-zinc-900/95 p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)]",
-            leaving
-              ? EXIT
-              : "animate-in fade-in slide-in-from-top-1 zoom-in-95 duration-200",
-          )}
-        >
+        <div className="animate-in fade-in slide-in-from-top-1 zoom-in-95 mt-2 w-52 rounded-2xl bg-zinc-900/95 p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)] duration-200">
           <p className="text-[10px] font-semibold tracking-wide text-zinc-500 uppercase">
             {t("dock.ambientTitle")}
           </p>
