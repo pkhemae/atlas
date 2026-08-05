@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Button } from "@atlas/ui/components/button";
 import { Input } from "@atlas/ui/components/input";
 import { Label } from "@atlas/ui/components/label";
@@ -23,6 +24,8 @@ export function SignupForm({
   onSubmit,
   onSwitchToLogin,
 }: SignupFormProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 flex w-full max-w-xs flex-col gap-8 duration-500">
       <header className="flex flex-col items-center gap-1.5 text-center">
@@ -30,10 +33,10 @@ export function SignupForm({
           Atlas
         </p>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Create your account
+          {t("auth.signup.title")}
         </h1>
         <p className="text-muted-foreground text-sm">
-          Start focusing with Atlas.
+          {t("auth.signup.subtitle")}
         </p>
       </header>
       <form
@@ -53,37 +56,39 @@ export function SignupForm({
       >
         <div className="flex flex-col gap-2">
           <Label htmlFor="fullName" className="text-muted-foreground text-xs">
-            Full name
+            {t("auth.signup.fullName")}
           </Label>
           <Input
             id="fullName"
             name="fullName"
             autoComplete="name"
-            placeholder="Ada Lovelace"
+            placeholder={t("auth.signup.fullNamePlaceholder")}
           />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="email" className="text-muted-foreground text-xs">
-            Email
+            {t("common.email")}
           </Label>
           <Input
             id="email"
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="you@example.com"
+            placeholder={t("common.emailPlaceholder")}
             required
           />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="password" className="text-muted-foreground text-xs">
-            Password
+            {t("common.password")}
           </Label>
           <PasswordInput
             id="password"
             name="password"
             autoComplete="new-password"
-            placeholder="8+ characters"
+            placeholder={t("auth.signup.passwordPlaceholder")}
+            showLabel={t("common.showPassword")}
+            hideLabel={t("common.hidePassword")}
             required
           />
         </div>
@@ -92,13 +97,15 @@ export function SignupForm({
             htmlFor="passwordConfirmation"
             className="text-muted-foreground text-xs"
           >
-            Confirm password
+            {t("auth.signup.confirmPassword")}
           </Label>
           <PasswordInput
             id="passwordConfirmation"
             name="passwordConfirmation"
             autoComplete="new-password"
-            placeholder="Repeat your password"
+            placeholder={t("auth.signup.confirmPasswordPlaceholder")}
+            showLabel={t("common.showPassword")}
+            hideLabel={t("common.hidePassword")}
             required
           />
         </div>
@@ -108,7 +115,7 @@ export function SignupForm({
           </p>
         ) : null}
         <Button type="submit" className="mt-2 w-full" disabled={pending}>
-          {pending ? "Creating account…" : "Sign up"}
+          {pending ? t("auth.signup.submitting") : t("auth.signup.submit")}
         </Button>
       </form>
       <button
@@ -116,7 +123,7 @@ export function SignupForm({
         onClick={onSwitchToLogin}
         className="text-muted-foreground hover:text-foreground mx-auto -my-2 px-3 py-2 text-sm transition-colors"
       >
-        Already have an account? Log in
+        {t("auth.signup.switchToLogin")}
       </button>
     </div>
   );

@@ -1,3 +1,4 @@
+import { Trans, useTranslation } from "react-i18next";
 import {
   InputOTP,
   InputOTPGroup,
@@ -6,6 +7,8 @@ import {
 } from "@atlas/ui/components/input-otp";
 
 const CODE_LENGTH = 10;
+// mirrors the API reset-token policy (30 min expiry)
+const RESET_CODE_TTL_MINUTES = 30;
 const HEX_PATTERN = "^[0-9a-fA-F]*$";
 
 interface ResetCodeFormProps {
@@ -33,6 +36,8 @@ export function ResetCodeForm({
   onResend,
   onBackToLogin,
 }: ResetCodeFormProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 flex w-full max-w-sm flex-col items-center gap-8 duration-500">
       <header className="flex flex-col items-center gap-1.5 text-center">
@@ -40,13 +45,16 @@ export function ResetCodeForm({
           Atlas
         </p>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Enter your code
+          {t("auth.resetCode.title")}
         </h1>
         <p className="text-muted-foreground text-sm">
-          We sent a reset code to{" "}
-          <span className="text-foreground">{email}</span>.
+          <Trans
+            i18nKey="auth.resetCode.sentTo"
+            values={{ email }}
+            components={{ 1: <span className="text-foreground" /> }}
+          />
           <br />
-          It expires in 30 minutes.
+          {t("auth.resetCode.expires", { count: RESET_CODE_TTL_MINUTES })}
         </p>
       </header>
       <div className="flex flex-col items-center gap-4">
@@ -91,7 +99,7 @@ export function ResetCodeForm({
           }
           role={errorMessage && !pending ? "alert" : undefined}
         >
-          {pending ? "Checking your code…" : (errorMessage ?? "")}
+          {pending ? t("auth.resetCode.checking") : (errorMessage ?? "")}
         </p>
       </div>
       <div className="flex flex-col items-center gap-1">
@@ -102,17 +110,17 @@ export function ResetCodeForm({
           className="text-muted-foreground hover:text-foreground px-3 py-2 text-sm tabular-nums transition-colors disabled:pointer-events-none disabled:opacity-50"
         >
           {resendPending
-            ? "Sending a new code…"
+            ? t("auth.resetCode.resendSending")
             : resendCooldown > 0
-              ? `Resend code in ${resendCooldown}s`
-              : "Resend code"}
+              ? t("auth.resetCode.resendIn", { seconds: resendCooldown })
+              : t("auth.resetCode.resend")}
         </button>
         <button
           type="button"
           onClick={onBackToLogin}
           className="text-muted-foreground hover:text-foreground px-3 py-2 text-sm transition-colors"
         >
-          Back to login
+          {t("common.backToLogin")}
         </button>
       </div>
     </div>

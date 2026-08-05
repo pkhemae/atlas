@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Tooltip,
   TooltipContent,
@@ -6,7 +7,9 @@ import {
   TooltipTrigger,
 } from "@atlas/ui/components/tooltip";
 import { cn } from "@atlas/ui/lib/utils";
+import { currentLocale } from "@/i18n";
 import {
+  ACTIVITY_WINDOW_MONTHS,
   type ActivityDay,
   buildWeeks,
   formatTotal,
@@ -32,10 +35,19 @@ const LEVEL_CLASSES = [
   "bg-green-400",
 ];
 
-const DAY_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
-
 export function ActivityGraph({ days, loading, error }: ActivityGraphProps) {
+  const { t } = useTranslation();
   const weeks = useMemo(() => buildWeeks(new Date()), []);
+  // built in render so labels follow the language; Sunday-indexed rows
+  const dayLabels = [
+    "",
+    t("home.activity.dayMon"),
+    "",
+    t("home.activity.dayWed"),
+    "",
+    t("home.activity.dayFri"),
+    "",
+  ];
   const totalsByDate = useMemo(
     () => new Map(days.map((day) => [day.date, day.totalSeconds])),
     [days],
@@ -48,15 +60,18 @@ export function ActivityGraph({ days, loading, error }: ActivityGraphProps) {
   );
 
   return (
-    <section aria-label="Activity" className="p-4">
+    <section aria-label={t("home.activity.ariaLabel")} className="p-4">
       <p className="text-xs font-medium">
         {loading
-          ? "Loading your activity…"
+          ? t("home.activity.loading")
           : error
-            ? "Couldn't load your activity."
+            ? t("home.activity.error")
             : totalSeconds > 0
-              ? `${formatTotal(totalSeconds)} of focus in the last 6 months`
-              : "No focus time in the last 6 months yet"}
+              ? t("home.activity.total", {
+                  duration: formatTotal(totalSeconds),
+                  months: ACTIVITY_WINDOW_MONTHS,
+                })
+              : t("home.activity.empty", { months: ACTIVITY_WINDOW_MONTHS })}
       </p>
       {loading ? (
         <div className="bg-foreground/5 mt-3 h-24 animate-pulse rounded-lg" />
@@ -76,7 +91,7 @@ export function ActivityGraph({ days, loading, error }: ActivityGraphProps) {
           {/* fluid columns: the grid always fills the card, never scrolls */}
           <div className="flex gap-[3px]">
             <div className="mr-1 grid w-6 grid-rows-7 gap-[3px]">
-              {DAY_LABELS.map((label, index) => (
+              {dayLabels.map((label, index) => (
                 <span
                   key={index}
                   className="text-muted-foreground flex items-center justify-end text-[9px] leading-none"
@@ -94,7 +109,7 @@ export function ActivityGraph({ days, loading, error }: ActivityGraphProps) {
                   {week.map((day) => {
                     const key = localKey(day);
                     const seconds = totalsByDate.get(key) ?? 0;
-                    const dateLabel = day.toLocaleDateString("en-US", {
+                    const dateLabel = day.toLocaleDateString(currentLocale(), {
                       month: "short",
                       day: "numeric",
                     });
@@ -110,8 +125,13 @@ export function ActivityGraph({ days, loading, error }: ActivityGraphProps) {
                         </TooltipTrigger>
                         <TooltipContent>
                           {seconds > 0
-                            ? `${formatTotal(seconds)} of focus · ${dateLabel}`
-                            : `No session · ${dateLabel}`}
+                            ? t("home.activity.dayTooltip", {
+                                duration: formatTotal(seconds),
+                                date: dateLabel,
+                              })
+                            : t("home.activity.dayTooltipEmpty", {
+                                date: dateLabel,
+                              })}
                         </TooltipContent>
                       </Tooltip>
                     );
@@ -121,7 +141,7 @@ export function ActivityGraph({ days, loading, error }: ActivityGraphProps) {
             </TooltipProvider>
           </div>
           <div className="text-muted-foreground mt-3 flex items-center justify-end gap-1 text-[10px]">
-            <span className="mr-1">Less</span>
+            <span className="mr-1">{t("home.activity.less")}</span>
             {LEVEL_CLASSES.map((levelClass) => (
               <span
                 key={levelClass}
@@ -129,7 +149,7 @@ export function ActivityGraph({ days, loading, error }: ActivityGraphProps) {
                 className={cn("size-2.5 rounded-[3px]", levelClass)}
               />
             ))}
-            <span className="ml-1">More</span>
+            <span className="ml-1">{t("home.activity.more")}</span>
           </div>
         </div>
       )}

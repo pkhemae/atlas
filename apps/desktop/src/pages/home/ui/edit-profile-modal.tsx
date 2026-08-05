@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MapPin, Pencil, Trash2, Upload } from "lucide-react";
 import {
   Avatar,
@@ -61,6 +62,7 @@ export function EditProfileModal({
   fieldErrors,
   onSubmit,
 }: EditProfileModalProps) {
+  const { t } = useTranslation();
   // Radix unmounts the content on close, so everything re-seeds from the
   // fresh `user` at each open — no manual reset needed.
   return (
@@ -69,7 +71,9 @@ export function EditProfileModal({
         className="max-w-xs gap-0 overflow-hidden p-0"
         aria-describedby={undefined}
       >
-        <DialogTitle className="sr-only">Edit profile</DialogTitle>
+        <DialogTitle className="sr-only">
+          {t("home.editProfile.title")}
+        </DialogTitle>
         <EditProfileForm
           user={user}
           pending={pending}
@@ -89,6 +93,7 @@ function EditProfileForm({
   fieldErrors,
   onSubmit,
 }: Omit<EditProfileModalProps, "open" | "onOpenChange">) {
+  const { t } = useTranslation();
   const [bio, setBio] = useState(user.bio ?? "");
   const [avatar, setAvatar] = useState<PickedImage | null>(null);
   const [banner, setBanner] = useState<PickedImage | null>(null);
@@ -128,7 +133,7 @@ function EditProfileForm({
         const form = new FormData(event.currentTarget);
         const username = String(form.get("username") ?? "").trim();
         if (!username) {
-          setUsernameError("Your username can't be empty.");
+          setUsernameError(t("home.editProfile.usernameEmpty"));
           return;
         }
         setUsernameError(null);
@@ -155,7 +160,7 @@ function EditProfileForm({
         <div className="absolute inset-0 flex items-center justify-center">
           <label className="flex h-7 cursor-pointer items-center gap-1.5 rounded-full bg-black/50 px-2.5 text-xs font-medium text-white transition-colors hover:bg-black/65">
             <Upload aria-hidden="true" className="size-3.5" />
-            Import
+            {t("home.editProfile.import")}
             <input
               type="file"
               name="banner"
@@ -177,7 +182,7 @@ function EditProfileForm({
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                aria-label="Edit profile photo"
+                aria-label={t("home.editProfile.editPhoto")}
                 className="bg-secondary text-secondary-foreground ring-card hover:bg-accent absolute -right-0.5 -bottom-0.5 flex size-7 items-center justify-center rounded-full ring-2 transition-colors"
               >
                 <Pencil aria-hidden="true" className="size-3" />
@@ -193,7 +198,7 @@ function EditProfileForm({
                 onSelect={() => avatarInputRef.current?.click()}
               >
                 <Upload />
-                Change photo
+                {t("home.editProfile.changePhoto")}
               </DropdownMenuItem>
               {avatarSrc && (
                 <DropdownMenuItem
@@ -204,7 +209,7 @@ function EditProfileForm({
                   }}
                 >
                   <Trash2 />
-                  Remove photo
+                  {t("home.editProfile.removePhoto")}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -226,13 +231,13 @@ function EditProfileForm({
       <div className="flex flex-col gap-3 px-4 pt-3">
         <div className="flex flex-col gap-2">
           <Label htmlFor="fullName" className="text-muted-foreground text-xs">
-            Name
+            {t("home.editProfile.name")}
           </Label>
           <Input
             id="fullName"
             name="fullName"
             defaultValue={user.fullName ?? ""}
-            placeholder="Your name"
+            placeholder={t("home.editProfile.namePlaceholder")}
             maxLength={100}
             className="h-8"
           />
@@ -240,7 +245,7 @@ function EditProfileForm({
 
         <div className="flex flex-col gap-2">
           <Label htmlFor="username" className="text-muted-foreground text-xs">
-            Username
+            {t("home.editProfile.username")}
           </Label>
           <div className="relative">
             <span
@@ -253,7 +258,7 @@ function EditProfileForm({
               id="username"
               name="username"
               defaultValue={user.username ?? ""}
-              placeholder="username"
+              placeholder={t("home.editProfile.usernamePlaceholder")}
               maxLength={20}
               autoCapitalize="none"
               autoCorrect="off"
@@ -268,7 +273,7 @@ function EditProfileForm({
             </p>
           ) : (
             <p className="text-muted-foreground/70 text-xs">
-              3–20 characters. Lowercase letters, numbers and underscores.
+              {t("home.editProfile.usernameHelp")}
             </p>
           )}
         </div>
@@ -276,17 +281,20 @@ function EditProfileForm({
         <div className="flex flex-col gap-2">
           <div className="flex items-baseline justify-between">
             <Label htmlFor="bio" className="text-muted-foreground text-xs">
-              Bio
+              {t("home.editProfile.bio")}
             </Label>
             <span className="text-muted-foreground/70 text-[11px] tabular-nums">
-              {bio.length}/{BIO_MAX}
+              {t("home.editProfile.bioCounter", {
+                length: bio.length,
+                max: BIO_MAX,
+              })}
             </span>
           </div>
           <Textarea
             id="bio"
             value={bio}
             onChange={(event) => setBio(event.target.value)}
-            placeholder="Tell others what you're focusing on"
+            placeholder={t("home.editProfile.bioPlaceholder")}
             maxLength={BIO_MAX}
             rows={2}
             className="resize-none"
@@ -296,7 +304,7 @@ function EditProfileForm({
 
         <div className="flex flex-col gap-2">
           <Label htmlFor="location" className="text-muted-foreground text-xs">
-            Location
+            {t("home.editProfile.location")}
           </Label>
           <div className="relative">
             <MapPin
@@ -307,7 +315,7 @@ function EditProfileForm({
               id="location"
               name="location"
               defaultValue={user.location ?? ""}
-              placeholder="City, Country"
+              placeholder={t("home.editProfile.locationPlaceholder")}
               maxLength={100}
               className="h-8 pl-8"
             />
@@ -324,11 +332,11 @@ function EditProfileForm({
       <div className="flex items-center justify-end gap-2 px-4 py-3.5">
         <DialogClose asChild>
           <Button type="button" variant="secondary" size="sm">
-            Cancel
+            {t("common.cancel")}
           </Button>
         </DialogClose>
         <Button type="submit" size="sm" disabled={pending}>
-          {pending ? "Saving…" : "Save changes"}
+          {pending ? t("home.editProfile.saving") : t("home.editProfile.save")}
         </Button>
       </div>
     </form>

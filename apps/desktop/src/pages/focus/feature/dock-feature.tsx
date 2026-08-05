@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { listen } from "@tauri-apps/api/event";
 import { emitTo } from "@tauri-apps/api/event";
+import i18n, { type Language } from "@/i18n";
 import { api, setAuthToken } from "@/lib/api";
 import { elapsedSeconds, type FocusSession } from "@/lib/focus";
 import { getAuthToken } from "@/lib/secure-storage";
@@ -37,6 +38,16 @@ export function DockFeature() {
       const token = await getAuthToken().catch(() => null);
       if (token) setAuthToken(token);
       setSession(event.payload);
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+
+  // the language can change in the main window while the dock is open
+  useEffect(() => {
+    const unlisten = listen<Language>("i18n:changed", (event) => {
+      void i18n.changeLanguage(event.payload);
     });
     return () => {
       unlisten.then((fn) => fn());

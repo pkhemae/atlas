@@ -1,4 +1,5 @@
 import type { Data } from "@atlas/api/data";
+import i18n, { currentLocale } from "@/i18n";
 
 export type FocusSession = Data.Focus.FocusSession;
 
@@ -46,7 +47,7 @@ export function levelFor(seconds: number): number {
 export function buildWeeks(now: Date): Date[][] {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const start = new Date(today);
-  start.setMonth(start.getMonth() - 6);
+  start.setMonth(start.getMonth() - ACTIVITY_WINDOW_MONTHS);
   start.setDate(start.getDate() + 1);
   start.setDate(start.getDate() - start.getDay());
 
@@ -64,7 +65,8 @@ export function buildWeeks(now: Date): Date[][] {
   return weeks;
 }
 
-const MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
+/** Shared by buildWeeks and the graph copy so window and text can't drift. */
+export const ACTIVITY_WINDOW_MONTHS = 6;
 
 export function monthLabels(
   weeks: Date[][],
@@ -75,7 +77,10 @@ export function monthLabels(
     if (!first) return;
     const month = first.getMonth();
     if (month !== weeks[index - 1]?.[0]?.getMonth()) {
-      labels.push({ index, label: MONTHS[month] ?? "" });
+      labels.push({
+        index,
+        label: first.toLocaleDateString(currentLocale(), { month: "short" }),
+      });
     }
   });
   // a label hugging the left edge gets overlapped by the next one — drop it
@@ -99,19 +104,22 @@ export function parseKey(key: string): Date {
   return new Date(year!, month! - 1, day!);
 }
 
-/** "Jun 15" label for a YYYY-MM-DD week-start key. */
+/** "Jun 15" / "15 juin" label for a YYYY-MM-DD week-start key. */
 export function weekLabel(weekStart: string): string {
-  return parseKey(weekStart).toLocaleDateString("en-US", {
+  return parseKey(weekStart).toLocaleDateString(currentLocale(), {
     month: "short",
     day: "numeric",
   });
 }
 
-/** "August 2026" from an ISO timestamp, or null when unparseable. */
+/** "August 2026" / "août 2026" from an ISO timestamp, or null. */
 export function memberSince(createdAt: string | null): string | null {
   const parsed = createdAt ? new Date(createdAt) : null;
   if (!parsed || Number.isNaN(parsed.getTime())) return null;
-  return parsed.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  return parsed.toLocaleDateString(currentLocale(), {
+    month: "long",
+    year: "numeric",
+  });
 }
 
 /** One day of settled focus, exactly as served by GET /focus/activity. */
@@ -124,13 +132,20 @@ export function localKey(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
-/** The duration copy used across the profile activity cards ("1h 5min"). */
+/**
+ * The duration copy used across the profile activity cards ("1h 5min",
+ * French "1 h 5 min") — patterns live in the translation catalogs.
+ */
 export function formatTotal(totalSeconds: number): string {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.round((totalSeconds % 3600) / 60);
-  if (hours > 0) return minutes > 0 ? `${hours}h ${minutes}min` : `${hours}h`;
-  if (minutes > 0) return `${minutes}min`;
-  return `${totalSeconds}s`;
+  if (hours > 0) {
+    return minutes > 0
+      ? i18n.t("duration.hoursMinutes", { h: hours, m: minutes })
+      : i18n.t("duration.hours", { h: hours });
+  }
+  if (minutes > 0) return i18n.t("duration.minutes", { m: minutes });
+  return i18n.t("duration.seconds", { s: totalSeconds });
 }
 
 /**

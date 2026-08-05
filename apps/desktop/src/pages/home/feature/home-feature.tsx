@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import {
@@ -16,6 +17,7 @@ import {
 import { ProfileCard } from "@/pages/home/ui/profile-card";
 
 export function HomeFeature() {
+  const { t } = useTranslation();
   const me = useMe();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
@@ -84,7 +86,7 @@ export function HomeFeature() {
         )}
         <div className="min-w-0 flex-1">
           <h2 className="text-muted-foreground mb-2 text-[11px] font-semibold tracking-wide uppercase">
-            Your activity
+            {t("home.yourActivity")}
           </h2>
           <div className="bg-card overflow-hidden rounded-xl">
             <ActivityGraph
