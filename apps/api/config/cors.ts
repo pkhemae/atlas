@@ -1,6 +1,8 @@
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/cors'
 
+import env from '#start/env'
+
 /**
  * Configuration options to tweak the CORS policy. The following
  * options are documented on the official documentation website.
@@ -15,10 +17,16 @@ const corsConfig = defineConfig({
 
   /**
    * In development, allow every origin to simplify local front/backend setup.
-   * In production, keep an explicit allowlist (empty by default, so no
-   * cross-origin browser access is allowed until configured).
+   * In production, an explicit allowlist from CORS_ORIGINS (comma-separated),
+   * defaulting to the Tauri webview origins (macOS/Linux and Windows).
    */
-  origin: app.inDev ? true : [],
+  origin: app.inDev
+    ? true
+    : (env
+        .get('CORS_ORIGINS', 'tauri://localhost,http://tauri.localhost')
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean) as string[]),
 
   /**
    * HTTP methods accepted for cross-origin requests.

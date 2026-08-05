@@ -1,0 +1,18 @@
+# App-command ACL: without these, the keychain commands would be
+# invocable from any webview (Tauri only gates app commands once an app
+# manifest exists). Write access stays main-window-only.
+
+[[permission]]
+identifier = "allow-get-auth-token"
+description = "Read the auth token from the OS keychain"
+commands.allow = ["get_auth_token"]
+
+[[permission]]
+identifier = "allow-save-auth-token"
+description = "Store the auth token in the OS keychain"
+commands.allow = ["save_auth_token"]
+
+[[permission]]
+identifier = "allow-delete-auth-token"
+description = "Delete the auth token from the OS keychain"
+commands.allow = ["delete_auth_token"]

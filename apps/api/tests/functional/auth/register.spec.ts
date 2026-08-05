@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import limiter from '@adonisjs/limiter/services/main'
 import testUtils from '@adonisjs/core/services/test_utils'
 
 import User from '#auth/models/user'
@@ -11,6 +12,7 @@ const CREDENTIALS = {
 
 test.group('Auth / register', (group) => {
   group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => limiter.clear())
 
   test('creates an account and returns a token', async ({ client, assert }) => {
     const response = await client.post('/api/v1/auth/register').json({

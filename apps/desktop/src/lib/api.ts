@@ -13,7 +13,7 @@ export function setAuthToken(token: string | null) {
 
 export const api = createTuyau({
   registry,
-  baseUrl: "http://localhost:3334",
+  baseUrl: import.meta.env.VITE_API_URL ?? "http://localhost:3334",
   hooks: {
     beforeRequest: [
       (request) => {
