@@ -87,17 +87,17 @@ export function ProfileFeature() {
           <h2 className="text-muted-foreground mb-2 text-[11px] font-semibold tracking-wide uppercase">
             Your activity
           </h2>
-          <ActivityGraph
-            days={activity.data?.data ?? []}
-            loading={activity.isPending}
-          />
-          <h2 className="text-muted-foreground mt-6 mb-2 text-[11px] font-semibold tracking-wide uppercase">
-            Weekly focus
-          </h2>
-          <WeeklyFocusChart
-            days={activity.data?.data ?? []}
-            loading={activity.isPending}
-          />
+          <div className="bg-card overflow-hidden rounded-xl">
+            <ActivityGraph
+              days={activity.data?.data ?? []}
+              loading={activity.isPending}
+            />
+            <div aria-hidden="true" className="bg-foreground/5 h-px" />
+            <WeeklyFocusChart
+              days={activity.data?.data ?? []}
+              loading={activity.isPending}
+            />
+          </div>
         </div>
       </div>
       {me.data && (

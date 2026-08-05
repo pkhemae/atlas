@@ -42,7 +42,7 @@ export function ActivityGraph({ days, loading }: ActivityGraphProps) {
   }, [days, firstShownDate]);
 
   return (
-    <section aria-label="Activity" className="bg-card rounded-xl p-4">
+    <section aria-label="Activity" className="p-4">
       <p className="text-xs font-medium">
         {loading
           ? "Loading your activity…"

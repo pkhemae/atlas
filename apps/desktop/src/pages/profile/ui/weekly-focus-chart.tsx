@@ -28,7 +28,7 @@ export function WeeklyFocusChart({ days, loading }: WeeklyFocusChartProps) {
   );
 
   return (
-    <section aria-label="Weekly focus" className="bg-card rounded-xl p-4">
+    <section aria-label="Weekly focus" className="p-4">
       {loading ? (
         <div className="bg-foreground/5 h-28 animate-pulse rounded-lg" />
       ) : (
