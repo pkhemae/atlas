@@ -16,6 +16,7 @@ interface DockProps {
   pending: boolean;
   error: boolean;
   settingsOpen: boolean;
+  leaving: boolean;
   ambient: AmbientState;
   onPause: () => void;
   onResume: () => void;
@@ -33,12 +34,25 @@ const MORPH_ICON =
 const MORPH_VISIBLE = "scale-100 opacity-100 blur-none";
 const MORPH_HIDDEN = "scale-25 opacity-0 blur-[2px]";
 
+/*
+ * Window-level enter/exit. The native window shows/hides instantly, so
+ * the DOM plays the transition: slide down from the screen edge on
+ * enter, softer/faster retreat on exit (fill-mode holds the final frame
+ * until the window actually hides — keep the duration in sync with
+ * EXIT_MS in feature/dock-feature.tsx).
+ */
+const ENTER =
+  "animate-in fade-in slide-in-from-top-2 zoom-in-95 duration-300 ease-[cubic-bezier(0.2,0,0,1)]";
+const EXIT =
+  "animate-out fade-out slide-out-to-top-2 zoom-out-95 fill-mode-forwards duration-200 ease-in";
+
 export function Dock({
   elapsed,
   status,
   pending,
   error,
   settingsOpen,
+  leaving,
   ambient,
   onPause,
   onResume,
@@ -56,11 +70,17 @@ export function Dock({
     // window used to put it, while the settings panel grows below.
     <div
       data-tauri-drag-region
-      className="flex h-svh w-svw flex-col items-center pt-1"
+      className={cn(
+        "flex h-svh w-svw flex-col items-center pt-1",
+        leaving && "pointer-events-none",
+      )}
     >
       <div
         data-tauri-drag-region
-        className="animate-in fade-in zoom-in-95 flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-zinc-900/95 py-1 pr-1 pl-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)] duration-300"
+        className={cn(
+          "flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-zinc-900/95 py-1 pr-1 pl-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)]",
+          leaving ? EXIT : ENTER,
+        )}
       >
         <span
           data-tauri-drag-region
@@ -155,7 +175,14 @@ export function Dock({
 
       {/* ambient sounds panel — the window grows to make room for it */}
       {settingsOpen && (
-        <div className="animate-in fade-in slide-in-from-top-1 zoom-in-95 mt-2 w-52 rounded-2xl bg-zinc-900/95 p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)] duration-200">
+        <div
+          className={cn(
+            "mt-2 w-52 rounded-2xl bg-zinc-900/95 p-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)]",
+            leaving
+              ? EXIT
+              : "animate-in fade-in slide-in-from-top-1 zoom-in-95 duration-200",
+          )}
+        >
           <p className="text-[10px] font-semibold tracking-wide text-zinc-500 uppercase">
             {t("dock.ambientTitle")}
           </p>

@@ -23,12 +23,16 @@ interface SessionPayload {
   data: FocusSession;
 }
 
+/** Keep in sync with the exit animation duration in ui/dock.tsx. */
+const EXIT_MS = 200;
+
 export function DockFeature() {
   const [booted, setBooted] = useState(false);
   const [session, setSession] = useState<FocusSession | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [actionFailed, setActionFailed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const [ambient, setAmbient] = useState<AmbientState>(loadAmbientState);
 
   // the dock window is its own webview: transparent chrome + own token
@@ -50,6 +54,7 @@ export function DockFeature() {
       const token = await getAuthToken().catch(() => null);
       if (token) setAuthToken(token);
       setSettingsOpen(false);
+      setLeaving(false);
       setSession(event.payload);
     });
     return () => {
@@ -59,10 +64,11 @@ export function DockFeature() {
 
   // the audio graph mirrors the settings: sounds play while a session
   // exists (running OR paused — the timer's pause keeps the ambience),
-  // fade out on stop/abandon, and follow volume live
+  // fade out on stop/abandon, and follow volume live. `leaving` starts
+  // the audio fade together with the pill's exit animation
   useEffect(() => {
-    syncAmbient(ambient, session !== null);
-  }, [ambient, session]);
+    syncAmbient(ambient, session !== null && !leaving);
+  }, [ambient, session, leaving]);
   useEffect(() => {
     saveAmbientState(ambient);
   }, [ambient]);
@@ -97,6 +103,20 @@ export function DockFeature() {
     };
   }, []);
 
+  // graceful dismissal: the pill plays its exit animation (the ambience
+  // fades alongside), then the windows swap back and the session drops
+  const dismissDock = async (notifyMain: boolean) => {
+    setLeaving(true);
+    if (notifyMain) await emitTo("main", "focus:completed", null);
+    await new Promise((resolve) => setTimeout(resolve, EXIT_MS));
+    await showMainHideDock();
+    // reset only once hidden — closing the panel earlier would shrink
+    // the window and clip its own exit animation
+    setSettingsOpen(false);
+    setSession(null);
+    setLeaving(false);
+  };
+
   // if a control fails (network blip, expired token), re-sync with the
   // server instead of keeping a lying timer on screen
   const resync = async () => {
@@ -109,8 +129,7 @@ export function DockFeature() {
       if (payload && typeof payload === "object" && "data" in payload) {
         setSession(payload.data);
       } else {
-        setSession(null);
-        await showMainHideDock();
+        await dismissDock(false);
       }
     } catch {
       // keep the current state; the next interaction retries
@@ -169,12 +188,7 @@ export function DockFeature() {
         params: { id },
       }),
     onMutate: () => setActionFailed(false),
-    onSuccess: async () => {
-      setSession(null);
-      setSettingsOpen(false);
-      await emitTo("main", "focus:completed", null);
-      await showMainHideDock();
-    },
+    onSuccess: () => dismissDock(true),
     onError: resync,
   });
 
@@ -194,6 +208,7 @@ export function DockFeature() {
       pending={pending}
       error={actionFailed}
       settingsOpen={settingsOpen}
+      leaving={leaving}
       ambient={ambient}
       onPause={() => pause.mutate(session.id)}
       onResume={() => resume.mutate(session.id)}
