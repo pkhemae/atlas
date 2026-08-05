@@ -151,6 +151,7 @@ export default {
     // theme names are proper nouns — identical in every catalog
     themeAtlas: "Atlas",
     themeMidnight: "Midnight",
+    themeDaylight: "Daylight",
   },
   dock: {
     pause: "Mettre la session en pause",

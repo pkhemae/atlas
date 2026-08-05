@@ -8,6 +8,9 @@
 
 :root {
   --radius: 0.625rem;
+  /* elevation ring + drop shadow for floating surfaces (borderless style) */
+  --surface-ring: rgba(0, 0, 0, 0.08);
+  --surface-shadow: rgba(0, 0, 0, 0.18);
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -42,6 +45,8 @@
 }
 
 .dark {
+  --surface-ring: rgba(255, 255, 255, 0.06);
+  --surface-shadow: rgba(0, 0, 0, 0.55);
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
