@@ -82,10 +82,15 @@ fn show_main_window(app: &tauri::AppHandle) {
 pub fn run() {
     // single-instance must be the first registered plugin: a second launch
     // would otherwise spawn a second dock panel racing the first
-    tauri::Builder::default()
-        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            show_main_window(app)
-        }))
+    let builder = tauri::Builder::default().plugin(tauri_plugin_single_instance::init(
+        |app, _args, _cwd| show_main_window(app),
+    ));
+
+    // nspanel manages the panel store that to_panel() consumes in setup
+    #[cfg(target_os = "macos")]
+    let builder = builder.plugin(tauri_nspanel::init());
+
+    builder
         .setup(|_app| {
             #[cfg(target_os = "macos")]
             match _app.get_webview_window("dock") {
