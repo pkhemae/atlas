@@ -10,10 +10,12 @@ import { api, setAuthToken } from "@/lib/api";
 import { elapsedSeconds, type FocusSession } from "@/lib/focus";
 import { getAuthToken } from "@/lib/secure-storage";
 import {
-  DEFAULT_AMBIENT_STATE,
+  loadAmbientState,
+  saveAmbientState,
   type AmbientSoundId,
   type AmbientState,
 } from "@/lib/ambient";
+import { stopAllAmbient, syncAmbient } from "@/lib/ambient-engine";
 import { showMainHideDock } from "@/lib/windows";
 import { Dock } from "@/pages/focus/ui/dock";
 
@@ -27,8 +29,7 @@ export function DockFeature() {
   const [now, setNow] = useState(() => Date.now());
   const [actionFailed, setActionFailed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  // UI groundwork for ambient sounds — the audio engine plugs in here
-  const [ambient, setAmbient] = useState<AmbientState>(DEFAULT_AMBIENT_STATE);
+  const [ambient, setAmbient] = useState<AmbientState>(loadAmbientState);
 
   // the dock window is its own webview: transparent chrome + own token
   useEffect(() => {
@@ -55,6 +56,17 @@ export function DockFeature() {
       unlisten.then((fn) => fn());
     };
   }, []);
+
+  // the audio graph mirrors the settings: sounds play while a session
+  // exists (running OR paused — the timer's pause keeps the ambience),
+  // fade out on stop/abandon, and follow volume live
+  useEffect(() => {
+    syncAmbient(ambient, session !== null);
+  }, [ambient, session]);
+  useEffect(() => {
+    saveAmbientState(ambient);
+  }, [ambient]);
+  useEffect(() => () => stopAllAmbient(), []);
 
   // the settings panel needs room: the transparent window grows under
   // the pill while open, and shrinks back so it stops swallowing clicks
