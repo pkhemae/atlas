@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
 import { House, LogOut, Play, Settings, Trophy } from "lucide-react";
 import {
@@ -46,9 +47,11 @@ export function AppSidebar({
   onLogout,
   loggingOut,
 }: AppSidebarProps) {
+  const { t } = useTranslation();
+
   return (
     <aside
-      aria-label="Application"
+      aria-label={t("sidebar.label")}
       data-tauri-drag-region
       className="animate-in fade-in slide-in-from-left-2 fixed inset-y-0 left-0 z-40 flex w-44 flex-col px-3 pt-12 pb-4 duration-500"
     >
@@ -68,7 +71,7 @@ export function AppSidebar({
             aria-hidden="true"
             className="text-primary size-4 transition-transform duration-200 ease-[cubic-bezier(0.2,0,0,1)] group-hover:translate-x-0.5"
           />
-          Start a session
+          {t("sidebar.startSession")}
         </button>
         {startError && (
           <p className="text-destructive mb-2 px-2.5 text-xs" role="alert">
@@ -77,15 +80,15 @@ export function AppSidebar({
         )}
         <Link to="/" activeOptions={{ exact: true }} className={NAV_ITEM}>
           <House aria-hidden="true" className="size-4" />
-          Home
+          {t("sidebar.home")}
         </Link>
         <Link to="/leaderboards" className={NAV_ITEM}>
           <Trophy aria-hidden="true" className="size-4" />
-          Leaderboards
+          {t("sidebar.leaderboards")}
         </Link>
         <Link to="/settings" className={NAV_ITEM}>
           <Settings aria-hidden="true" className="size-4" />
-          Settings
+          {t("sidebar.settings")}
         </Link>
       </nav>
 
@@ -104,8 +107,8 @@ export function AppSidebar({
         ) : meError || !user ? (
           <button
             type="button"
-            aria-label="Can't reach the Atlas API — click to retry"
-            title="Can't reach the Atlas API — click to retry"
+            aria-label={t("sidebar.retryTitle")}
+            title={t("sidebar.retryTitle")}
             onClick={onRetryMe}
             className="text-muted-foreground hover:text-foreground bg-foreground/10 flex size-7 items-center justify-center rounded-full text-sm transition-colors"
           >
@@ -124,7 +127,7 @@ export function AppSidebar({
             </span>
             <button
               type="button"
-              aria-label="Log out"
+              aria-label={t("sidebar.logOut")}
               disabled={loggingOut}
               onClick={onLogout}
               className="text-muted-foreground hover:text-foreground flex size-6 shrink-0 items-center justify-center rounded-md opacity-0 transition-[color,opacity] group-hover/footer:opacity-100 focus-visible:opacity-100 disabled:pointer-events-none disabled:opacity-50"

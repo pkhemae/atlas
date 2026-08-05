@@ -1,10 +1,14 @@
-import { useState } from "react";
-import { SettingsPage, type Language } from "@/pages/settings/ui/settings-page";
+import { useTranslation } from "react-i18next";
+import { setLanguage, type Language } from "@/i18n";
+import { SettingsPage } from "@/pages/settings/ui/settings-page";
 
 export function SettingsFeature() {
-  // UI only for now — the real i18n wiring (persistence + translation
-  // loading) comes with the i18n feature
-  const [language, setLanguage] = useState<Language>("en");
+  const { i18n } = useTranslation();
 
-  return <SettingsPage language={language} onLanguageChange={setLanguage} />;
+  return (
+    <SettingsPage
+      language={(i18n.resolvedLanguage as Language) ?? "en"}
+      onLanguageChange={(lang) => void setLanguage(lang)}
+    />
+  );
 }

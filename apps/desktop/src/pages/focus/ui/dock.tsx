@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Pause, Play, Settings, Square } from "lucide-react";
 import { cn } from "@atlas/ui/lib/utils";
 import { formatElapsed } from "@/lib/focus";
@@ -29,6 +30,7 @@ export function Dock({
   onResume,
   onStop,
 }: DockProps) {
+  const { t } = useTranslation();
   const paused = status === "paused";
 
   return (
@@ -55,15 +57,15 @@ export function Dock({
         {error && (
           <span
             role="alert"
-            aria-label="Last action failed — the timer re-synced with the server"
-            title="Last action failed — the timer re-synced with the server"
+            aria-label={t("dock.resyncError")}
+            title={t("dock.resyncError")}
             className="size-1.5 shrink-0 animate-pulse rounded-full bg-red-500"
           />
         )}
         {/* one button, two glyphs: pause and play morph in place */}
         <button
           type="button"
-          aria-label={paused ? "Resume session" : "Pause session"}
+          aria-label={paused ? t("dock.resume") : t("dock.pause")}
           disabled={pending}
           onClick={paused ? onResume : onPause}
           className={cn(
@@ -98,7 +100,7 @@ export function Dock({
         >
           <button
             type="button"
-            aria-label="Stop and save session"
+            aria-label={t("dock.stop")}
             aria-hidden={!paused}
             tabIndex={paused ? 0 : -1}
             disabled={pending || !paused}
@@ -115,7 +117,7 @@ export function Dock({
         {/* future dock settings */}
         <button
           type="button"
-          aria-label="Session settings (coming soon)"
+          aria-label={t("dock.settingsSoon")}
           className={cn(
             CHIP,
             "cursor-default text-zinc-500 hover:bg-white/10 hover:text-zinc-300",

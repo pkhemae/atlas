@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+
 interface ApiError {
   message: string;
   code?: string;
@@ -29,7 +31,8 @@ function apiErrors(error: unknown): ApiError[] {
 export function extractApiErrorMessage(error: unknown): string {
   const first = apiErrors(error)[0];
   if (first?.message) return first.message;
-  return "Something went wrong. Is the Atlas API running?";
+  // translated at call time — never a module constant
+  return i18n.t("errors.apiUnreachable");
 }
 
 // Validation errors carry a `field` — first message per field, for
