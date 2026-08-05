@@ -1,0 +1,166 @@
+import type en from "./en";
+
+// widen every leaf to string — without this, satisfies would demand the
+// English literals themselves
+type Catalog<T> = { [K in keyof T]: T[K] extends string ? string : Catalog<T[K]> };
+
+//   (narrow no-break space) before units, %, ? and ! — French typography
+export default {
+  common: {
+    backToLogin: "Retour à la connexion",
+    logIn: "Se connecter",
+    cancel: "Annuler",
+    email: "E-mail",
+    emailPlaceholder: "vous@exemple.com",
+    password: "Mot de passe",
+    showPassword: "Afficher le mot de passe",
+    hidePassword: "Masquer le mot de passe",
+  },
+  auth: {
+    gate: {
+      starting: "Démarrage d'Atlas…",
+    },
+    login: {
+      title: "Bon retour",
+      subtitle: "Connectez-vous pour retrouver votre concentration.",
+      forgotPassword: "Mot de passe oublié ?",
+      passwordPlaceholder: "Votre mot de passe",
+      submitting: "Connexion…",
+      switchToSignup: "Pas encore de compte ? Inscrivez-vous",
+    },
+    signup: {
+      title: "Créez votre compte",
+      subtitle: "Commencez à vous concentrer avec Atlas.",
+      fullName: "Nom complet",
+      fullNamePlaceholder: "Ada Lovelace",
+      passwordPlaceholder: "8 caractères minimum",
+      confirmPassword: "Confirmez le mot de passe",
+      confirmPasswordPlaceholder: "Répétez votre mot de passe",
+      submitting: "Création du compte…",
+      submit: "S'inscrire",
+      switchToLogin: "Déjà un compte ? Connectez-vous",
+    },
+    forgot: {
+      title: "Réinitialisez votre mot de passe",
+      subtitle:
+        "Saisissez votre e-mail et nous vous enverrons un code de réinitialisation.",
+      submitting: "Envoi…",
+      submit: "Envoyer le code",
+    },
+    resetCode: {
+      title: "Saisissez votre code",
+      sentTo: "Nous avons envoyé un code de réinitialisation à <1>{{email}}</1>.",
+      expires_one: "Il expire dans {{count}} minute.",
+      expires_other: "Il expire dans {{count}} minutes.",
+      checking: "Vérification du code…",
+      resendIn: "Renvoyer le code dans {{seconds}} s",
+      resendSending: "Envoi d'un nouveau code…",
+      resend: "Renvoyer le code",
+    },
+    resetPassword: {
+      title: "Choisissez un nouveau mot de passe",
+      subtitle:
+        "Code vérifié. Choisissez un nouveau mot de passe pour votre compte.",
+      newPassword: "Nouveau mot de passe",
+      confirmNewPassword: "Confirmez le nouveau mot de passe",
+      submitting: "Réinitialisation…",
+      submit: "Réinitialiser le mot de passe",
+    },
+    resetSuccess: {
+      title: "Mot de passe mis à jour",
+      body: "Votre mot de passe a été modifié. Vous pouvez maintenant vous connecter avec.",
+    },
+  },
+  sidebar: {
+    label: "Application",
+    startSession: "Démarrer une session",
+    home: "Accueil",
+    leaderboards: "Classements",
+    settings: "Réglages",
+    retryTitle: "Impossible de joindre l'API Atlas — cliquez pour réessayer",
+    logOut: "Se déconnecter",
+  },
+  home: {
+    yourActivity: "Votre activité",
+    activity: {
+      ariaLabel: "Activité",
+      loading: "Chargement de votre activité…",
+      error: "Impossible de charger votre activité.",
+      total: "{{duration}} de concentration sur les {{months}} derniers mois",
+      empty: "Pas encore de concentration sur les {{months}} derniers mois",
+      dayMon: "lun.",
+      dayWed: "mer.",
+      dayFri: "ven.",
+      dayTooltip: "{{duration}} de concentration · {{date}}",
+      dayTooltipEmpty: "Aucune session · {{date}}",
+      less: "Moins",
+      more: "Plus",
+    },
+    weekly: {
+      ariaLabel: "Concentration hebdomadaire",
+      seriesLabel: "Concentration",
+      loading: "Chargement de votre semaine…",
+      error: "Impossible de charger votre semaine.",
+      total: "{{duration}} de concentration cette semaine",
+      empty: "Pas encore de concentration cette semaine",
+      tooltipFocus: "{{duration}} de concentration · Semaine du {{week}}",
+      tooltipEmpty: "Aucune concentration · Semaine du {{week}}",
+    },
+    profile: {
+      ariaLabel: "Profil",
+      memberSince: "Membre depuis {{date}}",
+      editProfile: "Modifier le profil",
+      level: "Niveau {{level}}",
+      xp: "{{current}} / {{max}} XP",
+      rank: "Rang",
+      thisWeek: "Cette semaine",
+    },
+    editProfile: {
+      title: "Modifier le profil",
+      import: "Importer",
+      editPhoto: "Modifier la photo de profil",
+      changePhoto: "Changer la photo",
+      removePhoto: "Supprimer la photo",
+      name: "Nom",
+      namePlaceholder: "Votre nom",
+      username: "Nom d'utilisateur",
+      usernamePlaceholder: "nomdutilisateur",
+      usernameEmpty: "Votre nom d'utilisateur ne peut pas être vide.",
+      usernameHelp: "3 à 20 caractères. Lettres minuscules, chiffres et tirets bas.",
+      bio: "Bio",
+      bioPlaceholder: "Dites aux autres sur quoi vous vous concentrez",
+      bioCounter: "{{length}}/{{max}}",
+      location: "Localisation",
+      locationPlaceholder: "Ville, Pays",
+      saving: "Enregistrement…",
+      save: "Enregistrer",
+    },
+  },
+  settings: {
+    general: "Général",
+    language: "Langue",
+    languageHint: "La langue utilisée dans Atlas.",
+    english: "English",
+    french: "Français",
+  },
+  dock: {
+    pause: "Mettre la session en pause",
+    resume: "Reprendre la session",
+    stop: "Arrêter et enregistrer la session",
+    settingsSoon: "Réglages de session (bientôt)",
+    resyncError:
+      "La dernière action a échoué — le minuteur s'est resynchronisé avec le serveur",
+  },
+  comingSoon: {
+    leaderboards: "Affrontez d'autres étudiants bientôt.",
+  },
+  errors: {
+    apiUnreachable: "Une erreur est survenue. L'API Atlas est-elle lancée ?",
+  },
+  duration: {
+    hoursMinutes: "{{h}} h {{m}} min",
+    hours: "{{h}} h",
+    minutes: "{{m}} min",
+    seconds: "{{s}} s",
+  },
+} satisfies Catalog<typeof en>;

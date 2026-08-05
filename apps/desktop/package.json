@@ -19,9 +19,11 @@
     "@tanstack/react-router": "^1.170.18",
     "@tauri-apps/api": "^2",
     "@tuyau/core": "^1.2.2",
+    "i18next": "^26.3.6",
     "lucide-react": "^1.28.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-i18next": "^17.0.11",
     "recharts": "3.8.0"
   },
   "devDependencies": {
