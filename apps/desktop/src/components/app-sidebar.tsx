@@ -28,7 +28,7 @@ interface AppSidebarProps {
 
 // the active tab shows a small red→orange bar at the item's left edge
 const NAV_ITEM =
-  "relative flex h-8 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground data-[status=active]:text-foreground before:absolute before:top-1/2 before:left-0 before:h-4 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-linear-to-b before:from-red-500 before:to-orange-500 before:opacity-0 before:transition-opacity data-[status=active]:before:opacity-100";
+  "relative flex h-8 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground data-[status=active]:text-foreground before:absolute before:top-1/2 before:left-0 before:h-4 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-linear-to-b before:from-red-500 before:to-orange-500 before:opacity-0 before:transition-opacity data-[status=active]:before:opacity-100";
 
 /**
  * Blended sidebar: no surface, no border — the page background shows
@@ -53,7 +53,7 @@ export function AppSidebar({
     <aside
       aria-label={t("sidebar.label")}
       data-tauri-drag-region
-      className="animate-in fade-in slide-in-from-left-2 fixed inset-y-0 left-0 z-40 flex w-44 flex-col px-3 pt-12 pb-4 duration-500"
+      className="animate-in fade-in slide-in-from-left-2 fixed inset-y-0 left-0 z-40 flex w-52 flex-col px-3 pt-12 pb-4 duration-500"
     >
       <nav data-tauri-drag-region className="mt-1 flex flex-1 flex-col gap-0.5">
         {/* same clothes as the nav items — only the red glyph says "action" */}

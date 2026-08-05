@@ -93,7 +93,7 @@ export function AppLayout() {
         onLogout={() => logout.mutate()}
         loggingOut={logout.isPending}
       />
-      <div className="pl-44">
+      <div className="pl-52">
         <Outlet />
       </div>
     </>
