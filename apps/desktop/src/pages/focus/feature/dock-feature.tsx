@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { listen } from "@tauri-apps/api/event";
+import { LogicalSize } from "@tauri-apps/api/dpi";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { emitTo } from "@tauri-apps/api/event";
 import i18n, { type Language } from "@/i18n";
 import { applyThemeLocally, type ThemeId } from "@/theme";
 import { api, setAuthToken } from "@/lib/api";
 import { elapsedSeconds, type FocusSession } from "@/lib/focus";
 import { getAuthToken } from "@/lib/secure-storage";
+import {
+  DEFAULT_AMBIENT_STATE,
+  type AmbientSoundId,
+  type AmbientState,
+} from "@/lib/ambient";
 import { showMainHideDock } from "@/lib/windows";
 import { Dock } from "@/pages/focus/ui/dock";
 
@@ -19,6 +26,9 @@ export function DockFeature() {
   const [session, setSession] = useState<FocusSession | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [actionFailed, setActionFailed] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  // UI groundwork for ambient sounds — the audio engine plugs in here
+  const [ambient, setAmbient] = useState<AmbientState>(DEFAULT_AMBIENT_STATE);
 
   // the dock window is its own webview: transparent chrome + own token
   useEffect(() => {
@@ -38,12 +48,22 @@ export function DockFeature() {
     const unlisten = listen<FocusSession>("focus:start", async (event) => {
       const token = await getAuthToken().catch(() => null);
       if (token) setAuthToken(token);
+      setSettingsOpen(false);
       setSession(event.payload);
     });
     return () => {
       unlisten.then((fn) => fn());
     };
   }, []);
+
+  // the settings panel needs room: the transparent window grows under
+  // the pill while open, and shrinks back so it stops swallowing clicks
+  useEffect(() => {
+    const height = settingsOpen ? 200 : 44;
+    void getCurrentWebviewWindow()
+      .setSize(new LogicalSize(208, height))
+      .catch(() => {});
+  }, [settingsOpen]);
 
   // the language can change in the main window while the dock is open
   useEffect(() => {
@@ -139,6 +159,7 @@ export function DockFeature() {
     onMutate: () => setActionFailed(false),
     onSuccess: async () => {
       setSession(null);
+      setSettingsOpen(false);
       await emitTo("main", "focus:completed", null);
       await showMainHideDock();
     },
@@ -160,9 +181,21 @@ export function DockFeature() {
       status={session.status}
       pending={pending}
       error={actionFailed}
+      settingsOpen={settingsOpen}
+      ambient={ambient}
       onPause={() => pause.mutate(session.id)}
       onResume={() => resume.mutate(session.id)}
       onStop={() => stop.mutate(session.id)}
+      onToggleSettings={() => setSettingsOpen((open) => !open)}
+      onToggleSound={(id: AmbientSoundId) =>
+        setAmbient((state) => ({
+          ...state,
+          [id]: { ...state[id], enabled: !state[id].enabled },
+        }))
+      }
+      onVolumeChange={(id: AmbientSoundId, volume: number) =>
+        setAmbient((state) => ({ ...state, [id]: { ...state[id], volume } }))
+      }
     />
   );
 }

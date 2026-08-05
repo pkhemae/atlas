@@ -158,7 +158,10 @@ export default {
     pause: "Mettre la session en pause",
     resume: "Reprendre la session",
     stop: "Arrêter et enregistrer la session",
-    settingsSoon: "Réglages de session (bientôt)",
+    settings: "Réglages de session",
+    ambientTitle: "Sons d'ambiance",
+    rain: "Pluie",
+    volumeFor: "Volume — {{sound}}",
     resyncError:
       "La dernière action a échoué — le minuteur s'est resynchronisé avec le serveur",
   },

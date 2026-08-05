@@ -9,6 +9,7 @@
     "core:window:allow-show",
     "core:window:allow-hide",
     "core:window:allow-set-focus",
-    "allow-get-auth-token"
+    "allow-get-auth-token",
+    "core:window:allow-set-size"
   ]
 }
