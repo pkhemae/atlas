@@ -3,31 +3,27 @@ import {
   type AmbientSoundId,
   type AmbientState,
 } from "@/lib/ambient";
+import rainUrl from "@/assets/ambient/rain.m4a";
 
 /*
- * Web Audio ambient engine. Everything is synthesized or looped
- * sample-accurately (HTMLAudio can't loop without encoder gaps), fades
- * ride gain ramps, and the context sleeps when nothing plays. A future
- * recorded sound is just another recipe (fetch + decodeAudioData +
- * AudioBufferSourceNode(loop)) — same interface.
+ * Web Audio ambient engine. Sounds are recorded samples looped
+ * sample-accurately via loopStart/loopEnd (HTMLAudio can't loop without
+ * encoder gaps), fades ride gain ramps, and the context sleeps when
+ * nothing plays. Sources and licenses: src/assets/ambient/ATTRIBUTION.md.
  */
 
 // ---- tunables, iterate by ear ----
 const FADE_SECONDS = 0.4;
 /** setTargetAtTime constant — short so slider drags feel continuous. */
 const VOLUME_SMOOTHING = 0.06;
-const RAIN = {
-  /** noise loops seamlessly by nature; 4s avoids audible periodicity */
-  noiseSeconds: 4,
-  /** lowpass carrying the rain "shhh" */
-  hissFrequency: 1600,
-  /** darker low layer giving the rain some body */
-  bodyFrequency: 400,
-  bodyGain: 0.5,
-  /** slow swell so the rain never sounds perfectly static */
-  lfoFrequency: 0.2,
-  lfoDepth: 0.1,
-};
+/*
+ * Each sample carries 2s margins around a crossfade-built loop region, so
+ * the audio at loopEnd flows into the audio at loopStart by construction.
+ * Loop points sit inside the margins — codec edge padding (AAC priming)
+ * shifts the decoded samples slightly, but only the loop LENGTH matters
+ * for seamlessness, and that stays exact.
+ */
+const RAIN_LOOP = { start: 2, end: 72 };
 
 interface RunningRecipe {
   output: AudioNode;
@@ -49,60 +45,58 @@ function context(): AudioContext {
   return ctx;
 }
 
-function createNoiseBuffer(audio: AudioContext, seconds: number): AudioBuffer {
-  const buffer = audio.createBuffer(
-    1,
-    Math.floor(audio.sampleRate * seconds),
-    audio.sampleRate,
-  );
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < data.length; i++) {
-    data[i] = Math.random() * 2 - 1;
+/** Decoded samples, fetched once per app lifetime (failed loads retry). */
+const bufferCache = new Map<string, Promise<AudioBuffer>>();
+
+function loadBuffer(audio: AudioContext, url: string): Promise<AudioBuffer> {
+  let cached = bufferCache.get(url);
+  if (!cached) {
+    cached = fetch(url)
+      .then((res) => res.arrayBuffer())
+      .then((data) => audio.decodeAudioData(data));
+    cached.catch(() => bufferCache.delete(url));
+    bufferCache.set(url, cached);
   }
-  return buffer;
+  return cached;
 }
 
-const SOUND_RECIPES: Record<AmbientSoundId, Recipe> = {
-  rain: (audio) => {
-    const noise = audio.createBufferSource();
-    noise.buffer = createNoiseBuffer(audio, RAIN.noiseSeconds);
-    noise.loop = true;
-
+function sampleRecipe(
+  url: string,
+  loop: { start: number; end: number },
+): Recipe {
+  return (audio) => {
     const output = audio.createGain();
-
-    const hiss = audio.createBiquadFilter();
-    hiss.type = "lowpass";
-    hiss.frequency.value = RAIN.hissFrequency;
-    noise.connect(hiss).connect(output);
-
-    const body = audio.createBiquadFilter();
-    body.type = "lowpass";
-    body.frequency.value = RAIN.bodyFrequency;
-    const bodyGain = audio.createGain();
-    bodyGain.gain.value = RAIN.bodyGain;
-    noise.connect(body).connect(bodyGain).connect(output);
-
-    // audio-rate modulation of the output gain (base 1 ± depth)
-    const lfo = audio.createOscillator();
-    lfo.frequency.value = RAIN.lfoFrequency;
-    const lfoGain = audio.createGain();
-    lfoGain.gain.value = RAIN.lfoDepth;
-    lfo.connect(lfoGain).connect(output.gain);
-
-    noise.start();
-    lfo.start();
-
+    let source: AudioBufferSourceNode | null = null;
+    let stopped = false;
+    loadBuffer(audio, url)
+      .then((buffer) => {
+        if (stopped) return;
+        source = audio.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        source.loopStart = loop.start;
+        source.loopEnd = loop.end;
+        source.connect(output);
+        source.start(0, loop.start);
+      })
+      .catch((error: unknown) => {
+        console.error("ambient: sample failed to load", url, error);
+      });
     return {
       output,
       stop: () => {
-        noise.stop();
-        lfo.stop();
-        noise.disconnect();
-        lfo.disconnect();
-        lfoGain.disconnect();
+        stopped = true;
+        if (source) {
+          source.stop();
+          source.disconnect();
+        }
       },
     };
-  },
+  };
+}
+
+const SOUND_RECIPES: Record<AmbientSoundId, Recipe> = {
+  rain: sampleRecipe(rainUrl, RAIN_LOOP),
 };
 
 /** Slider 0–100 → quadratic gain: linear position ≈ perceived loudness. */
