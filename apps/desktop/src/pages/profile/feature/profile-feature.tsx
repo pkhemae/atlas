@@ -25,7 +25,7 @@ export function ProfileFeature() {
 
   return (
     <main className="bg-background min-h-svh px-6 pt-20 pb-8">
-      <div className="animate-in fade-in slide-in-from-bottom-2 mx-auto flex w-full max-w-2xl items-start gap-5 duration-500">
+      <div className="animate-in fade-in slide-in-from-bottom-2 mx-auto flex w-full max-w-2xl items-start gap-8 duration-500">
         {me.data ? (
           <ProfileCard
             fullName={me.data.fullName ?? me.data.email}
