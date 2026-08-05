@@ -58,7 +58,8 @@ export function AppSidebar({
           onClick={onStartSession}
           className={cn(
             NAV_ITEM,
-            "group mb-2 disabled:pointer-events-none disabled:opacity-50",
+            // permanent fill: the one always-filled row marks the action
+            "bg-foreground/5 group mb-2 disabled:pointer-events-none disabled:opacity-50",
           )}
         >
           <Play
