@@ -5,11 +5,10 @@ import {
   extractApiErrorMessage,
   extractApiFieldErrors,
 } from "@/lib/api-errors";
+import { type ActivityDay } from "@/lib/focus";
 import { useMe } from "@/pages/profile/feature/use-me";
-import {
-  ActivityGraph,
-  type ActivityDay,
-} from "@/pages/profile/ui/activity-graph";
+import { ActivityGraph } from "@/pages/profile/ui/activity-graph";
+import { WeeklyFocusChart } from "@/pages/profile/ui/weekly-focus-chart";
 import {
   EditProfileModal,
   type EditProfileFormState,
@@ -88,10 +87,17 @@ export function ProfileFeature() {
           <h2 className="text-muted-foreground mb-2 text-[11px] font-semibold tracking-wide uppercase">
             Your activity
           </h2>
-          <ActivityGraph
-            days={activity.data?.data ?? []}
-            loading={activity.isPending}
-          />
+          <div className="bg-card overflow-hidden rounded-xl">
+            <ActivityGraph
+              days={activity.data?.data ?? []}
+              loading={activity.isPending}
+            />
+            <div aria-hidden="true" className="bg-foreground/5 h-px" />
+            <WeeklyFocusChart
+              days={activity.data?.data ?? []}
+              loading={activity.isPending}
+            />
+          </div>
         </div>
       </div>
       {me.data && (

@@ -22,7 +22,8 @@
     "@tuyau/core": "^1.2.2",
     "lucide-react": "^1.28.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "recharts": "3.8.0"
   },
   "devDependencies": {
     "@atlas/eslint-config": "workspace:*",
