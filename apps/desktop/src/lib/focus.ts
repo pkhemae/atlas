@@ -30,20 +30,92 @@ export function formatElapsed(totalSeconds: number): string {
   return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
 }
 
-export function formatDuration(totalSeconds: number): string {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  if (hours > 0) return `${hours}h ${minutes}min`;
-  if (minutes > 0) return `${minutes}min ${seconds}s`;
-  return `${seconds}s`;
+/** Contribution-graph intensity level for a day's total (0..4). */
+export function levelFor(seconds: number): number {
+  if (seconds <= 0) return 0;
+  if (seconds < 30 * 60) return 1;
+  if (seconds < 90 * 60) return 2;
+  if (seconds < 180 * 60) return 3;
+  return 4;
 }
 
-/** One day of settled focus, as served by GET /focus/activity. */
-export interface ActivityDay {
-  date: string;
-  totalSeconds: number;
+/**
+ * Sunday-started weeks covering the last 6 months, GitHub-style:
+ * full first week, last one cut at today.
+ */
+export function buildWeeks(now: Date): Date[][] {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const start = new Date(today);
+  start.setMonth(start.getMonth() - 6);
+  start.setDate(start.getDate() + 1);
+  start.setDate(start.getDate() - start.getDay());
+
+  const weeks: Date[][] = [];
+  let current: Date[] = [];
+  for (const d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+    const day = new Date(d);
+    if (day.getDay() === 0 && current.length > 0) {
+      weeks.push(current);
+      current = [];
+    }
+    current.push(day);
+  }
+  if (current.length > 0) weeks.push(current);
+  return weeks;
 }
+
+const MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
+
+export function monthLabels(
+  weeks: Date[][],
+): { index: number; label: string }[] {
+  const labels: { index: number; label: string }[] = [];
+  weeks.forEach((week, index) => {
+    const first = week[0];
+    if (!first) return;
+    const month = first.getMonth();
+    if (month !== weeks[index - 1]?.[0]?.getMonth()) {
+      labels.push({ index, label: MONTHS[month] ?? "" });
+    }
+  });
+  // a label hugging the left edge gets overlapped by the next one — drop it
+  const [first, second] = labels;
+  if (first && second && second.index - first.index < 3) {
+    labels.shift();
+  }
+  return labels;
+}
+
+/** Sum of daily totals from firstKey (inclusive, YYYY-MM-DD) onwards. */
+export function totalSince(days: ActivityDay[], firstKey: string): number {
+  return days
+    .filter((day) => day.date >= firstKey)
+    .reduce((sum, day) => sum + day.totalSeconds, 0);
+}
+
+/** Parses a local YYYY-MM-DD key — new Date(string) would read it as UTC. */
+export function parseKey(key: string): Date {
+  const [year, month, day] = key.split("-").map(Number);
+  return new Date(year!, month! - 1, day!);
+}
+
+/** "Jun 15" label for a YYYY-MM-DD week-start key. */
+export function weekLabel(weekStart: string): string {
+  return parseKey(weekStart).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+/** "August 2026" from an ISO timestamp, or null when unparseable. */
+export function memberSince(createdAt: string | null): string | null {
+  const parsed = createdAt ? new Date(createdAt) : null;
+  if (!parsed || Number.isNaN(parsed.getTime())) return null;
+  return parsed.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
+/** One day of settled focus, exactly as served by GET /focus/activity. */
+export type ActivityDay = Data.Focus.FocusActivity;
 
 /** Local calendar date key (YYYY-MM-DD), matching the API's per-day buckets. */
 export function localKey(date: Date): string {
@@ -59,12 +131,6 @@ export function formatTotal(totalSeconds: number): string {
   if (hours > 0) return minutes > 0 ? `${hours}h ${minutes}min` : `${hours}h`;
   if (minutes > 0) return `${minutes}min`;
   return `${totalSeconds}s`;
-}
-
-/** Parses a local YYYY-MM-DD key — new Date(string) would read it as UTC. */
-function parseKey(key: string): Date {
-  const [year, month, day] = key.split("-").map(Number);
-  return new Date(year!, month! - 1, day!);
 }
 
 /**
