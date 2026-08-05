@@ -38,7 +38,9 @@ export function WeeklyFocusChart({ days, loading }: WeeklyFocusChartProps) {
         >
           <AreaChart
             data={data}
-            margin={{ top: 4, right: 4, bottom: 0, left: 4 }}
+            // side margins give the edge tick labels room to render —
+            // grid and curve share the same plot box, ending together
+            margin={{ top: 4, right: 14, bottom: 0, left: 14 }}
           >
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -61,8 +63,6 @@ export function WeeklyFocusChart({ days, loading }: WeeklyFocusChartProps) {
               axisLine={false}
               interval={1}
               tickMargin={6}
-              // inset the edge points so their centered labels fit
-              padding={{ left: 14, right: 14 }}
               tick={{ fontSize: 9, fill: "var(--muted-foreground)" }}
             />
             {/* 1h floor keeps an all-zero series flat at the baseline */}
