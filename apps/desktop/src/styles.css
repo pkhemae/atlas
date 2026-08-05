@@ -138,3 +138,16 @@
     user-select: text;
   }
 }
+
+/*
+ * Dock enter (pages/focus/ui/dock.tsx): the pill unfolds from its
+ * center in both directions. The blur masks the content squish while
+ * the scale runs (icon-morph recipe).
+ */
+@keyframes dock-unfold {
+  from {
+    opacity: 0;
+    scale: 0.25 0.6;
+    filter: blur(4px);
+  }
+}

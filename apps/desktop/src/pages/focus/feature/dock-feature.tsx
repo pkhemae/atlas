@@ -97,6 +97,15 @@ export function DockFeature() {
     };
   }, []);
 
+  // dismissal is deliberately instant (no exit animation): the session
+  // drops, the ambience starts its fade, and the windows swap back
+  const dismissDock = async (notifyMain: boolean) => {
+    setSession(null);
+    setSettingsOpen(false);
+    if (notifyMain) await emitTo("main", "focus:completed", null);
+    await showMainHideDock();
+  };
+
   // if a control fails (network blip, expired token), re-sync with the
   // server instead of keeping a lying timer on screen
   const resync = async () => {
@@ -109,8 +118,7 @@ export function DockFeature() {
       if (payload && typeof payload === "object" && "data" in payload) {
         setSession(payload.data);
       } else {
-        setSession(null);
-        await showMainHideDock();
+        await dismissDock(false);
       }
     } catch {
       // keep the current state; the next interaction retries
@@ -169,12 +177,7 @@ export function DockFeature() {
         params: { id },
       }),
     onMutate: () => setActionFailed(false),
-    onSuccess: async () => {
-      setSession(null);
-      setSettingsOpen(false);
-      await emitTo("main", "focus:completed", null);
-      await showMainHideDock();
-    },
+    onSuccess: () => dismissDock(true),
     onError: resync,
   });
 

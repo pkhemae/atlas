@@ -33,6 +33,16 @@ const MORPH_ICON =
 const MORPH_VISIBLE = "scale-100 opacity-100 blur-none";
 const MORPH_HIDDEN = "scale-25 opacity-0 blur-[2px]";
 
+/*
+ * Window-level enter (keyframes in src/styles.css). The native window
+ * shows instantly, so the DOM plays the transition: after a half-second
+ * beat the pill unfolds from its center in both directions (`backwards`
+ * keeps it invisible through the delay). Dismissal is deliberately
+ * instant — no exit animation.
+ */
+const ENTER =
+  "animate-[dock-unfold_350ms_cubic-bezier(0.2,0,0,1)_500ms_backwards]";
+
 export function Dock({
   elapsed,
   status,
@@ -60,7 +70,10 @@ export function Dock({
     >
       <div
         data-tauri-drag-region
-        className="animate-in fade-in zoom-in-95 flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-zinc-900/95 py-1 pr-1 pl-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)] duration-300"
+        className={cn(
+          "flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-zinc-900/95 py-1 pr-1 pl-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)]",
+          ENTER,
+        )}
       >
         <span
           data-tauri-drag-region
