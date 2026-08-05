@@ -61,6 +61,8 @@ export function WeeklyFocusChart({ days, loading }: WeeklyFocusChartProps) {
               axisLine={false}
               interval={1}
               tickMargin={6}
+              // inset the edge points so their centered labels fit
+              padding={{ left: 14, right: 14 }}
               tick={{ fontSize: 9, fill: "var(--muted-foreground)" }}
             />
             {/* 1h floor keeps an all-zero series flat at the baseline */}
