@@ -146,6 +146,11 @@ export default {
     languageHint: "La langue utilisée dans Atlas.",
     english: "English",
     french: "Français",
+    theme: "Thème",
+    themeHint: "L'apparence d'Atlas.",
+    // theme names are proper nouns — identical in every catalog
+    themeAtlas: "Atlas",
+    themeMidnight: "Midnight",
   },
   dock: {
     pause: "Mettre la session en pause",

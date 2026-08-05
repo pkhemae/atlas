@@ -25,14 +25,14 @@ interface ActivityGraphProps {
   error: boolean;
 }
 
-// intensity ramp: none, <30min, <1h30, <3h, 3h+ — green like a
-// contribution graph, deliberately apart from the app's red accent
+// intensity ramp: none, <30min, <1h30, <3h, 3h+ — steps come from the
+// per-theme --activity tokens (level 0 adapts through the foreground)
 const LEVEL_CLASSES = [
   "bg-foreground/[0.06]",
-  "bg-green-950",
-  "bg-green-800",
-  "bg-green-600",
-  "bg-green-400",
+  "bg-(--activity-1)",
+  "bg-(--activity-2)",
+  "bg-(--activity-3)",
+  "bg-(--activity-4)",
 ];
 
 export function ActivityGraph({ days, loading, error }: ActivityGraphProps) {

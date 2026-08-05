@@ -4,10 +4,15 @@
 @source "../src";
 
 /*
- * Desktop flat theme: warm dark grays, elevated flat surfaces, a single
- * red accent. Diverges from the marketing landing on purpose.
+ * Themes: each [data-theme] block redefines the raw tokens (bridged to
+ * utilities by the ui package's @theme inline). Both current themes are
+ * dark, so <html> keeps the static `dark` class; tokens NOT overridden
+ * here inherit the ui package's zinc dark values (e.g. --destructive).
+ * Adding a theme = one full block here + a THEMES entry + one i18n key.
  */
-.dark {
+
+/* Atlas — the default: warm dark grays, single red accent. */
+[data-theme="atlas"] {
   --background: #1b1b1c;
   --foreground: #f4f4f5;
   --card: #232325;
@@ -26,8 +31,59 @@
   --input: #29292b;
   --ring: rgba(255, 255, 255, 0.25);
   --radius: 0.75rem;
-  /* charts share the contribution graph's brightest green */
+  color-scheme: dark;
+  /* sidebar active-tab bar */
+  --nav-active-bar: linear-gradient(
+    to bottom,
+    var(--color-red-500),
+    var(--color-orange-500)
+  );
+  /* contribution graph ramp (level 0 stays bg-foreground/[0.06]) */
+  --activity-1: var(--color-green-950);
+  --activity-2: var(--color-green-800);
+  --activity-3: var(--color-green-600);
+  --activity-4: var(--color-green-400);
+  /* charts share the graph's brightest step */
   --chart-1: var(--color-green-400);
+}
+
+/* Midnight — deep blue dark, blue→cyan accent, teal activity ramp. */
+[data-theme="midnight"] {
+  --background: #101418;
+  --foreground: #edf1f5;
+  --card: #171c22;
+  --card-foreground: #edf1f5;
+  --popover: #171c22;
+  --popover-foreground: #edf1f5;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #1d242c;
+  --secondary-foreground: #dde4ec;
+  --muted: #1d242c;
+  --muted-foreground: #8b96a5;
+  --accent: #222a33;
+  --accent-foreground: #edf1f5;
+  --border: rgba(255, 255, 255, 0.07);
+  --input: #1c232b;
+  --ring: rgba(255, 255, 255, 0.28);
+  --radius: 0.75rem;
+  color-scheme: dark;
+  --nav-active-bar: linear-gradient(
+    to bottom,
+    var(--color-blue-500),
+    var(--color-cyan-500)
+  );
+  --activity-1: var(--color-teal-950);
+  --activity-2: var(--color-teal-800);
+  --activity-3: var(--color-cyan-600);
+  --activity-4: var(--color-cyan-400);
+  --chart-1: var(--color-cyan-400);
+}
+
+/* Text selection follows the theme accent (the shared red stays for
+   marketing — this override is desktop-only). */
+::selection {
+  background-color: color-mix(in srgb, var(--primary) 25%, transparent);
 }
 
 /*

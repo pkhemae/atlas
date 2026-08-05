@@ -26,9 +26,9 @@ interface AppSidebarProps {
   loggingOut: boolean;
 }
 
-// the active tab shows a small red→orange bar at the item's left edge
+// the active tab shows a small gradient bar (per-theme token) at the left edge
 const NAV_ITEM =
-  "relative flex h-8 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground data-[status=active]:text-foreground before:absolute before:top-1/2 before:left-0 before:h-4 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-linear-to-b before:from-red-500 before:to-orange-500 before:opacity-0 before:transition-opacity data-[status=active]:before:opacity-100";
+  "relative flex h-8 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground data-[status=active]:text-foreground before:absolute before:top-1/2 before:left-0 before:h-4 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-[image:var(--nav-active-bar)] before:opacity-0 before:transition-opacity data-[status=active]:before:opacity-100";
 
 /**
  * Blended sidebar: no surface, no border — the page background shows
