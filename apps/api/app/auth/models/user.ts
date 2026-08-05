@@ -6,6 +6,7 @@ import { type AccessToken, DbAccessTokensProvider } from '@adonisjs/auth/access_
 
 import { WithPrimaryUuid } from '#core/mixins/with_primary_uuid'
 import { WithTimestamps } from '#core/mixins/with_timestamps'
+import { appUrl } from '#config/app'
 
 export default class User extends compose(
   BaseModel,
@@ -22,8 +23,32 @@ export default class User extends compose(
   @column({ serializeAs: null })
   declare password: string
 
+  @column()
+  declare username: string | null
+
+  @column()
+  declare bio: string | null
+
+  @column()
+  declare location: string | null
+
+  @column()
+  declare avatarPath: string | null
+
+  @column()
+  declare bannerPath: string | null
+
   static accessTokens = DbAccessTokensProvider.forModel(User)
   declare currentAccessToken?: AccessToken
+
+  // absolute URLs — the desktop webview is a different origin
+  get avatarUrl() {
+    return this.avatarPath ? `${appUrl}/uploads/${this.avatarPath}` : null
+  }
+
+  get bannerUrl() {
+    return this.bannerPath ? `${appUrl}/uploads/${this.bannerPath}` : null
+  }
 
   get initials() {
     const [first, last] = this.fullName ? this.fullName.split(' ') : this.email.split('@')

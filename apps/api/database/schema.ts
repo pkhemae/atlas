@@ -97,8 +97,26 @@ export class ResetPasswordTokenSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
+  static $columns = [
+    'avatarPath',
+    'bannerPath',
+    'bio',
+    'createdAt',
+    'email',
+    'fullName',
+    'id',
+    'location',
+    'password',
+    'updatedAt',
+    'username',
+  ] as const
   $columns = UserSchema.$columns
+  @column()
+  declare avatarPath: string | null
+  @column()
+  declare bannerPath: string | null
+  @column()
+  declare bio: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
@@ -107,8 +125,12 @@ export class UserSchema extends BaseModel {
   declare fullName: string | null
   @column({ isPrimary: true })
   declare id: string
+  @column()
+  declare location: string | null
   @column({ serializeAs: null })
   declare password: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare username: string | null
 }

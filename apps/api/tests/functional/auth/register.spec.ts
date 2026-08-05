@@ -27,6 +27,30 @@ test.group('Auth / register', (group) => {
     assert.notProperty(data.user, 'password')
   })
 
+  test('generates a default username from the email', async ({ client, assert }) => {
+    const response = await client.post('/api/v1/auth/register').json({
+      ...CREDENTIALS,
+      passwordConfirmation: CREDENTIALS.password,
+    })
+
+    response.assertStatus(201)
+    const { data } = response.body()
+    assert.equal(data.user.username, 'ada')
+  })
+
+  test('suffixes the default username when already taken', async ({ client, assert }) => {
+    await User.create({ ...CREDENTIALS, email: 'other@atlas.app', username: 'ada' })
+
+    const response = await client.post('/api/v1/auth/register').json({
+      ...CREDENTIALS,
+      passwordConfirmation: CREDENTIALS.password,
+    })
+
+    response.assertStatus(201)
+    const { data } = response.body()
+    assert.match(data.user.username!, /^ada\d{4}$/)
+  })
+
   test('rejects duplicate emails', async ({ client, assert }) => {
     await User.create({ ...CREDENTIALS })
 

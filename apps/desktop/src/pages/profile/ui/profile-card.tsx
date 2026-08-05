@@ -1,50 +1,81 @@
-import { Trophy } from "lucide-react";
+import { MapPin, Trophy } from "lucide-react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@atlas/ui/components/avatar";
 import { Button } from "@atlas/ui/components/button";
 
 interface ProfileCardProps {
   fullName: string;
   handle: string;
   initials: string;
+  bio: string | null;
+  location: string | null;
+  avatarUrl: string | null;
+  bannerUrl: string | null;
   memberSince: string | null;
+  onEditProfile: () => void;
 }
 
 /**
- * Level, XP, rank and the banner/avatar edit flow are design placeholders —
- * the real systems land later.
+ * Level, XP and rank are design placeholders — the real systems land later.
  */
 export function ProfileCard({
   fullName,
   handle,
   initials,
+  bio,
+  location,
+  avatarUrl,
+  bannerUrl,
   memberSince,
+  onEditProfile,
 }: ProfileCardProps) {
   return (
     <section
       aria-label="Profile"
       className="bg-card w-60 shrink-0 overflow-hidden rounded-xl"
     >
-      {/* banner placeholder */}
-      <div aria-hidden="true" className="bg-foreground/[0.04] h-18" />
+      {bannerUrl ? (
+        <img src={bannerUrl} alt="" className="h-18 w-full object-cover" />
+      ) : (
+        <div aria-hidden="true" className="bg-foreground/[0.04] h-18" />
+      )}
       <div className="px-4 pb-4">
-        <div
-          aria-hidden="true"
-          className="bg-primary text-primary-foreground ring-card -mt-8 flex size-16 items-center justify-center rounded-full text-xl font-semibold ring-4"
-        >
-          {initials}
-        </div>
+        <Avatar className="ring-card -mt-8 size-16 ring-4">
+          <AvatarImage src={avatarUrl ?? undefined} alt="" />
+          <AvatarFallback className="text-xl">{initials}</AvatarFallback>
+        </Avatar>
         <h1 className="mt-2.5 text-base font-semibold text-balance">
           {fullName}
         </h1>
         <p className="text-primary text-xs font-semibold tracking-wide uppercase">
           @{handle}
         </p>
+        {bio && (
+          <p className="text-muted-foreground mt-1.5 text-xs break-words">
+            {bio}
+          </p>
+        )}
+        {location && (
+          <p className="text-muted-foreground/70 mt-1.5 flex items-center gap-1 text-[11px]">
+            <MapPin aria-hidden="true" className="size-3 shrink-0" />
+            {location}
+          </p>
+        )}
         {memberSince && (
-          <p className="text-muted-foreground/70 mt-1.5 text-[11px]">
+          <p className="text-muted-foreground/70 mt-1 text-[11px]">
             Member since {memberSince}
           </p>
         )}
 
-        <Button variant="secondary" size="sm" className="mt-3 w-full">
+        <Button
+          variant="secondary"
+          size="sm"
+          className="mt-3 w-full"
+          onClick={onEditProfile}
+        >
           Edit profile
         </Button>
 

@@ -29,4 +29,7 @@ VineDate.transform((value) => DateTime.fromJSDate(value))
  */
 vine.messagesProvider = new SimpleMessagesProvider({
   'passwordConfirmation.sameAs': 'Both passwords must be identical.',
+  'username.regex':
+    'Usernames can only use lowercase letters, numbers and underscores (3–20 characters).',
+  'database.unique': 'This {{ field }} is already taken.',
 })

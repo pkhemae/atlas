@@ -12,18 +12,32 @@ function isApiErrorPayload(value: unknown): value is { errors: ApiError[] } {
   );
 }
 
-// The API always answers errors as { errors: [{ message, code? | field? }] }
-// (VineJS 422s and domain 400s alike) — surface the first message.
-export function extractApiErrorMessage(error: unknown): string {
+function apiErrors(error: unknown): ApiError[] {
   if (
     typeof error === "object" &&
     error !== null &&
     "response" in error &&
     isApiErrorPayload((error as { response: unknown }).response)
   ) {
-    const first = (error as { response: { errors: ApiError[] } }).response
-      .errors[0];
-    if (first?.message) return first.message;
+    return (error as { response: { errors: ApiError[] } }).response.errors;
   }
+  return [];
+}
+
+// The API always answers errors as { errors: [{ message, code? | field? }] }
+// (VineJS 422s and domain 400s alike) — surface the first message.
+export function extractApiErrorMessage(error: unknown): string {
+  const first = apiErrors(error)[0];
+  if (first?.message) return first.message;
   return "Something went wrong. Is the Atlas API running?";
+}
+
+// Validation errors carry a `field` — first message per field, for
+// inline display under the matching input.
+export function extractApiFieldErrors(error: unknown): Record<string, string> {
+  const byField: Record<string, string> = {};
+  for (const { field, message } of apiErrors(error)) {
+    if (field && !(field in byField)) byField[field] = message;
+  }
+  return byField;
 }

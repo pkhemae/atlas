@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useRouteContext } from "@tanstack/react-router";
-import { api, setAuthToken, type AuthUser } from "@/lib/api";
+import { api, setAuthToken } from "@/lib/api";
 import { deleteAuthToken } from "@/lib/secure-storage";
+import { useMe } from "@/pages/profile/feature/use-me";
 import { UserMenu } from "@/pages/profile/ui/user-menu";
 
 export function UserMenuFeature() {
@@ -10,11 +11,7 @@ export function UserMenuFeature() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const me = useQuery({
-    queryKey: ["me"],
-    queryFn: () => api.get("/api/v1/auth/me", {}) as Promise<AuthUser>,
-    retry: false,
-  });
+  const me = useMe();
 
   const logout = useMutation({
     mutationFn: async () => {
@@ -59,6 +56,7 @@ export function UserMenuFeature() {
       ) : (
         <UserMenu
           initials={me.data.initials}
+          avatarUrl={me.data.avatarUrl}
           loggingOut={logout.isPending}
           onOpenProfile={() => navigate({ to: "/profile" })}
           onLogout={() => logout.mutate()}
