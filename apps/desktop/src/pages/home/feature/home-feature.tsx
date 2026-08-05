@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, type AuthUser } from "@/lib/api";
+import { api } from "@/lib/api";
 import {
   extractApiErrorMessage,
   extractApiFieldErrors,
