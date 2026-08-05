@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { listen } from "@tauri-apps/api/event";
 import { emitTo } from "@tauri-apps/api/event";
 import i18n, { type Language } from "@/i18n";
+import { applyThemeLocally, type ThemeId } from "@/theme";
 import { api, setAuthToken } from "@/lib/api";
 import { elapsedSeconds, type FocusSession } from "@/lib/focus";
 import { getAuthToken } from "@/lib/secure-storage";
@@ -48,6 +49,16 @@ export function DockFeature() {
   useEffect(() => {
     const unlisten = listen<Language>("i18n:changed", (event) => {
       void i18n.changeLanguage(event.payload);
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+
+  // same for the theme — the dock accents follow the app theme
+  useEffect(() => {
+    const unlisten = listen<ThemeId>("theme:changed", (event) => {
+      applyThemeLocally(event.payload);
     });
     return () => {
       unlisten.then((fn) => fn());

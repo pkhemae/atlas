@@ -20,7 +20,7 @@
         "minHeight": 560,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
-        "backgroundColor": "#111111"
+        "backgroundColor": "#1b1b1c"
       },
       {
         "label": "dock",

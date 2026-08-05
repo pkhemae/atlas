@@ -48,7 +48,7 @@ export function Dock({
           className={cn(
             // explicit Menlo stack: WKWebView resolves ui-monospace weights
             // to Times through CoreText fallbacks
-            "font-[Menlo,Consolas,monospace] text-sm font-semibold text-red-500 tabular-nums transition-opacity duration-300",
+            "font-[Menlo,Consolas,monospace] text-primary text-sm font-semibold tabular-nums transition-opacity duration-300",
             paused && "animate-pulse opacity-70",
           )}
         >
@@ -59,7 +59,7 @@ export function Dock({
             role="alert"
             aria-label={t("dock.resyncError")}
             title={t("dock.resyncError")}
-            className="size-1.5 shrink-0 animate-pulse rounded-full bg-red-500"
+            className="bg-destructive size-1.5 shrink-0 animate-pulse rounded-full"
           />
         )}
         {/* one button, two glyphs: pause and play morph in place */}
@@ -107,7 +107,7 @@ export function Dock({
             onClick={onStop}
             className={cn(
               CHIP,
-              "bg-red-600 text-white transition-[opacity,scale,background-color] duration-300 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-red-500",
+              "bg-primary text-primary-foreground hover:bg-primary/90 transition-[opacity,scale,background-color] duration-300 ease-[cubic-bezier(0.2,0,0,1)]",
               paused ? "scale-100 opacity-100" : "scale-50 opacity-0",
             )}
           >

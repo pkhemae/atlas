@@ -137,6 +137,11 @@ export default {
     // autonyms: identical in every catalog, each language names itself
     english: "English",
     french: "Français",
+    theme: "Theme",
+    themeHint: "The look of Atlas.",
+    // theme names are proper nouns — identical in every catalog
+    themeAtlas: "Atlas",
+    themeMidnight: "Midnight",
   },
   dock: {
     pause: "Pause session",
