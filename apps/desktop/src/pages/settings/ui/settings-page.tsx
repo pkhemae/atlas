@@ -69,6 +69,7 @@ export function SettingsPage({
               <SelectContent position="popper" align="end">
                 {THEMES.map((id) => (
                   <SelectItem key={id} value={id}>
+                    <ThemeSwatch theme={id} />
                     {id === "atlas"
                       ? t("settings.themeAtlas")
                       : t("settings.themeMidnight")}
@@ -80,5 +81,23 @@ export function SettingsPage({
         </div>
       </div>
     </main>
+  );
+}
+
+/**
+ * Real-color preview: the chip carries the theme's own data-theme
+ * attribute, so its tokens (surface, ink, accent) resolve from the
+ * actual CSS blocks — nothing to keep in sync.
+ */
+function ThemeSwatch({ theme }: { theme: ThemeId }) {
+  return (
+    <span
+      data-theme={theme}
+      aria-hidden="true"
+      className="bg-background text-foreground relative flex size-6 shrink-0 items-center justify-center rounded-md text-[10px] font-semibold shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+    >
+      Aa
+      <span className="bg-primary absolute right-0.5 bottom-0.5 size-1.5 rounded-full" />
+    </span>
   );
 }
