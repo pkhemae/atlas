@@ -1,4 +1,5 @@
 import { useId, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   ChartContainer,
@@ -18,43 +19,48 @@ interface WeeklyFocusChartProps {
   error: boolean;
 }
 
-const CHART_CONFIG = {
-  focus: { label: "Focus", color: "var(--chart-1)" },
-} satisfies ChartConfig;
-
 export function WeeklyFocusChart({
   days,
   loading,
   error,
 }: WeeklyFocusChartProps) {
+  const { t, i18n } = useTranslation();
   const gradientId = useId();
+  // in render scope: the series label follows the active language
+  const chartConfig = {
+    focus: { label: t("home.weekly.seriesLabel"), color: "var(--chart-1)" },
+  } satisfies ChartConfig;
   const data = useMemo(
     () =>
       weeklyTotals(days, new Date()).map(({ weekStart, totalSeconds }) => ({
         label: weekLabel(weekStart),
         totalSeconds,
       })),
-    [days],
+    // i18n.language: weekLabel output is locale-dependent
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [days, i18n.language],
   );
 
   const thisWeekSeconds = data[data.length - 1]?.totalSeconds ?? 0;
 
   return (
-    <section aria-label="Weekly focus" className="p-4">
+    <section aria-label={t("home.weekly.ariaLabel")} className="p-4">
       <p className="text-xs font-medium">
         {loading
-          ? "Loading your week…"
+          ? t("home.weekly.loading")
           : error
-            ? "Couldn't load your week."
+            ? t("home.weekly.error")
             : thisWeekSeconds > 0
-              ? `${formatTotal(thisWeekSeconds)} of focus this week`
-              : "No focus time this week yet"}
+              ? t("home.weekly.total", {
+                  duration: formatTotal(thisWeekSeconds),
+                })
+              : t("home.weekly.empty")}
       </p>
       {loading ? (
         <div className="bg-foreground/5 mt-3 h-28 animate-pulse rounded-lg" />
       ) : (
         <ChartContainer
-          config={CHART_CONFIG}
+          config={chartConfig}
           className="mt-3 aspect-auto h-28 w-full"
         >
           <AreaChart
@@ -122,12 +128,17 @@ function WeeklyFocusTooltip({
   label,
   payload,
 }: WeeklyFocusTooltipProps) {
+  const { t } = useTranslation();
   if (!active || !payload?.length) return null;
   const seconds = payload[0]?.value ?? 0;
   return (
     <div className="rounded-full bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-50">
-      {seconds > 0 ? `${formatTotal(seconds)} of focus` : "No focus"} · Week of{" "}
-      {label}
+      {seconds > 0
+        ? t("home.weekly.tooltipFocus", {
+            duration: formatTotal(seconds),
+            week: label ?? "",
+          })
+        : t("home.weekly.tooltipEmpty", { week: label ?? "" })}
     </div>
   );
 }

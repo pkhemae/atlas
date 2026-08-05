@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { MapPin, Trophy } from "lucide-react";
 import {
   Avatar,
@@ -32,9 +33,11 @@ export function ProfileCard({
   memberSince,
   onEditProfile,
 }: ProfileCardProps) {
+  const { t } = useTranslation();
+
   return (
     <section
-      aria-label="Profile"
+      aria-label={t("home.profile.ariaLabel")}
       className="bg-card w-60 shrink-0 overflow-hidden rounded-xl"
     >
       {bannerUrl ? (
@@ -66,7 +69,7 @@ export function ProfileCard({
         )}
         {memberSince && (
           <p className="text-muted-foreground/70 mt-1 text-[11px]">
-            Member since {memberSince}
+            {t("home.profile.memberSince", { date: memberSince })}
           </p>
         )}
 
@@ -76,19 +79,21 @@ export function ProfileCard({
           className="mt-3 w-full"
           onClick={onEditProfile}
         >
-          Edit profile
+          {t("home.profile.editProfile")}
         </Button>
 
         <div aria-hidden="true" className="bg-foreground/5 my-4 h-px" />
 
         <p className="text-primary text-xs font-semibold tracking-wide uppercase">
-          Level 13
+          {t("home.profile.level", { level: 13 })}
         </p>
         <div className="bg-foreground/[0.06] mt-1.5 h-1 overflow-hidden rounded-full">
           <div className="bg-primary h-full w-[58%] rounded-full" />
         </div>
         <div className="text-muted-foreground mt-1.5 flex items-baseline justify-between text-[11px]">
-          <span className="tabular-nums">754 / 1.3K XP</span>
+          <span className="tabular-nums">
+            {t("home.profile.xp", { current: 754, max: "1.3K" })}
+          </span>
           <span>~55 min</span>
         </div>
 
@@ -96,13 +101,13 @@ export function ProfileCard({
           <div>
             <p className="text-muted-foreground flex items-center gap-1 text-[11px] font-semibold tracking-wide uppercase">
               <Trophy className="size-3" />
-              Rank
+              {t("home.profile.rank")}
             </p>
             <p className="mt-0.5 text-lg font-semibold tabular-nums">#348</p>
           </div>
           <div className="text-right">
             <p className="text-muted-foreground text-[11px] font-semibold tracking-wide uppercase">
-              This week
+              {t("home.profile.thisWeek")}
             </p>
             <p className="text-muted-foreground mt-0.5 text-lg font-semibold">
               —
