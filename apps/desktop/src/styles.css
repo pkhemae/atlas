@@ -26,6 +26,8 @@
   --input: #29292b;
   --ring: rgba(255, 255, 255, 0.25);
   --radius: 0.75rem;
+  /* charts share the contribution graph's brightest green */
+  --chart-1: var(--color-green-400);
 }
 
 /*

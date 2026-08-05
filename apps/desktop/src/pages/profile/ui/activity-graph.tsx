@@ -6,11 +6,7 @@ import {
   TooltipTrigger,
 } from "@atlas/ui/components/tooltip";
 import { cn } from "@atlas/ui/lib/utils";
-
-export interface ActivityDay {
-  date: string;
-  totalSeconds: number;
-}
+import { type ActivityDay, formatTotal, localKey } from "@/lib/focus";
 
 interface ActivityGraphProps {
   days: ActivityDay[];
@@ -176,25 +172,10 @@ function monthLabels(weeks: Date[][]) {
   return labels;
 }
 
-/** Local calendar date key, matching the API's per-day buckets. */
-function localKey(date: Date): string {
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${date.getFullYear()}-${month}-${day}`;
-}
-
 function levelFor(seconds: number): number {
   if (seconds <= 0) return 0;
   if (seconds < 30 * 60) return 1;
   if (seconds < 90 * 60) return 2;
   if (seconds < 180 * 60) return 3;
   return 4;
-}
-
-function formatTotal(totalSeconds: number): string {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.round((totalSeconds % 3600) / 60);
-  if (hours > 0) return minutes > 0 ? `${hours}h ${minutes}min` : `${hours}h`;
-  if (minutes > 0) return `${minutes}min`;
-  return `${totalSeconds}s`;
 }
