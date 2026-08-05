@@ -6,7 +6,8 @@ import {
 } from "@tanstack/react-router";
 import { AppLayout } from "@/app/app-layout";
 import { HomeFeature } from "@/pages/home/feature/home-feature";
-import { ProfileFeature } from "@/pages/profile/feature/profile-feature";
+import { LeaderboardsFeature } from "@/pages/leaderboards/feature/leaderboards-feature";
+import { SettingsFeature } from "@/pages/settings/feature/settings-feature";
 
 interface AppRouterContext {
   onLoggedOut: () => void;
@@ -22,13 +23,23 @@ const homeRoute = createRoute({
   component: HomeFeature,
 });
 
-const profileRoute = createRoute({
+const leaderboardsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/profile",
-  component: ProfileFeature,
+  path: "/leaderboards",
+  component: LeaderboardsFeature,
 });
 
-const routeTree = rootRoute.addChildren([homeRoute, profileRoute]);
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/settings",
+  component: SettingsFeature,
+});
+
+const routeTree = rootRoute.addChildren([
+  homeRoute,
+  leaderboardsRoute,
+  settingsRoute,
+]);
 
 // in-memory history: a desktop window has no URL bar to sync with
 export const appRouter = createRouter({

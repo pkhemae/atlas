@@ -104,7 +104,8 @@ Example: `src/pages/focus/`
 - Auth token: stored in the OS keychain via Rust commands (`save_auth_token`, `get_auth_token`, `delete_auth_token` in `src-tauri/src/lib.rs`), mirrored in memory for the API client (`src/lib/api.ts`). Never persist tokens in files or localStorage.
 - Dev quirk: every Rust rebuild re-signs the debug binary ad hoc, so macOS re-prompts for keychain access on the next login ("Toujours autoriser" holds until the next native rebuild). Signed production builds won't prompt — not a bug, don't work around it.
 - API access: typed Tuyau client (`createTuyau` + `@atlas/api/registry`); response types flow from the API's controllers/transformers. Tuyau auto-switches to multipart when the body contains a `File`; `null` serializes as an empty field, which the API reads as "remove" for images.
-- Modals use the shared `dialog.tsx` (borderless, layered shadows, `z-[80]` — above the `z-[60]` navbar); avatars use the shared `Avatar` with the initials medallion as automatic fallback.
+- Modals use the shared `dialog.tsx` (borderless, layered shadows, `z-[80]` — above all app chrome); avatars use the shared `Avatar` with the initials medallion as automatic fallback.
+- Navigation: a blended left sidebar (`components/app-sidebar.tsx`, presentational — no surface/border, red→orange gradient bar marks the active tab, avatar + logout in the footer). Session/logout/401 logic lives in `app/app-layout.tsx`; the window stays draggable via the top strip in `App.tsx` plus `data-tauri-drag-region` on the sidebar's own elements (the attribute only fires on the element carrying it).
 - Screens follow the same feature/ui split as the marketing app (`src/pages/<domain>/{feature,ui}/`).
 
 ## Development Guidelines
