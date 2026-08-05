@@ -1,5 +1,5 @@
 import { useId, useMemo } from "react";
-import { Area, AreaChart, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   ChartContainer,
   ChartTooltip,
@@ -54,6 +54,7 @@ export function WeeklyFocusChart({ days, loading }: WeeklyFocusChartProps) {
                 />
               </linearGradient>
             </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
             <XAxis
               dataKey="label"
               tickLine={false}
