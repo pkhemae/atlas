@@ -1,8 +1,11 @@
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { cn } from "@atlas/ui/lib/utils";
 import { type TierId } from "@/lib/focus";
-import { LevelBadge, type BadgeState } from "@/pages/levels/ui/level-badge";
+import {
+  BADGE_SIZE,
+  LevelBadge,
+  type BadgeState,
+} from "@/pages/levels/ui/level-badge";
 
 export interface RoadLevel {
   index: number;
@@ -20,14 +23,29 @@ interface LevelsRoadProps {
   error: boolean;
 }
 
-// literal classes — the Tailwind scanner can't see template strings
-const TIER_SEGMENT = {
-  bronze: "bg-[image:var(--tier-bronze)]",
-  silver: "bg-[image:var(--tier-silver)]",
-  gold: "bg-[image:var(--tier-gold)]",
-  platinum: "bg-[image:var(--tier-platinum)]",
-  diamond: "bg-[image:var(--tier-diamond)]",
+/* Road geometry: badges snake across the full height of the page on a
+ * sine wave, far apart — the distance is the point. */
+const SPACING = 240;
+const PAD_X = 100;
+const COLUMN_WIDTH = 112; // w-28 badge column
+const SHAPE_HALF = BADGE_SIZE / 2;
+const PAD_TOP = 64;
+const PAD_BOTTOM = 132; // shape half + the labels hanging below
+const TRIM = SHAPE_HALF + 14; // segments stop short of the pentagons
+
+function waveFraction(i: number) {
+  return 0.5 + 0.45 * Math.sin(i * 1.15);
+}
+
+const TIER_STROKE = {
+  bronze: "var(--tier-bronze-glow)",
+  silver: "var(--tier-silver-glow)",
+  gold: "var(--tier-gold-glow)",
+  platinum: "var(--tier-platinum-glow)",
+  diamond: "var(--tier-diamond-glow)",
 } as const;
+
+const DASHED_STROKE = "color-mix(in srgb, var(--foreground) 20%, transparent)";
 
 function badgeState(index: number, currentIndex: number | null): BadgeState {
   if (currentIndex === null || index > currentIndex) return "locked";
@@ -43,6 +61,16 @@ export function LevelsRoad({
   const { t } = useTranslation();
   const scrollerRef = useRef<HTMLElement>(null);
   const currentRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+
+  // the serpentine needs real pixels: measure the road's height
+  useLayoutEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const observer = new ResizeObserver(() => setHeight(scroller.clientHeight));
+    observer.observe(scroller);
+    return () => observer.disconnect();
+  }, []);
 
   // land with the current badge centered (scrollIntoView could scroll
   // the page vertically too — set scrollLeft by hand instead)
@@ -52,10 +80,17 @@ export function LevelsRoad({
     if (!scroller || !badge) return;
     scroller.scrollLeft =
       badge.offsetLeft - (scroller.clientWidth - badge.offsetWidth) / 2;
-  }, [levels.length, currentIndex]);
+  }, [levels.length, currentIndex, height]);
+
+  const totalWidth = PAD_X * 2 + Math.max(0, levels.length - 1) * SPACING;
+  const band = Math.max(0, height - PAD_TOP - PAD_BOTTOM);
+  const centers = levels.map((_, i): [number, number] => [
+    PAD_X + i * SPACING,
+    PAD_TOP + waveFraction(i) * band,
+  ]);
 
   return (
-    <main className="bg-background min-h-svh pt-12 pb-8">
+    <main className="bg-background flex h-svh flex-col pt-12 pb-4">
       <div className="px-6">
         <h2 className="text-muted-foreground mb-2 text-[11px] font-semibold tracking-wide uppercase">
           {t("levels.heading")}
@@ -69,48 +104,90 @@ export function LevelsRoad({
       <section
         ref={scrollerRef}
         aria-label={t("levels.ariaLabel")}
-        className="scrollbar-none mt-12 overflow-x-auto"
+        className="scrollbar-none min-h-0 flex-1 overflow-x-auto overflow-y-hidden"
       >
-        <div className="flex w-max items-start px-10">
-          {levels.map((level, i) => {
-            const state = badgeState(level.index, currentIndex);
-            // the segment left of this badge tells whether this level
-            // has been reached, is being worked toward, or lies ahead
-            const segment =
-              currentIndex === null || level.index > currentIndex + 1
-                ? "future"
-                : level.index === currentIndex + 1
-                  ? "partial"
-                  : "done";
-            return (
-              <Fragment key={level.index}>
-                {i > 0 && (
-                  <div
-                    aria-hidden="true"
-                    className="mt-[31px] h-0.5 w-16 shrink-0"
-                  >
+        {height > 0 && (
+          <div className="relative h-full" style={{ width: `${totalWidth}px` }}>
+            <svg
+              aria-hidden="true"
+              className="absolute inset-0"
+              width={totalWidth}
+              height={height}
+              viewBox={`0 0 ${totalWidth} ${height}`}
+            >
+              {levels.slice(1).map((level, i) => {
+                const [ax, ay] = centers[i]!;
+                const [bx, by] = centers[i + 1]!;
+                const length = Math.hypot(bx - ax, by - ay);
+                const ux = (bx - ax) / length;
+                const uy = (by - ay) / length;
+                // trim both ends so the road stops short of the badges
+                const x1 = ax + ux * TRIM;
+                const y1 = ay + uy * TRIM;
+                const x2 = bx - ux * TRIM;
+                const y2 = by - uy * TRIM;
+                const visible = length - TRIM * 2;
+                const segment =
+                  currentIndex === null || level.index > currentIndex + 1
+                    ? "future"
+                    : level.index === currentIndex + 1
+                      ? "partial"
+                      : "done";
+                return (
+                  <Fragment key={level.index}>
                     {segment === "done" ? (
-                      <div className={cn("h-full", TIER_SEGMENT[level.tier])} />
+                      <line
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        stroke={TIER_STROKE[level.tier]}
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                      />
                     ) : (
-                      <div className="relative h-full">
-                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-dashed border-foreground/15" />
+                      <>
+                        <line
+                          x1={x1}
+                          y1={y1}
+                          x2={x2}
+                          y2={y2}
+                          stroke={DASHED_STROKE}
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeDasharray="1 12"
+                        />
                         {segment === "partial" && (
-                          <div
-                            className={cn(
-                              "absolute inset-y-0 left-0 rounded-full",
-                              TIER_SEGMENT[level.tier],
-                            )}
-                            style={{ width: `${progressPct}%` }}
+                          <line
+                            x1={x1}
+                            y1={y1}
+                            x2={x2}
+                            y2={y2}
+                            stroke={TIER_STROKE[level.tier]}
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeDasharray={`${(visible * progressPct) / 100} ${visible}`}
                           />
                         )}
-                      </div>
+                      </>
                     )}
-                  </div>
-                )}
+                  </Fragment>
+                );
+              })}
+            </svg>
+            {levels.map((level, i) => {
+              const state = badgeState(level.index, currentIndex);
+              const [x, y] = centers[i]!;
+              return (
                 <div
+                  key={level.index}
                   ref={state === "current" ? currentRef : undefined}
-                  className="animate-in fade-in slide-in-from-bottom-2 fill-mode-backwards duration-500"
-                  style={{ animationDelay: `${i * 40}ms` }}
+                  className="animate-in fade-in slide-in-from-bottom-2 fill-mode-backwards absolute duration-500"
+                  style={{
+                    left: x - COLUMN_WIDTH / 2,
+                    top: y - SHAPE_HALF,
+                    animationDelay: `${i * 40}ms`,
+                  }}
                 >
                   <LevelBadge
                     tier={level.tier}
@@ -119,10 +196,10 @@ export function LevelsRoad({
                     state={state}
                   />
                 </div>
-              </Fragment>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
     </main>
   );
