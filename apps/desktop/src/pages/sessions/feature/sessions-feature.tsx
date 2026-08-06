@@ -78,9 +78,7 @@ export function SessionsFeature() {
             month={cursor.getMonth()}
             todayKey={localKey(new Date())}
             sessionsByDay={sessionsByDay}
-            loading={sessions.isPending}
             error={sessions.isError}
-            empty={sessions.isSuccess && list.length === 0}
           />
         </div>
       </div>
