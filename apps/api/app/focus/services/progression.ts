@@ -68,7 +68,7 @@ const LEVEL_XP = [
   null, // diamond III — apex
 ] as const
 
-interface LevelRow extends Level {
+export interface LevelRow extends Level {
   xpForLevel: number | null
   cumulative: number
 }

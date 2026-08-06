@@ -7,14 +7,12 @@ import {
 } from "@atlas/ui/components/avatar";
 import { Button } from "@atlas/ui/components/button";
 import { currentLocale } from "@/i18n";
-import { romanDivision } from "@/lib/focus";
-
-export type ProfileTier = "bronze" | "silver" | "gold" | "platinum" | "diamond";
+import { romanDivision, TIER_KEYS, type TierId } from "@/lib/focus";
 
 export interface ProfileProgression {
-  tier: ProfileTier;
+  tier: TierId;
   division: 1 | 2 | 3;
-  next: { tier: ProfileTier; division: 1 | 2 | 3 } | null;
+  next: { tier: TierId; division: 1 | 2 | 3 } | null;
   xpIntoLevel: number;
   xpForLevel: number | null;
   streakDays: number;
@@ -32,15 +30,6 @@ interface ProfileCardProps {
   progression: ProfileProgression | null;
   onEditProfile: () => void;
 }
-
-// record lookup — a template-literal key would fight the typed t()
-const TIER_KEYS = {
-  bronze: "home.profile.tiers.bronze",
-  silver: "home.profile.tiers.silver",
-  gold: "home.profile.tiers.gold",
-  platinum: "home.profile.tiers.platinum",
-  diamond: "home.profile.tiers.diamond",
-} as const;
 
 export function ProfileCard({
   fullName,

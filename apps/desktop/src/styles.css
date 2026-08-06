@@ -45,6 +45,17 @@
   --activity-4: var(--color-green-400);
   /* charts share the graph's brightest step */
   --chart-1: var(--color-green-400);
+  /* levels-road tier metals (badge gradients + solid halo colors) */
+  --tier-bronze: linear-gradient(160deg, #b0703c, #8a4f27 55%, #6b3a1c);
+  --tier-silver: linear-gradient(160deg, #c8cdd4, #9aa1ab 55%, #767d88);
+  --tier-gold: linear-gradient(160deg, #f0c75e, #d99f2b 55%, #a97617);
+  --tier-platinum: linear-gradient(160deg, #9fe8df, #5fc4bb 55%, #3d9a94);
+  --tier-diamond: linear-gradient(160deg, #a8c6f5, #7d9bf0 55%, #5f74d8);
+  --tier-bronze-glow: #b0703c;
+  --tier-silver-glow: #aab1bb;
+  --tier-gold-glow: #e5b93f;
+  --tier-platinum-glow: #6fd0c6;
+  --tier-diamond-glow: #8aa5f0;
 }
 
 /* Midnight — deep blue dark, blue→cyan accent, teal activity ramp. */
@@ -78,6 +89,17 @@
   --activity-3: var(--color-cyan-600);
   --activity-4: var(--color-cyan-400);
   --chart-1: var(--color-cyan-400);
+  /* levels-road tier metals — same set as atlas (they read on any dark) */
+  --tier-bronze: linear-gradient(160deg, #b0703c, #8a4f27 55%, #6b3a1c);
+  --tier-silver: linear-gradient(160deg, #c8cdd4, #9aa1ab 55%, #767d88);
+  --tier-gold: linear-gradient(160deg, #f0c75e, #d99f2b 55%, #a97617);
+  --tier-platinum: linear-gradient(160deg, #9fe8df, #5fc4bb 55%, #3d9a94);
+  --tier-diamond: linear-gradient(160deg, #a8c6f5, #7d9bf0 55%, #5f74d8);
+  --tier-bronze-glow: #b0703c;
+  --tier-silver-glow: #aab1bb;
+  --tier-gold-glow: #e5b93f;
+  --tier-platinum-glow: #6fd0c6;
+  --tier-diamond-glow: #8aa5f0;
 }
 
 /* Daylight — warm light, same red brand accent: Atlas in daytime. */
@@ -113,6 +135,26 @@
   --activity-3: var(--color-green-600);
   --activity-4: var(--color-green-800);
   --chart-1: var(--color-green-600);
+  /* tier metals run deeper here — pale silver/platinum would sink into
+     the near-white background */
+  --tier-bronze: linear-gradient(160deg, #a05a2c, #7c431d 55%, #5f3315);
+  --tier-silver: linear-gradient(160deg, #9aa1ab, #7b828c 55%, #626973);
+  --tier-gold: linear-gradient(160deg, #d9a12b, #b57e14 55%, #8f620e);
+  --tier-platinum: linear-gradient(160deg, #4fb3aa, #37918a 55%, #27716c);
+  --tier-diamond: linear-gradient(160deg, #6f8ee8, #5069d6 55%, #3d51b0);
+  --tier-bronze-glow: #a05a2c;
+  --tier-silver-glow: #7b828c;
+  --tier-gold-glow: #b57e14;
+  --tier-platinum-glow: #37918a;
+  --tier-diamond-glow: #5069d6;
+}
+
+/* The levels road hides its scrollbar — the blended page has no chrome. */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 /* Text selection follows the theme accent (the shared red stays for
