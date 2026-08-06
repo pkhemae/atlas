@@ -87,8 +87,6 @@ function segmentPath(centers: [number, number][], i: number): string {
   return `M ${s.p1x} ${s.p1y} C ${s.c1x} ${s.c1y}, ${s.c2x} ${s.c2y}, ${s.p2x} ${s.p2y}`;
 }
 
-/** Point at parameter t on the segment's cubic — close enough to the
- * arc-length position for these gentle curves. */
 function bezierPoint(
   s: ReturnType<typeof segmentControls>,
   t: number,
@@ -102,6 +100,41 @@ function bezierPoint(
     a * s.p1x + b * s.c1x + c * s.c2x + d * s.p2x,
     a * s.p1y + b * s.c1y + c * s.c2y + d * s.p2y,
   ];
+}
+
+/**
+ * Point at a FRACTION OF ARC LENGTH along the cubic — the same measure
+ * strokeDasharray uses, so the marker lands exactly where the filled
+ * stroke stops (the raw Bézier parameter drifts from it on curves).
+ */
+function bezierPointAtArcLength(
+  s: ReturnType<typeof segmentControls>,
+  fraction: number,
+): [number, number] {
+  const STEPS = 64;
+  const points: [number, number][] = [];
+  const lengths: number[] = [0];
+  let total = 0;
+  for (let i = 0; i <= STEPS; i++) {
+    const p = bezierPoint(s, i / STEPS);
+    if (i > 0) {
+      const prev = points[i - 1]!;
+      total += Math.hypot(p[0] - prev[0], p[1] - prev[1]);
+      lengths.push(total);
+    }
+    points.push(p);
+  }
+  const target = total * Math.min(1, Math.max(0, fraction));
+  for (let i = 1; i <= STEPS; i++) {
+    if (lengths[i]! >= target) {
+      const span = lengths[i]! - lengths[i - 1]!;
+      const t = span === 0 ? 0 : (target - lengths[i - 1]!) / span;
+      const [ax, ay] = points[i - 1]!;
+      const [bx, by] = points[i]!;
+      return [ax + (bx - ax) * t, ay + (by - ay) * t];
+    }
+  }
+  return points[STEPS]!;
 }
 
 // the marker only shows when it has visible road to live on: far
@@ -183,7 +216,7 @@ export function LevelsRoad({
     currentIndex < levels.length &&
     progressPct >= MARKER_MIN_PCT &&
     progressPct <= MARKER_MAX_PCT
-      ? bezierPoint(
+      ? bezierPointAtArcLength(
           segmentControls(centers, currentIndex - 1),
           progressPct / 100,
         )
@@ -356,19 +389,23 @@ export function LevelsRoad({
                 // this is a purely visual pin, bar centered on the curve
                 <div
                   aria-hidden="true"
-                  className="animate-in fade-in fill-mode-backwards pointer-events-none absolute flex -translate-x-1/2 -translate-y-[calc(100%-18px)] flex-col items-center gap-1.5 duration-500"
+                  // the column's bottom is the dot, whose CENTER sits
+                  // exactly on the curve (half the 6px dot overhangs)
+                  className="animate-in fade-in fill-mode-backwards pointer-events-none absolute flex -translate-x-1/2 -translate-y-[calc(100%_-_3px)] flex-col items-center duration-500"
                   style={{
                     left: marker[0],
                     top: marker[1],
                     animationDelay: "700ms",
                   }}
                 >
-                  <span className="text-muted-foreground text-[10px] font-semibold tracking-wide uppercase whitespace-nowrap">
+                  <span className="text-muted-foreground mb-1.5 text-[10px] font-semibold tracking-wide uppercase whitespace-nowrap">
                     {t("levels.youAreHere")}
                   </span>
                   {/* the sidebar's active-tab gradient — the app's accent
                       bar, already declined per theme */}
-                  <div className="h-9 w-0.5 rounded-full bg-[image:var(--nav-active-bar)]" />
+                  <div className="h-14 w-0.5 rounded-full bg-[image:var(--nav-active-bar)]" />
+                  {/* the tip: a dot resting on the stroke's end */}
+                  <div className="-mt-0.5 size-1.5 rounded-full bg-[image:var(--nav-active-bar)]" />
                 </div>
               )}
             </div>
