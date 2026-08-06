@@ -15,6 +15,7 @@ export type ScannedRoutes = {
     'update_profile': { paramsTuple?: []; params?: {} }
     'start_session': { paramsTuple?: []; params?: {} }
     'list_activity': { paramsTuple?: []; params?: {} }
+    'progression': { paramsTuple?: []; params?: {} }
     'active_session': { paramsTuple?: []; params?: {} }
     'abandon_active_session': { paramsTuple?: []; params?: {} }
     'pause_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -25,12 +26,14 @@ export type ScannedRoutes = {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'me.show': { paramsTuple?: []; params?: {} }
     'list_activity': { paramsTuple?: []; params?: {} }
+    'progression': { paramsTuple?: []; params?: {} }
     'active_session': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'me.show': { paramsTuple?: []; params?: {} }
     'list_activity': { paramsTuple?: []; params?: {} }
+    'progression': { paramsTuple?: []; params?: {} }
     'active_session': { paramsTuple?: []; params?: {} }
   }
   POST: {

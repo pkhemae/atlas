@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon'
 
 import FocusSession from '#focus/models/focus_session'
+import { calculateProgression } from '#focus/services/progression'
+import type { ProgressionSnapshot } from '#focus/services/progression'
 import type User from '#auth/models/user'
 
 export interface DailyActivity {
@@ -46,6 +48,15 @@ export default class FocusSessionService {
     }
 
     return [...totals.entries()].map(([date, totalSeconds]) => ({ date, totalSeconds }))
+  }
+
+  /**
+   * XP/rank snapshot — a pure fold over dailyActivity, anchored to the
+   * server-local date (same toISODate bucketing as the activity days).
+   */
+  async progression(user: User): Promise<ProgressionSnapshot> {
+    const days = await this.dailyActivity(user)
+    return calculateProgression(days, DateTime.now().toISODate())
   }
 
   async findActive(user: User) {
