@@ -109,11 +109,15 @@ export function LevelBadge({
         }
       >
         {/* nested clips: clip-path cuts box-shadows, so the ring is a
-            pentagon behind the (inset) metal one */}
+            pentagon behind the (inset) metal one. Fills mix into the
+            page background so they stay OPAQUE — a translucent badge
+            would let the road show through it */}
         <div
           className={cn(
             "relative",
-            locked ? "bg-foreground/10" : "bg-foreground/20",
+            locked
+              ? "bg-[color-mix(in_srgb,var(--foreground)_10%,var(--background))]"
+              : "bg-[color-mix(in_srgb,var(--foreground)_20%,var(--background))]",
           )}
           style={{
             width: BADGE_SIZE,
@@ -125,7 +129,7 @@ export function LevelBadge({
             className={cn(
               "absolute inset-0 grid place-items-center",
               locked
-                ? "bg-foreground/[0.06]"
+                ? "bg-[color-mix(in_srgb,var(--foreground)_6%,var(--background))]"
                 : cn(
                     TIER_BG[tier],
                     // bevel: inset shadows render inside the clip
