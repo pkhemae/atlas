@@ -145,7 +145,7 @@ export function LevelsRoad({
   ]);
 
   return (
-    <main className="bg-background flex h-svh flex-col pt-12 pb-4">
+    <main className="flex h-svh flex-col pt-12 pb-4">
       <div className="px-6">
         <h2 className="text-muted-foreground mb-2 text-[11px] font-semibold tracking-wide uppercase">
           {t("levels.heading")}

@@ -31,7 +31,7 @@ export function SettingsPage({
   const { t } = useTranslation();
 
   return (
-    <main className="bg-background min-h-svh px-6 pt-12 pb-8">
+    <main className="min-h-svh px-6 pt-12 pb-8">
       <div className="animate-in fade-in slide-in-from-bottom-2 mx-auto w-full max-w-2xl duration-500">
         <h2 className="text-muted-foreground mb-2 text-[11px] font-semibold tracking-wide uppercase">
           {t("settings.general")}
