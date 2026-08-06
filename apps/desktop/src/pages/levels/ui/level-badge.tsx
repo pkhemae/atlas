@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-// Roman square capitals for the numerals — bundled locally (the CSP
-// blocks remote fonts, and the desktop must work offline)
-import "@fontsource/cinzel/700.css";
+// Roman inscriptional capitals for the numerals — bundled locally (the
+// CSP blocks remote fonts, and the desktop must work offline)
+import "@fontsource/marcellus/400.css";
 import { cn } from "@atlas/ui/lib/utils";
 import { currentLocale } from "@/i18n";
 import { romanDivision, TIER_KEYS, type TierId } from "@/lib/focus";
@@ -143,7 +143,9 @@ export function LevelBadge({
           >
             <span
               className={cn(
-                "text-xl font-bold",
+                // Marcellus ships a single 400 weight — no font-bold, a
+                // synthetic bold would wreck the letterforms
+                "text-[22px]",
                 locked
                   ? "text-muted-foreground/50"
                   : // white numeral on the metal — deliberately fixed, the
@@ -151,7 +153,7 @@ export function LevelBadge({
                     "text-white text-shadow-[0_1px_1px_rgba(0,0,0,0.3)]",
               )}
               // inline so no cascade or class-generation issue can undo it
-              style={{ fontFamily: '"Cinzel", serif' }}
+              style={{ fontFamily: '"Marcellus", serif' }}
             >
               {romanDivision(division)}
             </span>
