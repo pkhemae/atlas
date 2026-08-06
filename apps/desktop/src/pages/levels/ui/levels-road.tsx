@@ -48,6 +48,24 @@ const TIER_STROKE = {
 
 const DASHED_STROKE = "color-mix(in srgb, var(--foreground) 20%, transparent)";
 
+/**
+ * Catmull-Rom → Bézier for the segment centers[i] → centers[i+1]:
+ * consecutive segments share their tangents, so the road reads as ONE
+ * smooth sinusoid the badges sit on — while each piece stays
+ * individually styleable (done / partial / future).
+ */
+function segmentPath(centers: [number, number][], i: number): string {
+  const [p0x, p0y] = centers[Math.max(0, i - 1)]!;
+  const [p1x, p1y] = centers[i]!;
+  const [p2x, p2y] = centers[i + 1]!;
+  const [p3x, p3y] = centers[Math.min(centers.length - 1, i + 2)]!;
+  const c1x = p1x + (p2x - p0x) / 6;
+  const c1y = p1y + (p2y - p0y) / 6;
+  const c2x = p2x - (p3x - p1x) / 6;
+  const c2y = p2y - (p3y - p1y) / 6;
+  return `M ${p1x} ${p1y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2x} ${p2y}`;
+}
+
 function badgeState(index: number, currentIndex: number | null): BadgeState {
   if (currentIndex === null || index > currentIndex) return "locked";
   return index === currentIndex ? "current" : "done";
@@ -146,12 +164,9 @@ export function LevelsRoad({
                 viewBox={`0 0 ${totalWidth} ${height}`}
               >
                 {levels.slice(1).map((level, i) => {
-                  const [ax, ay] = centers[i]!;
-                  const [bx, by] = centers[i + 1]!;
-                  // center-to-center S-curve with horizontal tangents: the
-                  // badges paint over the ends, so the joins can't gap
-                  const mx = (ax + bx) / 2;
-                  const d = `M ${ax} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${bx} ${by}`;
+                  // center-to-center: the badges paint over the curve
+                  // ends, so the joins can't gap
+                  const d = segmentPath(centers, i);
                   const segment =
                     currentIndex === null || level.index > currentIndex + 1
                       ? "future"
