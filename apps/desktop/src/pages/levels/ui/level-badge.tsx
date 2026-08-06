@@ -143,13 +143,15 @@ export function LevelBadge({
           >
             <span
               className={cn(
-                "font-[Cinzel,serif] text-xl font-bold",
+                "text-xl font-bold",
                 locked
                   ? "text-muted-foreground/50"
                   : // white numeral on the metal — deliberately fixed, the
                     // tier gradients guarantee contrast in every theme
                     "text-white text-shadow-[0_1px_1px_rgba(0,0,0,0.3)]",
               )}
+              // inline so no cascade or class-generation issue can undo it
+              style={{ fontFamily: '"Cinzel", serif' }}
             >
               {romanDivision(division)}
             </span>
