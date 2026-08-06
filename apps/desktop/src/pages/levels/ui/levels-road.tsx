@@ -2,7 +2,8 @@ import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@atlas/ui/lib/utils";
-import { type TierId } from "@/lib/focus";
+import { currentLocale } from "@/i18n";
+import { romanDivision, TIER_KEYS, type TierId } from "@/lib/focus";
 import {
   BADGE_SIZE,
   LevelBadge,
@@ -16,8 +17,17 @@ export interface RoadLevel {
   cumulative: number;
 }
 
+export interface RoadStats {
+  xp: number;
+  tier: TierId;
+  division: 1 | 2 | 3;
+  streakDays: number;
+  multiplier: number;
+}
+
 interface LevelsRoadProps {
   levels: RoadLevel[];
+  stats: RoadStats | null;
   /** The user's current level index, or null while loading. */
   currentIndex: number | null;
   /** 0-100 fill of the segment toward the next level. */
@@ -26,16 +36,17 @@ interface LevelsRoadProps {
 }
 
 /* Road geometry: badges snake across the full height of the page on a
- * sine wave, far apart — the distance is the point. */
-const SPACING = 240;
+ * sine wave, far apart — the distance is the point. Flatter and longer
+ * than it could be: the stats row above needs the headroom. */
+const SPACING = 260;
 const PAD_X = 100;
 const COLUMN_WIDTH = 112; // w-28 badge column
 const SHAPE_HALF = BADGE_SIZE / 2;
-const PAD_TOP = 64;
+const PAD_TOP = 48;
 const PAD_BOTTOM = 132; // shape half + the labels hanging below
 
 function waveFraction(i: number) {
-  return 0.5 + 0.45 * Math.sin(i * 1.15);
+  return 0.5 + 0.4 * Math.sin(i * 1.15);
 }
 
 const TIER_STROKE = {
@@ -73,6 +84,7 @@ function badgeState(index: number, currentIndex: number | null): BadgeState {
 
 export function LevelsRoad({
   levels,
+  stats,
   currentIndex,
   progressPct,
   error,
@@ -143,6 +155,67 @@ export function LevelsRoad({
             {t("levels.error")}
           </p>
         )}
+        {/* flat stat strip — no surface, the page stays blended */}
+        <div className="mt-3 flex items-center gap-6">
+          <div>
+            <p className="text-muted-foreground/70 text-[10px] font-semibold tracking-wide uppercase">
+              {t("levels.xpLabel")}
+            </p>
+            <p className="mt-0.5 text-lg font-semibold tabular-nums">
+              {stats
+                ? t("levels.xpThreshold", {
+                    xp: stats.xp.toLocaleString(currentLocale()),
+                  })
+                : "—"}
+            </p>
+          </div>
+          <div aria-hidden="true" className="bg-foreground/5 h-8 w-px" />
+          <div>
+            <p className="text-muted-foreground/70 text-[10px] font-semibold tracking-wide uppercase">
+              {t("home.profile.rank")}
+            </p>
+            <p
+              className="mt-0.5 text-lg font-semibold"
+              // the rank wears its metal — same color the road uses
+              style={
+                stats ? { color: `var(--tier-${stats.tier}-glow)` } : undefined
+              }
+            >
+              {stats
+                ? t("home.profile.rankLabel", {
+                    tier: t(TIER_KEYS[stats.tier]),
+                    division: romanDivision(stats.division),
+                  })
+                : "—"}
+            </p>
+          </div>
+          <div aria-hidden="true" className="bg-foreground/5 h-8 w-px" />
+          <div>
+            <p className="text-muted-foreground/70 text-[10px] font-semibold tracking-wide uppercase">
+              {t("home.profile.streakLabel")}
+            </p>
+            <p className="mt-0.5 text-lg font-semibold tabular-nums">
+              {stats
+                ? t("home.profile.streak", { count: stats.streakDays })
+                : "—"}
+            </p>
+          </div>
+          <div aria-hidden="true" className="bg-foreground/5 h-8 w-px" />
+          <div>
+            <p className="text-muted-foreground/70 text-[10px] font-semibold tracking-wide uppercase">
+              {t("levels.bonusLabel")}
+            </p>
+            <p className="mt-0.5 text-lg font-semibold tabular-nums">
+              {stats
+                ? t("levels.bonusValue", {
+                    value: stats.multiplier.toLocaleString(currentLocale(), {
+                      maximumFractionDigits: 2,
+                    }),
+                  })
+                : "—"}
+            </p>
+          </div>
+        </div>
       </div>
       <div className="relative min-h-0 flex-1">
         <section

@@ -22,6 +22,17 @@ export function LevelsFeature() {
   return (
     <LevelsRoad
       levels={levels.data?.data ?? []}
+      stats={
+        snapshot
+          ? {
+              xp: snapshot.xp,
+              tier: snapshot.level.tier,
+              division: snapshot.level.division,
+              streakDays: snapshot.streakDays,
+              multiplier: snapshot.multiplier,
+            }
+          : null
+      }
       currentIndex={snapshot?.level.index ?? null}
       progressPct={
         snapshot
