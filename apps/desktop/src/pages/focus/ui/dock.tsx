@@ -26,10 +26,10 @@ interface DockProps {
 }
 
 const CHIP =
-  "flex size-7 items-center justify-center rounded-full transition-[color,background-color,scale] active:scale-[0.96] disabled:pointer-events-none disabled:opacity-50";
+  "flex size-6 items-center justify-center rounded-full transition-[color,background-color,scale] active:scale-[0.96] disabled:pointer-events-none disabled:opacity-50";
 
 const MORPH_ICON =
-  "absolute inset-0 size-3.5 transition-[opacity,scale,filter] duration-200 ease-[cubic-bezier(0.2,0,0,1)]";
+  "absolute inset-0 size-3 transition-[opacity,scale,filter] duration-200 ease-[cubic-bezier(0.2,0,0,1)]";
 const MORPH_VISIBLE = "scale-100 opacity-100 blur-none";
 const MORPH_HIDDEN = "scale-25 opacity-0 blur-[2px]";
 
@@ -71,7 +71,7 @@ export function Dock({
       <div
         data-tauri-drag-region
         className={cn(
-          "flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-zinc-900/95 py-1 pr-1 pl-3 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)]",
+          "flex h-7 shrink-0 items-center gap-1.5 rounded-full bg-zinc-900/95 py-0.5 pr-1 pl-2.5 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_6px_16px_rgba(0,0,0,0.45)]",
           ENTER,
         )}
       >
@@ -80,7 +80,7 @@ export function Dock({
           className={cn(
             // explicit Menlo stack: WKWebView resolves ui-monospace weights
             // to Times through CoreText fallbacks
-            "font-[Menlo,Consolas,monospace] text-primary text-sm font-semibold tabular-nums transition-opacity duration-300",
+            "font-[Menlo,Consolas,monospace] text-primary text-[13px] font-medium tabular-nums transition-opacity duration-300",
             paused && "animate-pulse opacity-70",
           )}
         >
@@ -105,7 +105,7 @@ export function Dock({
             "text-zinc-400 hover:bg-white/10 hover:text-white",
           )}
         >
-          <span className="relative size-3.5" aria-hidden="true">
+          <span className="relative size-3" aria-hidden="true">
             <Pause
               className={cn(
                 MORPH_ICON,
@@ -127,7 +127,7 @@ export function Dock({
         <div
           className={cn(
             "overflow-hidden transition-[width,margin-left] duration-300 ease-[cubic-bezier(0.2,0,0,1)]",
-            paused ? "ml-0 w-7" : "-ml-1.5 w-0",
+            paused ? "ml-0 w-6" : "-ml-1.5 w-0",
           )}
         >
           <button
@@ -139,11 +139,11 @@ export function Dock({
             onClick={onStop}
             className={cn(
               CHIP,
-              "bg-primary text-primary-foreground hover:bg-primary/90 transition-[opacity,scale,background-color] duration-300 ease-[cubic-bezier(0.2,0,0,1)]",
+              "text-zinc-400 transition-[opacity,scale,color,background-color] duration-300 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-white/10 hover:text-white",
               paused ? "scale-100 opacity-100" : "scale-50 opacity-0",
             )}
           >
-            <Square className="size-3 fill-current" />
+            <Square className="size-2.5 fill-current" />
           </button>
         </div>
         <button
@@ -159,7 +159,7 @@ export function Dock({
         >
           <Settings
             className={cn(
-              "size-3.5 transition-transform duration-300 ease-[cubic-bezier(0.2,0,0,1)]",
+              "size-3 transition-transform duration-300 ease-[cubic-bezier(0.2,0,0,1)]",
               settingsOpen && "rotate-90",
             )}
           />

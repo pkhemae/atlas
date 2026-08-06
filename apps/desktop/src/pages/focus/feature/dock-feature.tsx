@@ -71,7 +71,7 @@ export function DockFeature() {
   // the settings panel needs room: the transparent window grows under
   // the pill while open, and shrinks back so it stops swallowing clicks
   useEffect(() => {
-    const height = settingsOpen ? 200 : 44;
+    const height = settingsOpen ? 200 : 36;
     void getCurrentWebviewWindow()
       .setSize(new LogicalSize(208, height))
       .catch(() => {});
