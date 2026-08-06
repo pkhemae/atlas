@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@atlas/ui/lib/utils";
 import { currentLocale } from "@/i18n";
-import { romanDivision, TIER_KEYS, type TierId } from "@/lib/focus";
+import { formatXp, romanDivision, TIER_KEYS, type TierId } from "@/lib/focus";
 import {
   BADGE_SIZE,
   LevelBadge,
@@ -163,9 +163,7 @@ export function LevelsRoad({
             </p>
             <p className="mt-0.5 text-lg font-semibold tabular-nums">
               {stats
-                ? t("levels.xpThreshold", {
-                    xp: stats.xp.toLocaleString(currentLocale()),
-                  })
+                ? t("levels.xpThreshold", { xp: formatXp(stats.xp) })
                 : "—"}
             </p>
           </div>

@@ -6,8 +6,7 @@ import {
   AvatarImage,
 } from "@atlas/ui/components/avatar";
 import { Button } from "@atlas/ui/components/button";
-import { currentLocale } from "@/i18n";
-import { romanDivision, TIER_KEYS, type TierId } from "@/lib/focus";
+import { formatXp, romanDivision, TIER_KEYS, type TierId } from "@/lib/focus";
 
 export interface ProfileProgression {
   tier: TierId;
@@ -145,9 +144,8 @@ export function ProfileCard({
             ? progression.xpForLevel === null
               ? t("home.profile.apex")
               : t("home.profile.xp", {
-                  current:
-                    progression.xpIntoLevel.toLocaleString(currentLocale()),
-                  max: progression.xpForLevel.toLocaleString(currentLocale()),
+                  current: formatXp(progression.xpIntoLevel),
+                  max: formatXp(progression.xpForLevel),
                 })
             : "—"}
         </p>

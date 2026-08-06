@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 // CSP blocks remote fonts, and the desktop must work offline)
 import "@fontsource/marcellus/400.css";
 import { cn } from "@atlas/ui/lib/utils";
-import { currentLocale } from "@/i18n";
-import { romanDivision, TIER_KEYS, type TierId } from "@/lib/focus";
+import { formatXp, romanDivision, TIER_KEYS, type TierId } from "@/lib/focus";
 
 export type BadgeState = "done" | "current" | "locked";
 
@@ -94,7 +93,7 @@ export function LevelBadge({
       role="img"
       aria-label={t(STATE_LABEL_KEYS[state], {
         rank,
-        xp: cumulative.toLocaleString(currentLocale()),
+        xp: formatXp(cumulative),
       })}
       className="flex w-28 shrink-0 flex-col items-center gap-3"
     >
@@ -174,9 +173,7 @@ export function LevelBadge({
           {t(TIER_KEYS[tier])}
         </p>
         <p className="text-muted-foreground/70 mt-0.5 text-[11px] tabular-nums">
-          {t("levels.xpThreshold", {
-            xp: cumulative.toLocaleString(currentLocale()),
-          })}
+          {t("levels.xpThreshold", { xp: formatXp(cumulative) })}
         </p>
       </div>
     </div>
