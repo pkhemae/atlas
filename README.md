@@ -1,11 +1,11 @@
 <div align="center">
 
-<img src=".github/assets/preview.png" alt="Atlas — focused study sessions" width="720" />
+<img src=".github/assets/preview.png" alt="Atlas — focused work sessions" width="720" />
 
 ### Find your focus.
 
-Atlas helps students study without distractions — focused sessions, healthy
-breaks, and progress you can actually see.
+Atlas helps you work without distractions — focused sessions, healthy breaks,
+and progress you can actually see.
 
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
@@ -14,13 +14,12 @@ breaks, and progress you can actually see.
 
 </div>
 
----
-
 ## Why Atlas
 
-Studying is a fight against your own screen. Atlas turns focus into something
-you start, protect and measure: launch a session, let the app step out of the
-way, and watch consistency compound into real progression.
+Deep work is a fight against your own screen. Whether you're studying,
+writing, coding or creating, Atlas turns focus into something you start,
+protect and measure: launch a session, let the app step out of the way, and
+watch consistency compound into real progression.
 
 - **One button, zero friction** — start a session and the app collapses into a
   tiny always-on-top dock that follows you across every desktop and fullscreen
@@ -29,38 +28,6 @@ way, and watch consistency compound into real progression.
   charts, and a rank that reflects how consistently you actually show up.
 - **Honest by design** — every timer, streak and ranking is computed
   server-side from real session data. No client-side wishful thinking.
-
-## Features
-
-### Focus sessions
-
-Start, pause, resume, complete — the server owns all time math, so the timer
-never drifts and pauses never count. The floating dock keeps the session (and
-its controls) visible without stealing your screen.
-
-### Ambient sounds
-
-Real recorded rain, looped seamlessly with the Web Audio API — gapless, with
-gain-ramp fades and per-sound volume. More sounds are one asset away.
-
-### Levels & the road
-
-Focused minutes earn XP. Consecutive days multiply it (up to ×1.5); every idle
-day decays it — your rank tracks the recent you, not the you of last semester.
-Fifteen ranks from Bronze I to Diamond III, laid out as a winding road of
-badges with a "you are here" marker.
-
-### Leaderboards
-
-Daily, weekly and monthly rankings of focus time across all users — top 10,
-podium medals, and your own position with the rivals around it. Weeks are ISO
-weeks: the same arena for everyone.
-
-### Make it yours
-
-Named themes (Atlas, Midnight, Daylight — dark and light), full
-internationalization (English and French), profile customization with avatars
-and banners.
 
 ## Tech stack
 
