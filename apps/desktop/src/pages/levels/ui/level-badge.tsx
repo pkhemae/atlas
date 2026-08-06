@@ -1,4 +1,7 @@
 import { useTranslation } from "react-i18next";
+// Roman square capitals for the numerals — bundled locally (the CSP
+// blocks remote fonts, and the desktop must work offline)
+import "@fontsource/cinzel/700.css";
 import { cn } from "@atlas/ui/lib/utils";
 import { currentLocale } from "@/i18n";
 import { romanDivision, TIER_KEYS, type TierId } from "@/lib/focus";
@@ -140,7 +143,7 @@ export function LevelBadge({
           >
             <span
               className={cn(
-                "text-xl font-bold",
+                "font-[Cinzel,serif] text-xl font-bold",
                 locked
                   ? "text-muted-foreground/50"
                   : // white numeral on the metal — deliberately fixed, the
