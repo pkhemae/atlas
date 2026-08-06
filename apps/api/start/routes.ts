@@ -10,7 +10,12 @@
 import router from '@adonisjs/core/services/router'
 
 import { middleware } from '#start/kernel'
-import { focusThrottle, profileThrottle, registerThrottle } from '#start/limiter'
+import {
+  focusThrottle,
+  leaderboardThrottle,
+  profileThrottle,
+  registerThrottle,
+} from '#start/limiter'
 import { controllers } from '#generated/controllers'
 import { defineRouteGroup } from '#core/utils/index'
 
@@ -39,6 +44,8 @@ defineRouteGroup('/api/v1/focus', () => {
   router.get('activity', [focus.ListActivity, 'handle'])
   router.get('progression', [focus.Progression, 'handle'])
   router.get('levels', [focus.ListLevels, 'handle'])
+  // heaviest query in the app: its own tighter limit on top of the group's
+  router.get('leaderboard', [focus.Leaderboard, 'handle']).use(leaderboardThrottle)
   router.get('sessions/active', [focus.ActiveSession, 'handle'])
   router.post('sessions/abandon-active', [focus.AbandonActiveSession, 'handle'])
   router.post('sessions/:id/pause', [focus.PauseSession, 'handle'])

@@ -18,6 +18,7 @@ export const controllers = {
     AbandonActiveSession: () => import('#app/focus/controllers/abandon_active_session_controller'),
     ActiveSession: () => import('#app/focus/controllers/active_session_controller'),
     CompleteSession: () => import('#app/focus/controllers/complete_session_controller'),
+    Leaderboard: () => import('#app/focus/controllers/leaderboard_controller'),
     ListActivity: () => import('#app/focus/controllers/list_activity_controller'),
     ListLevels: () => import('#app/focus/controllers/list_levels_controller'),
     PauseSession: () => import('#app/focus/controllers/pause_session_controller'),

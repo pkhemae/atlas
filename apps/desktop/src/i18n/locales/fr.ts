@@ -190,8 +190,24 @@ export default {
     badgeCurrent: "{{rank}}, niveau actuel",
     badgeLocked: "{{rank}}, verrouillé",
   },
+  leaderboards: {
+    heading: "Classements",
+    ariaLabel: "Classement",
+    tabsLabel: "Période du classement",
+    tabs: {
+      daily: "Jour",
+      weekly: "Semaine",
+      monthly: "Mois",
+    },
+    previousPeriod: "Période précédente",
+    nextPeriod: "Période suivante",
+    yourPosition: "Votre position",
+    you: "(vous)",
+    empty:
+      "Aucun temps de concentration classé sur cette période pour l'instant.",
+    error: "Impossible de charger le classement.",
+  },
   comingSoon: {
-    leaderboards: "Affrontez d'autres étudiants bientôt.",
     sessions: "Parcourez bientôt l'historique de vos sessions.",
   },
   errors: {

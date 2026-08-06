@@ -181,8 +181,23 @@ export default {
     badgeCurrent: "{{rank}}, current level",
     badgeLocked: "{{rank}}, locked",
   },
+  leaderboards: {
+    heading: "Leaderboards",
+    ariaLabel: "Leaderboard",
+    tabsLabel: "Ranking period",
+    tabs: {
+      daily: "Daily",
+      weekly: "Weekly",
+      monthly: "Monthly",
+    },
+    previousPeriod: "Previous period",
+    nextPeriod: "Next period",
+    yourPosition: "Your position",
+    you: "(you)",
+    empty: "No focus time ranked for this period yet.",
+    error: "Couldn't load the leaderboard.",
+  },
   comingSoon: {
-    leaderboards: "Compete with other students soon.",
     sessions: "Browse your session history soon.",
   },
   errors: {
