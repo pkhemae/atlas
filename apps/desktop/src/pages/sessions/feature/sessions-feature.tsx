@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
@@ -9,6 +9,11 @@ import {
   weekStartFor,
   type FocusSession,
 } from "@/lib/focus";
+import {
+  loadMinDuration,
+  saveMinDuration,
+  type MinDuration,
+} from "@/lib/session-filter";
 import { CalendarHeader } from "@/pages/sessions/ui/calendar-header";
 import { MonthGrid } from "@/pages/sessions/ui/month-grid";
 
@@ -20,6 +25,11 @@ export function SessionsFeature() {
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
   const month = monthKey(cursor);
+  const [minDuration, setMinDuration] = useState<MinDuration>(loadMinDuration);
+
+  useEffect(() => {
+    saveMinDuration(minDuration);
+  }, [minDuration]);
 
   // the ["focus"] invalidation on focus:completed (app-layout) refreshes
   // this live; staleTime keeps month paging cheap under the focus throttle
@@ -41,13 +51,14 @@ export function SessionsFeature() {
     const map = new Map<string, FocusSession[]>();
     for (const session of list) {
       if (!session.startedAt) continue;
+      if ((session.durationSeconds ?? 0) < minDuration) continue;
       const key = localKey(new Date(session.startedAt));
       const bucket = map.get(key);
       if (bucket) bucket.push(session);
       else map.set(key, [session]);
     }
     return map;
-  }, [list]);
+  }, [list, minDuration]);
 
   return (
     <main className="bg-background min-h-svh px-6 pt-12 pb-8">
@@ -58,6 +69,8 @@ export function SessionsFeature() {
         <div className="bg-card overflow-hidden rounded-xl">
           <CalendarHeader
             cursor={cursor}
+            minDuration={minDuration}
+            onMinDurationChange={setMinDuration}
             onPrev={() =>
               setCursor(
                 new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1),
