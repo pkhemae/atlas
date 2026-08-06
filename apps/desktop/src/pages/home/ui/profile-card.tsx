@@ -28,6 +28,8 @@ interface ProfileCardProps {
   bannerUrl: string | null;
   memberSince: string | null;
   progression: ProfileProgression | null;
+  /** This week's leaderboard position; null while loading or unranked. */
+  weeklyRank: number | null;
   onEditProfile: () => void;
 }
 
@@ -41,6 +43,7 @@ export function ProfileCard({
   bannerUrl,
   memberSince,
   progression,
+  weeklyRank,
   onEditProfile,
 }: ProfileCardProps) {
   const { t } = useTranslation();
@@ -105,7 +108,15 @@ export function ProfileCard({
 
         {/* the bar runs from the current level toward the next one */}
         <div className="flex items-baseline justify-between gap-2">
-          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+          <p
+            className="text-primary text-xs font-semibold tracking-wide uppercase"
+            // the tier name wears its metal — same color the road uses
+            style={
+              progression
+                ? { color: `var(--tier-${progression.tier}-glow)` }
+                : undefined
+            }
+          >
             {progression
               ? t("home.profile.rankLabel", {
                   tier: t(TIER_KEYS[progression.tier]),
@@ -158,8 +169,10 @@ export function ProfileCard({
               <Trophy className="size-3" />
               {t("home.profile.rank")}
             </p>
-            {/* leaderboard placeholder — the real ranking lands with it */}
-            <p className="mt-0.5 text-lg font-semibold tabular-nums">#348</p>
+            {/* this week's leaderboard position */}
+            <p className="mt-0.5 text-lg font-semibold tabular-nums">
+              {weeklyRank !== null ? `#${weeklyRank}` : "—"}
+            </p>
           </div>
         </div>
       </div>

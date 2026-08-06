@@ -28,3 +28,10 @@ export const focusThrottle = limiter.define('focus', (ctx) =>
     .every('1 min')
     .usingKey(`focus_${ctx.auth.user?.id ?? ctx.request.ip()}`)
 )
+
+export const leaderboardThrottle = limiter.define('leaderboard', (ctx) =>
+  limiter
+    .allowRequests(20)
+    .every('1 min')
+    .usingKey(`leaderboard_${ctx.auth.user?.id ?? ctx.request.ip()}`)
+)

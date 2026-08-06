@@ -163,6 +163,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/list_levels_controller').default['handle']>>>
     }
   }
+  'leaderboard': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/focus/leaderboard'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#focus/validators/leaderboard').leaderboardValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/leaderboard_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/leaderboard_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'active_session': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/focus/sessions/active'

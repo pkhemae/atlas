@@ -103,6 +103,46 @@ export function romanDivision(division: number): string {
   return ["I", "II", "III"][division - 1] ?? String(division);
 }
 
+export type LeaderboardPeriod = "daily" | "weekly" | "monthly";
+
+/**
+ * Start of the ISO (Monday) week — the leaderboard's fixed competition
+ * week shared by every user; deliberately different from the home
+ * chart's Sunday-started weeks (weeklyTotals).
+ */
+export function isoWeekStart(date: Date): Date {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return d;
+}
+
+/** First day of the leaderboard period holding `date`. */
+export function periodStart(period: LeaderboardPeriod, date: Date): Date {
+  if (period === "weekly") return isoWeekStart(date);
+  if (period === "monthly") {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  }
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+/** The adjacent period, anchored on its first day. */
+export function shiftPeriod(
+  period: LeaderboardPeriod,
+  date: Date,
+  delta: 1 | -1,
+): Date {
+  const start = periodStart(period, date);
+  if (period === "monthly") {
+    return new Date(start.getFullYear(), start.getMonth() + delta, 1);
+  }
+  const days = period === "weekly" ? 7 : 1;
+  return new Date(
+    start.getFullYear(),
+    start.getMonth(),
+    start.getDate() + delta * days,
+  );
+}
+
 /** Tier ids as served by the API — display names live in the catalogs. */
 export type TierId = "bronze" | "silver" | "gold" | "platinum" | "diamond";
 

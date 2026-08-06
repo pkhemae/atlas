@@ -6,7 +6,7 @@ import {
   extractApiErrorMessage,
   extractApiFieldErrors,
 } from "@/lib/api-errors";
-import { memberSince } from "@/lib/focus";
+import { localKey, memberSince, periodStart } from "@/lib/focus";
 import { useMe } from "@/app/use-me";
 import { ActivityGraph } from "@/pages/home/ui/activity-graph";
 import { WeeklyFocusChart } from "@/pages/home/ui/weekly-focus-chart";
@@ -35,6 +35,18 @@ export function HomeFeature() {
     retry: false,
   });
   const snapshot = progression.data?.data ?? null;
+
+  // the card's rank = this week's leaderboard position; the key matches
+  // the leaderboards page's default view, so the cache is shared
+  const weekKey = localKey(periodStart("weekly", new Date()));
+  const weeklyBoard = useQuery({
+    queryKey: ["focus", "leaderboard", "weekly", weekKey],
+    queryFn: () =>
+      api.get("/api/v1/focus/leaderboard", {
+        query: { period: "weekly", anchor: weekKey },
+      }),
+    retry: false,
+  });
 
   // API contract: absent key = untouched, File = replace, null = remove
   // (tuyau serializes null as an empty field and switches to multipart
@@ -104,6 +116,7 @@ export function HomeFeature() {
                   }
                 : null
             }
+            weeklyRank={weeklyBoard.data?.data.me?.rank ?? null}
             onEditProfile={openEditor}
           />
         ) : (
