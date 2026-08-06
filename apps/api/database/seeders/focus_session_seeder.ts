@@ -6,10 +6,12 @@ import FocusSession from '#focus/models/focus_session'
 
 const DAYS_BACK = 180
 const FOCUS_DAY_PROBABILITY = 0.65
+const ABANDON_PROBABILITY = 0.15
 
 /**
  * Fills the activity graph with realistic history: on ~2 days out of 3,
- * one to three completed sessions of 1h–4h each. Additive — re-running
+ * one to three sessions of 1h–4h each (a few short abandoned ones mixed
+ * in, so the calendar's muted rendering has data). Additive — re-running
  * stacks more sessions on top of what exists.
  *
  * Targets SEED_USER_EMAIL, or the most recently created user by default.
@@ -23,6 +25,10 @@ export default class extends BaseSeeder {
       ? await User.findByOrFail('email', email)
       : await User.query().orderBy('created_at', 'desc').firstOrFail()
 
+    // continue the per-user "Session N" sequence the service uses
+    const [row] = await FocusSession.query().where('user_id', user.id).count('* as total')
+    let sequence = Number(row!.$extras.total) + 1
+
     const sessions: Partial<FocusSession>[] = []
     const today = DateTime.now().startOf('day')
 
@@ -35,13 +41,15 @@ export default class extends BaseSeeder {
       let cursor = day.plus({ hours: randomBetween(8, 11), minutes: randomBetween(0, 59) })
 
       for (let i = 0; i < count; i++) {
-        const durationSeconds = randomBetween(60, 240) * 60
+        const abandoned = Math.random() < ABANDON_PROBABILITY
+        const durationSeconds = abandoned ? randomBetween(5, 45) * 60 : randomBetween(60, 240) * 60
         const pausedSeconds = Math.random() < 0.4 ? randomBetween(1, 10) * 60 : 0
         const endedAt = cursor.plus({ seconds: durationSeconds + pausedSeconds })
 
         sessions.push({
           userId: user.id,
-          status: 'completed',
+          name: `Session ${sequence++}`,
+          status: abandoned ? 'abandoned' : 'completed',
           startedAt: cursor,
           endedAt,
           lastPausedAt: null,

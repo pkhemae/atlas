@@ -169,7 +169,18 @@ export default {
   comingSoon: {
     levels: "Suivez bientôt votre progression.",
     leaderboards: "Affrontez d'autres étudiants bientôt.",
-    sessions: "Parcourez bientôt l'historique de vos sessions.",
+  },
+  sessions: {
+    heading: "Vos sessions",
+    ariaLabel: "Calendrier des sessions",
+    today: "Aujourd'hui",
+    previousMonth: "Mois précédent",
+    nextMonth: "Mois suivant",
+    loading: "Chargement de vos sessions…",
+    error: "Impossible de charger vos sessions.",
+    empty: "Pas encore de session ce mois-ci.",
+    sessionLabel: "{{name}}, {{duration}}",
+    abandonedSession: "{{name}}, {{duration}}, session abandonnée",
   },
   errors: {
     apiUnreachable: "Une erreur est survenue. L'API Atlas est-elle lancée ?",

@@ -50,6 +50,7 @@ export class FocusSessionSchema extends BaseModel {
     'endedAt',
     'id',
     'lastPausedAt',
+    'name',
     'pausedSeconds',
     'startedAt',
     'status',
@@ -67,6 +68,8 @@ export class FocusSessionSchema extends BaseModel {
   declare id: string
   @column.dateTime()
   declare lastPausedAt: DateTime | null
+  @column()
+  declare name: string
   @column()
   declare pausedSeconds: number
   @column.dateTime()

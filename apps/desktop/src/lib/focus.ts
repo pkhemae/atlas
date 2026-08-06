@@ -68,6 +68,43 @@ export function buildWeeks(now: Date): Date[][] {
 /** Shared by buildWeeks and the graph copy so window and text can't drift. */
 export const ACTIVITY_WINDOW_MONTHS = 6;
 
+export type WeekStart = 0 | 1; // 0 = Sunday, 1 = Monday
+
+/** Week-start convention follows the app language: Monday in French. */
+export function weekStartFor(language: string): WeekStart {
+  return language.startsWith("fr") ? 1 : 0;
+}
+
+/** "YYYY-MM" month key for the sessions endpoint, from a local date. */
+export function monthKey(date: Date): string {
+  return localKey(date).slice(0, 7);
+}
+
+/**
+ * Calendar page for one month: 7-column weeks covering the month, padded
+ * with adjacent-month days on both sides. 4–6 rows depending on the month.
+ */
+export function buildMonthGrid(
+  year: number,
+  month: number, // 0-based, matching Date
+  weekStartsOn: WeekStart,
+): Date[][] {
+  const first = new Date(year, month, 1);
+  const lead = (first.getDay() - weekStartsOn + 7) % 7;
+  const cursor = new Date(year, month, 1 - lead);
+
+  const weeks: Date[][] = [];
+  do {
+    const week: Date[] = [];
+    for (let i = 0; i < 7; i++) {
+      week.push(new Date(cursor));
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    weeks.push(week);
+  } while (cursor.getMonth() === month && cursor.getFullYear() === year);
+  return weeks;
+}
+
 export function monthLabels(
   weeks: Date[][],
 ): { index: number; label: string }[] {

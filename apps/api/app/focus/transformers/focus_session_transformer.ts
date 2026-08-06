@@ -6,6 +6,7 @@ export default class FocusSessionTransformer extends BaseTransformer<FocusSessio
   toObject() {
     return this.pick(this.resource, [
       'id',
+      'name',
       'status',
       'startedAt',
       'endedAt',

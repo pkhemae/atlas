@@ -17,6 +17,9 @@ export default class FocusSession extends compose(BaseModel, WithTimestamps, Wit
   declare userId: string
 
   @column()
+  declare name: string
+
+  @column()
   declare status: FocusSessionStatus
 
   @column.dateTime()

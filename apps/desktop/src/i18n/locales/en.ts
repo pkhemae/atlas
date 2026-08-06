@@ -159,7 +159,18 @@ export default {
   comingSoon: {
     levels: "Track your progression soon.",
     leaderboards: "Compete with other students soon.",
-    sessions: "Browse your session history soon.",
+  },
+  sessions: {
+    heading: "Your sessions",
+    ariaLabel: "Sessions calendar",
+    today: "Today",
+    previousMonth: "Previous month",
+    nextMonth: "Next month",
+    loading: "Loading your sessions…",
+    error: "Couldn't load your sessions.",
+    empty: "No sessions this month yet.",
+    sessionLabel: "{{name}}, {{duration}}",
+    abandonedSession: "{{name}}, {{duration}}, abandoned session",
   },
   errors: {
     apiUnreachable: "Something went wrong. Is the Atlas API running?",

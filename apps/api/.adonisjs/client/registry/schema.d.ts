@@ -127,6 +127,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/start_session_controller').default['handle']>>>
     }
   }
+  'list_sessions': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/focus/sessions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#focus/validators/session').listSessionsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/list_sessions_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/list_sessions_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'list_activity': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/focus/activity'

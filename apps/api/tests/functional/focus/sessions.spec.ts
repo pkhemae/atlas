@@ -45,6 +45,19 @@ test.group('Focus / sessions', (group) => {
     assert.isNull(data.endedAt)
   })
 
+  test('starts sessions with sequential default names', async ({ client, assert }) => {
+    const user = await User.create({ ...CREDENTIALS })
+
+    const first = await client.post('/api/v1/focus/sessions').loginAs(user)
+    // the first session gets auto-abandoned but still counts in the sequence
+    const second = await client.post('/api/v1/focus/sessions').loginAs(user)
+
+    const firstBody = first.body() as unknown as { data: { name: string } }
+    const secondBody = second.body() as unknown as { data: { name: string } }
+    assert.equal(firstBody.data.name, 'Session 1')
+    assert.equal(secondBody.data.name, 'Session 2')
+  })
+
   test('starting abandons the previous active session', async ({ client, assert }) => {
     const user = await User.create({ ...CREDENTIALS })
     const service = new FocusSessionService()
