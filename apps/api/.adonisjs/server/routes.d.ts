@@ -16,6 +16,7 @@ export type ScannedRoutes = {
     'start_session': { paramsTuple?: []; params?: {} }
     'list_activity': { paramsTuple?: []; params?: {} }
     'progression': { paramsTuple?: []; params?: {} }
+    'list_levels': { paramsTuple?: []; params?: {} }
     'active_session': { paramsTuple?: []; params?: {} }
     'abandon_active_session': { paramsTuple?: []; params?: {} }
     'pause_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -27,6 +28,7 @@ export type ScannedRoutes = {
     'me.show': { paramsTuple?: []; params?: {} }
     'list_activity': { paramsTuple?: []; params?: {} }
     'progression': { paramsTuple?: []; params?: {} }
+    'list_levels': { paramsTuple?: []; params?: {} }
     'active_session': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
@@ -34,6 +36,7 @@ export type ScannedRoutes = {
     'me.show': { paramsTuple?: []; params?: {} }
     'list_activity': { paramsTuple?: []; params?: {} }
     'progression': { paramsTuple?: []; params?: {} }
+    'list_levels': { paramsTuple?: []; params?: {} }
     'active_session': { paramsTuple?: []; params?: {} }
   }
   POST: {

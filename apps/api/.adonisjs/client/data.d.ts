@@ -8,6 +8,7 @@ import type { InferData, InferVariants } from '@adonisjs/core/types/transformers
 import type AuthUserTransformer from '#app/auth/transformers/user_transformer'
 import type FocusFocusActivityTransformer from '#app/focus/transformers/focus_activity_transformer'
 import type FocusFocusSessionTransformer from '#app/focus/transformers/focus_session_transformer'
+import type FocusLevelTransformer from '#app/focus/transformers/level_transformer'
 import type FocusProgressionTransformer from '#app/focus/transformers/progression_transformer'
 
 export namespace Data {
@@ -25,6 +26,10 @@ export namespace Data {
     export type FocusSession = InferData<FocusFocusSessionTransformer>
     export namespace FocusSession {
       export type Variants = InferVariants<FocusFocusSessionTransformer>
+    }
+    export type Level = InferData<FocusLevelTransformer>
+    export namespace Level {
+      export type Variants = InferVariants<FocusLevelTransformer>
     }
     export type Progression = InferData<FocusProgressionTransformer>
     export namespace Progression {

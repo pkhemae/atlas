@@ -103,6 +103,18 @@ export function romanDivision(division: number): string {
   return ["I", "II", "III"][division - 1] ?? String(division);
 }
 
+/** Tier ids as served by the API — display names live in the catalogs. */
+export type TierId = "bronze" | "silver" | "gold" | "platinum" | "diamond";
+
+// record lookup — a template-literal key would fight the typed t()
+export const TIER_KEYS = {
+  bronze: "tiers.bronze",
+  silver: "tiers.silver",
+  gold: "tiers.gold",
+  platinum: "tiers.platinum",
+  diamond: "tiers.diamond",
+} as const satisfies Record<TierId, string>;
+
 /** Parses a local YYYY-MM-DD key — new Date(string) would read it as UTC. */
 export function parseKey(key: string): Date {
   const [year, month, day] = key.split("-").map(Number);
