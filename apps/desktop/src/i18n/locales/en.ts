@@ -172,6 +172,8 @@ export default {
     ariaLabel: "Progression road",
     error: "Couldn't load your levels.",
     xpThreshold: "{{xp}} XP",
+    scrollLeft: "Scroll the road left",
+    scrollRight: "Scroll the road right",
     badgeDone: "{{rank}}, reached",
     badgeCurrent: "{{rank}}, current level",
     badgeLocked: "{{rank}}, locked",

@@ -1,5 +1,7 @@
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@atlas/ui/lib/utils";
 import { type TierId } from "@/lib/focus";
 import {
   BADGE_SIZE,
@@ -61,6 +63,29 @@ export function LevelsRoad({
   const scrollerRef = useRef<HTMLElement>(null);
   const currentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  const [canScroll, setCanScroll] = useState({ left: false, right: false });
+
+  // the arrows only show when that direction actually has more road
+  const updateArrows = () => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const left = scroller.scrollLeft > 8;
+    const right =
+      scroller.scrollLeft < scroller.scrollWidth - scroller.clientWidth - 8;
+    setCanScroll((previous) =>
+      previous.left === left && previous.right === right
+        ? previous
+        : { left, right },
+    );
+  };
+
+  const nudge = (direction: -1 | 1) => {
+    const scroller = scrollerRef.current;
+    scroller?.scrollBy({
+      left: direction * scroller.clientWidth * 0.6,
+      behavior: "smooth",
+    });
+  };
 
   // the serpentine needs real pixels: measure the road's height
   useLayoutEffect(() => {
@@ -79,6 +104,7 @@ export function LevelsRoad({
     if (!scroller || !badge) return;
     scroller.scrollLeft =
       badge.offsetLeft - (scroller.clientWidth - badge.offsetWidth) / 2;
+    updateArrows();
   }, [levels.length, currentIndex, height]);
 
   const totalWidth = PAD_X * 2 + Math.max(0, levels.length - 1) * SPACING;
@@ -100,98 +126,152 @@ export function LevelsRoad({
           </p>
         )}
       </div>
-      <section
-        ref={scrollerRef}
-        aria-label={t("levels.ariaLabel")}
-        className="scrollbar-none min-h-0 flex-1 overflow-x-auto overflow-y-hidden"
-      >
-        {height > 0 && (
-          <div className="relative h-full" style={{ width: `${totalWidth}px` }}>
-            <svg
-              aria-hidden="true"
-              className="absolute inset-0"
-              width={totalWidth}
-              height={height}
-              viewBox={`0 0 ${totalWidth} ${height}`}
+      <div className="relative min-h-0 flex-1">
+        <section
+          ref={scrollerRef}
+          aria-label={t("levels.ariaLabel")}
+          onScroll={updateArrows}
+          className="scrollbar-none h-full overflow-x-auto overflow-y-hidden"
+        >
+          {height > 0 && (
+            <div
+              className="relative h-full"
+              style={{ width: `${totalWidth}px` }}
             >
-              {levels.slice(1).map((level, i) => {
-                const [ax, ay] = centers[i]!;
-                const [bx, by] = centers[i + 1]!;
-                // center-to-center S-curve with horizontal tangents: the
-                // badges paint over the ends, so the joins can't gap
-                const mx = (ax + bx) / 2;
-                const d = `M ${ax} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${bx} ${by}`;
-                const segment =
-                  currentIndex === null || level.index > currentIndex + 1
-                    ? "future"
-                    : level.index === currentIndex + 1
-                      ? "partial"
-                      : "done";
-                return (
-                  <Fragment key={level.index}>
-                    {segment === "done" ? (
-                      <path
-                        d={d}
-                        fill="none"
-                        stroke={TIER_STROKE[level.tier]}
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                      />
-                    ) : (
-                      <>
+              <svg
+                aria-hidden="true"
+                className="absolute inset-0"
+                width={totalWidth}
+                height={height}
+                viewBox={`0 0 ${totalWidth} ${height}`}
+              >
+                {levels.slice(1).map((level, i) => {
+                  const [ax, ay] = centers[i]!;
+                  const [bx, by] = centers[i + 1]!;
+                  // center-to-center S-curve with horizontal tangents: the
+                  // badges paint over the ends, so the joins can't gap
+                  const mx = (ax + bx) / 2;
+                  const d = `M ${ax} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${bx} ${by}`;
+                  const segment =
+                    currentIndex === null || level.index > currentIndex + 1
+                      ? "future"
+                      : level.index === currentIndex + 1
+                        ? "partial"
+                        : "done";
+                  return (
+                    <Fragment key={level.index}>
+                      {segment === "done" ? (
                         <path
                           d={d}
                           fill="none"
-                          stroke={DASHED_STROKE}
+                          stroke={TIER_STROKE[level.tier]}
                           strokeWidth="2.5"
                           strokeLinecap="round"
-                          strokeDasharray="1 12"
                         />
-                        {segment === "partial" && (
-                          // pathLength normalizes the curve to 100 units,
-                          // so the dash IS the percentage
+                      ) : (
+                        <>
                           <path
                             d={d}
                             fill="none"
-                            pathLength={100}
-                            stroke={TIER_STROKE[level.tier]}
+                            stroke={DASHED_STROKE}
                             strokeWidth="2.5"
                             strokeLinecap="round"
-                            strokeDasharray={`${progressPct} 100`}
+                            strokeDasharray="1 12"
                           />
-                        )}
-                      </>
-                    )}
-                  </Fragment>
+                          {segment === "partial" && (
+                            // pathLength normalizes the curve to 100 units,
+                            // so the dash IS the percentage
+                            <path
+                              d={d}
+                              fill="none"
+                              pathLength={100}
+                              stroke={TIER_STROKE[level.tier]}
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeDasharray={`${progressPct} 100`}
+                            />
+                          )}
+                        </>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </svg>
+              {levels.map((level, i) => {
+                const state = badgeState(level.index, currentIndex);
+                const [x, y] = centers[i]!;
+                return (
+                  <div
+                    key={level.index}
+                    ref={state === "current" ? currentRef : undefined}
+                    className="animate-in fade-in slide-in-from-bottom-2 fill-mode-backwards absolute duration-500"
+                    style={{
+                      left: x - COLUMN_WIDTH / 2,
+                      top: y - SHAPE_HALF,
+                      animationDelay: `${i * 40}ms`,
+                    }}
+                  >
+                    <LevelBadge
+                      tier={level.tier}
+                      division={level.division}
+                      cumulative={level.cumulative}
+                      state={state}
+                    />
+                  </div>
                 );
               })}
-            </svg>
-            {levels.map((level, i) => {
-              const state = badgeState(level.index, currentIndex);
-              const [x, y] = centers[i]!;
-              return (
-                <div
-                  key={level.index}
-                  ref={state === "current" ? currentRef : undefined}
-                  className="animate-in fade-in slide-in-from-bottom-2 fill-mode-backwards absolute duration-500"
-                  style={{
-                    left: x - COLUMN_WIDTH / 2,
-                    top: y - SHAPE_HALF,
-                    animationDelay: `${i * 40}ms`,
-                  }}
-                >
-                  <LevelBadge
-                    tier={level.tier}
-                    division={level.division}
-                    cumulative={level.cumulative}
-                    state={state}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
+            </div>
+          )}
+        </section>
+
+        {/* edge fades: hidden road dissolves into the background */}
+        <div
+          aria-hidden="true"
+          className={cn(
+            "from-background pointer-events-none absolute inset-y-0 left-0 z-[5] w-20 bg-linear-to-r to-transparent transition-opacity duration-300",
+            canScroll.left ? "opacity-100" : "opacity-0",
+          )}
+        />
+        <div
+          aria-hidden="true"
+          className={cn(
+            "from-background pointer-events-none absolute inset-y-0 right-0 z-[5] w-20 bg-linear-to-l to-transparent transition-opacity duration-300",
+            canScroll.right ? "opacity-100" : "opacity-0",
+          )}
+        />
+
+        {/* floating chevrons: only when that direction has more road */}
+        <button
+          type="button"
+          aria-label={t("levels.scrollLeft")}
+          aria-hidden={!canScroll.left}
+          tabIndex={canScroll.left ? 0 : -1}
+          onClick={() => nudge(-1)}
+          className={cn(
+            "absolute top-1/2 left-4 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full",
+            "bg-background/80 shadow-[0_0_0_1px_var(--surface-ring),0_12px_32px_-8px_var(--surface-shadow)] backdrop-blur-sm",
+            "text-muted-foreground hover:text-foreground transition-[opacity,color,scale] duration-300 active:scale-[0.96]",
+            canScroll.left ? "opacity-100" : "pointer-events-none opacity-0",
+          )}
+        >
+          <ChevronLeft aria-hidden="true" className="size-4" />
+        </button>
+        <button
+          type="button"
+          aria-label={t("levels.scrollRight")}
+          aria-hidden={!canScroll.right}
+          tabIndex={canScroll.right ? 0 : -1}
+          onClick={() => nudge(1)}
+          className={cn(
+            "absolute top-1/2 right-4 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full",
+            "bg-background/80 shadow-[0_0_0_1px_var(--surface-ring),0_12px_32px_-8px_var(--surface-shadow)] backdrop-blur-sm",
+            "text-muted-foreground hover:text-foreground transition-[opacity,color,scale] duration-300 active:scale-[0.96]",
+            canScroll.right ? "opacity-100" : "pointer-events-none opacity-0",
+          )}
+        >
+          <ChevronRight aria-hidden="true" className="size-4" />
+        </button>
+      </div>
     </main>
   );
 }

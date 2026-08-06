@@ -181,6 +181,8 @@ export default {
     ariaLabel: "Route de progression",
     error: "Impossible de charger vos niveaux.",
     xpThreshold: "{{xp}} XP",
+    scrollLeft: "Faire défiler la route vers la gauche",
+    scrollRight: "Faire défiler la route vers la droite",
     badgeDone: "{{rank}}, atteint",
     badgeCurrent: "{{rank}}, niveau actuel",
     badgeLocked: "{{rank}}, verrouillé",
