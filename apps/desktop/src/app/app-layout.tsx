@@ -102,8 +102,10 @@ export function AppLayout() {
           aria-hidden="true"
           className="pointer-events-none fixed -top-44 -right-44 z-0"
         >
+          {/* a shade DARKER than the background — recessed like a shadow,
+              it sinks instead of catching light, in every theme */}
           <Target
-            className="text-foreground/[0.02] size-[560px]"
+            className="size-[560px] text-[color-mix(in_srgb,black_12%,var(--background))]"
             strokeWidth={1.5}
           />
         </div>
