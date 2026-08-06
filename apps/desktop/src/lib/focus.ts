@@ -98,6 +98,11 @@ export function totalSince(days: ActivityDay[], firstKey: string): number {
     .reduce((sum, day) => sum + day.totalSeconds, 0);
 }
 
+/** Division 1..3 → Roman numeral for rank display ("Gold II"). */
+export function romanDivision(division: number): string {
+  return ["I", "II", "III"][division - 1] ?? String(division);
+}
+
 /** Parses a local YYYY-MM-DD key — new Date(string) would read it as UTC. */
 export function parseKey(key: string): Date {
   const [year, month, day] = key.split("-").map(Number);

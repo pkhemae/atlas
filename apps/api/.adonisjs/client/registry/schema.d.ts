@@ -139,6 +139,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/list_activity_controller').default['handle']>>>
     }
   }
+  'progression': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/focus/progression'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/progression_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/progression_controller').default['handle']>>>
+    }
+  }
   'active_session': {
     methods: ["GET","HEAD"]
     pattern: '/api/v1/focus/sessions/active'

@@ -1,11 +1,24 @@
 import { useTranslation } from "react-i18next";
-import { MapPin, Trophy } from "lucide-react";
+import { Flame, MapPin, Trophy } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@atlas/ui/components/avatar";
 import { Button } from "@atlas/ui/components/button";
+import { currentLocale } from "@/i18n";
+import { romanDivision } from "@/lib/focus";
+
+export type ProfileTier = "bronze" | "silver" | "gold" | "platinum" | "diamond";
+
+export interface ProfileProgression {
+  tier: ProfileTier;
+  division: 1 | 2 | 3;
+  next: { tier: ProfileTier; division: 1 | 2 | 3 } | null;
+  xpIntoLevel: number;
+  xpForLevel: number | null;
+  streakDays: number;
+}
 
 interface ProfileCardProps {
   fullName: string;
@@ -16,12 +29,19 @@ interface ProfileCardProps {
   avatarUrl: string | null;
   bannerUrl: string | null;
   memberSince: string | null;
+  progression: ProfileProgression | null;
   onEditProfile: () => void;
 }
 
-/**
- * Level, XP and rank are design placeholders — the real systems land later.
- */
+// record lookup — a template-literal key would fight the typed t()
+const TIER_KEYS = {
+  bronze: "home.profile.tiers.bronze",
+  silver: "home.profile.tiers.silver",
+  gold: "home.profile.tiers.gold",
+  platinum: "home.profile.tiers.platinum",
+  diamond: "home.profile.tiers.diamond",
+} as const;
+
 export function ProfileCard({
   fullName,
   handle,
@@ -31,9 +51,19 @@ export function ProfileCard({
   avatarUrl,
   bannerUrl,
   memberSince,
+  progression,
   onEditProfile,
 }: ProfileCardProps) {
   const { t } = useTranslation();
+
+  const progressPct = progression
+    ? progression.xpForLevel === null
+      ? 100
+      : Math.min(
+          100,
+          Math.round((progression.xpIntoLevel / progression.xpForLevel) * 100),
+        )
+    : 0;
 
   return (
     <section
@@ -84,34 +114,63 @@ export function ProfileCard({
 
         <div aria-hidden="true" className="bg-foreground/5 my-4 h-px" />
 
-        <p className="text-primary text-xs font-semibold tracking-wide uppercase">
-          {t("home.profile.level", { level: 13 })}
-        </p>
+        {/* the bar runs from the current level toward the next one */}
+        <div className="flex items-baseline justify-between gap-2">
+          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+            {progression
+              ? t("home.profile.rankLabel", {
+                  tier: t(TIER_KEYS[progression.tier]),
+                  division: romanDivision(progression.division),
+                })
+              : "—"}
+          </p>
+          {progression?.next && (
+            <p className="text-muted-foreground/70 text-[10px] font-semibold tracking-wide uppercase">
+              {t("home.profile.rankLabel", {
+                tier: t(TIER_KEYS[progression.next.tier]),
+                division: romanDivision(progression.next.division),
+              })}
+            </p>
+          )}
+        </div>
         <div className="bg-foreground/[0.06] mt-1.5 h-1 overflow-hidden rounded-full">
-          <div className="bg-primary h-full w-[58%] rounded-full" />
+          {/* Tailwind can't do data-driven widths — inline style it is */}
+          <div
+            className="bg-primary h-full rounded-full"
+            style={{ width: `${progressPct}%` }}
+          />
         </div>
-        <div className="text-muted-foreground mt-1.5 flex items-baseline justify-between text-[11px]">
-          <span className="tabular-nums">
-            {t("home.profile.xp", { current: 754, max: "1.3K" })}
-          </span>
-          <span>~55 min</span>
-        </div>
+        <p className="text-muted-foreground mt-1.5 text-[11px] tabular-nums">
+          {progression
+            ? progression.xpForLevel === null
+              ? t("home.profile.apex")
+              : t("home.profile.xp", {
+                  current:
+                    progression.xpIntoLevel.toLocaleString(currentLocale()),
+                  max: progression.xpForLevel.toLocaleString(currentLocale()),
+                })
+            : "—"}
+        </p>
 
         <div className="bg-foreground/[0.04] mt-4 flex items-start justify-between rounded-lg p-3">
           <div>
             <p className="text-muted-foreground flex items-center gap-1 text-[11px] font-semibold tracking-wide uppercase">
+              <Flame className="size-3" />
+              {t("home.profile.streakLabel")}
+            </p>
+            <p className="mt-0.5 text-lg font-semibold tabular-nums">
+              {progression
+                ? t("home.profile.streak", { count: progression.streakDays })
+                : "—"}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-muted-foreground flex items-center justify-end gap-1 text-[11px] font-semibold tracking-wide uppercase">
               <Trophy className="size-3" />
               {t("home.profile.rank")}
             </p>
+            {/* leaderboard placeholder — the real ranking lands with it */}
             <p className="mt-0.5 text-lg font-semibold tabular-nums">#348</p>
-          </div>
-          <div className="text-right">
-            <p className="text-muted-foreground text-[11px] font-semibold tracking-wide uppercase">
-              {t("home.profile.thisWeek")}
-            </p>
-            <p className="text-muted-foreground mt-0.5 text-lg font-semibold">
-              —
-            </p>
           </div>
         </div>
       </div>

@@ -28,6 +28,14 @@ export function HomeFeature() {
     retry: false,
   });
 
+  // refreshed by the ["focus"] invalidation when a session completes
+  const progression = useQuery({
+    queryKey: ["focus", "progression"],
+    queryFn: () => api.get("/api/v1/focus/progression", {}),
+    retry: false,
+  });
+  const snapshot = progression.data?.data ?? null;
+
   // API contract: absent key = untouched, File = replace, null = remove
   // (tuyau serializes null as an empty field and switches to multipart
   // on its own when the body holds a File)
@@ -79,6 +87,23 @@ export function HomeFeature() {
             avatarUrl={me.data.avatarUrl}
             bannerUrl={me.data.bannerUrl}
             memberSince={memberSince(me.data.createdAt)}
+            progression={
+              snapshot
+                ? {
+                    tier: snapshot.level.tier,
+                    division: snapshot.level.division,
+                    next: snapshot.nextLevel
+                      ? {
+                          tier: snapshot.nextLevel.tier,
+                          division: snapshot.nextLevel.division,
+                        }
+                      : null,
+                    xpIntoLevel: snapshot.xpIntoLevel,
+                    xpForLevel: snapshot.xpForLevel,
+                    streakDays: snapshot.streakDays,
+                  }
+                : null
+            }
             onEditProfile={openEditor}
           />
         ) : (

@@ -72,6 +72,12 @@ const routes = {
     tokens: [{"old":"/api/v1/focus/activity","type":0,"val":"api","end":""},{"old":"/api/v1/focus/activity","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/activity","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/activity","type":0,"val":"activity","end":""}],
     types: placeholder as Registry['list_activity']['types'],
   },
+  'progression': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/focus/progression',
+    tokens: [{"old":"/api/v1/focus/progression","type":0,"val":"api","end":""},{"old":"/api/v1/focus/progression","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/progression","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/progression","type":0,"val":"progression","end":""}],
+    types: placeholder as Registry['progression']['types'],
+  },
   'active_session': {
     methods: ["GET","HEAD"],
     pattern: '/api/v1/focus/sessions/active',
