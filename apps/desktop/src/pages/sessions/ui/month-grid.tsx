@@ -47,12 +47,13 @@ export function MonthGrid({
       ) : error ? null : (
         <>
           {/* labels come from the actual first week, so they localize AND
-              reorder with the week-start convention */}
+              reorder with the week-start convention. No hairline of its
+              own — the single line above the grid does the separating */}
           <div className="grid grid-cols-7">
             {weeks[0]?.map((day) => (
               <div
                 key={day.getDay()}
-                className="text-muted-foreground px-2 py-2 text-right text-[10px]"
+                className="text-muted-foreground/70 px-2 pb-2 text-right text-[9px] font-medium tracking-[0.08em] uppercase"
               >
                 {day.toLocaleDateString(currentLocale(), { weekday: "short" })}
               </div>

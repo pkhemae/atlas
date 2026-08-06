@@ -19,8 +19,8 @@ export function CalendarHeader({
   const { t } = useTranslation();
 
   return (
-    <div className="flex items-center justify-between p-4">
-      <h3 className="text-sm font-semibold">
+    <div className="flex items-center justify-between p-4 pb-3">
+      <h3 className="text-[15px] font-semibold">
         {cursor.toLocaleDateString(currentLocale(), {
           month: "long",
           year: "numeric",

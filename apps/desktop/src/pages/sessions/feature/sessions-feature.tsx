@@ -73,7 +73,6 @@ export function SessionsFeature() {
               setCursor(new Date(now.getFullYear(), now.getMonth(), 1));
             }}
           />
-          <div aria-hidden="true" className="bg-foreground/5 h-px" />
           <MonthGrid
             weeks={weeks}
             month={cursor.getMonth()}

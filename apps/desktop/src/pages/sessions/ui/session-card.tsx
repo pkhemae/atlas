@@ -21,9 +21,13 @@ export function SessionCard({ session }: SessionCardProps) {
         { name: session.name, duration },
       )}
       className={cn(
-        "w-full rounded-[5px] bg-foreground/[0.04] px-1.5 py-1 text-left transition-colors outline-none",
-        "hover:bg-foreground/5 focus-visible:ring-ring/50 focus-visible:ring-2",
-        abandoned && "opacity-60",
+        "relative w-full rounded-md bg-foreground/[0.05] py-1.5 pr-2 text-left transition-colors outline-none",
+        "hover:bg-foreground/[0.08] focus-visible:ring-ring/50 focus-visible:ring-2",
+        abandoned
+          ? "pl-2 opacity-60"
+          : // the same gradient bar that marks the active sidebar tab —
+            // one accent, theme-aware through the token
+            "pl-3 before:absolute before:top-1.5 before:bottom-1.5 before:left-1.5 before:w-0.5 before:rounded-full before:bg-[image:var(--nav-active-bar)]",
       )}
     >
       <span
@@ -34,7 +38,7 @@ export function SessionCard({ session }: SessionCardProps) {
       >
         {session.name}
       </span>
-      <span className="text-muted-foreground block text-[10px] tabular-nums">
+      <span className="text-muted-foreground/70 mt-0.5 block text-[10px] tabular-nums">
         {duration}
       </span>
     </button>
