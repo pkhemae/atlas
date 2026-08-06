@@ -190,6 +190,18 @@ export function localKey(date: Date): string {
 }
 
 /**
+ * Compact XP display used everywhere XP shows ("1.1k", French "1,1k") —
+ * below a thousand the raw number reads better.
+ */
+export function formatXp(value: number): string {
+  if (value < 1000) return value.toLocaleString(currentLocale());
+  const compact = (value / 1000).toLocaleString(currentLocale(), {
+    maximumFractionDigits: 1,
+  });
+  return `${compact}k`;
+}
+
+/**
  * The duration copy used across the profile activity cards ("1h 5min",
  * French "1 h 5 min") — patterns live in the translation catalogs.
  */

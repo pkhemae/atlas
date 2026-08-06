@@ -86,12 +86,11 @@ export function Leaderboard({
             onShift={onShift}
           />
         </div>
-        <section
-          aria-label={t("leaderboards.ariaLabel")}
-          className="bg-card overflow-hidden rounded-xl"
-        >
+        {/* blended into the page background — no card surface, like the
+            levels road */}
+        <section aria-label={t("leaderboards.ariaLabel")}>
           {error ? (
-            <p className="text-muted-foreground p-4 text-xs font-medium">
+            <p className="text-muted-foreground py-4 text-xs font-medium">
               {t("leaderboards.error")}
             </p>
           ) : !data ? (
@@ -101,7 +100,7 @@ export function Leaderboard({
               className={loading ? "min-h-40" : undefined}
             />
           ) : data.top.length === 0 ? (
-            <p className="text-muted-foreground p-4 text-xs font-medium">
+            <p className="text-muted-foreground py-4 text-xs font-medium">
               {t("leaderboards.empty")}
             </p>
           ) : (

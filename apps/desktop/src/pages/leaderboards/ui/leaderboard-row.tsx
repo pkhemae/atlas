@@ -43,11 +43,11 @@ export function LeaderboardRow({ entry, isMe }: LeaderboardRowProps) {
   return (
     <li
       className={cn(
-        "flex items-center gap-3 px-4 py-3",
-        // opaque wash: the row sits inside an opaque card anyway, but the
-        // color-mix keeps the highlight identical in every theme
+        "flex items-center gap-3 px-3 py-3",
+        // opaque wash mixed into the PAGE background — the list is
+        // blended, there is no card underneath
         isMe &&
-          "bg-[color-mix(in_srgb,var(--primary)_5%,var(--card))] shadow-[inset_0_0_0_1px_var(--surface-ring)]",
+          "rounded-lg bg-[color-mix(in_srgb,var(--primary)_5%,var(--background))] shadow-[inset_0_0_0_1px_var(--surface-ring)]",
       )}
     >
       <span

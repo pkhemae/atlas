@@ -175,6 +175,7 @@ export default {
     xpLabel: "Experience",
     bonusLabel: "XP bonus",
     bonusValue: "×{{value}}",
+    youAreHere: "You are here",
     scrollLeft: "Scroll the road left",
     scrollRight: "Scroll the road right",
     badgeDone: "{{rank}}, reached",
