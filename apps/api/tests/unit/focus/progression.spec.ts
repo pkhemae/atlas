@@ -30,12 +30,15 @@ test.group('Focus / progression math', () => {
     const apex = levelFromXp(999999)
     assert.deepEqual(apex.level, { index: 15, tier: 'diamond', division: 3 })
     assert.isNull(apex.xpForLevel)
+    assert.isNull(apex.nextLevel)
+    assert.deepEqual(levelFromXp(0).nextLevel, { index: 2, tier: 'bronze', division: 2 })
   })
 
   test('empty history is Bronze I at rest', ({ assert }) => {
     assert.deepEqual(calculateProgression([], '2026-01-10'), {
       xp: 0,
       level: { index: 1, tier: 'bronze', division: 1 },
+      nextLevel: { index: 2, tier: 'bronze', division: 2 },
       xpIntoLevel: 0,
       xpForLevel: 100,
       streakDays: 0,

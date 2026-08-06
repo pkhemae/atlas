@@ -46,6 +46,7 @@ test.group('Focus / progression', (group) => {
     assert.deepEqual(data, {
       xp: 0,
       level: { index: 1, tier: 'bronze', division: 1 },
+      nextLevel: { index: 2, tier: 'bronze', division: 2 },
       xpIntoLevel: 0,
       xpForLevel: 100,
       streakDays: 0,
@@ -66,6 +67,7 @@ test.group('Focus / progression', (group) => {
     assert.deepEqual(data, {
       xp: 113,
       level: { index: 2, tier: 'bronze', division: 2 },
+      nextLevel: { index: 3, tier: 'bronze', division: 3 },
       xpIntoLevel: 13,
       xpForLevel: 150,
       streakDays: 0,

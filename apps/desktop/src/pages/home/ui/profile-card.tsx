@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Flame, MapPin } from "lucide-react";
+import { Flame, MapPin, Trophy } from "lucide-react";
 import {
   Avatar,
   AvatarFallback,
@@ -9,13 +9,15 @@ import { Button } from "@atlas/ui/components/button";
 import { currentLocale } from "@/i18n";
 import { romanDivision } from "@/lib/focus";
 
+export type ProfileTier = "bronze" | "silver" | "gold" | "platinum" | "diamond";
+
 export interface ProfileProgression {
-  tier: "bronze" | "silver" | "gold" | "platinum" | "diamond";
+  tier: ProfileTier;
   division: 1 | 2 | 3;
+  next: { tier: ProfileTier; division: 1 | 2 | 3 } | null;
   xpIntoLevel: number;
   xpForLevel: number | null;
   streakDays: number;
-  multiplier: number;
 }
 
 interface ProfileCardProps {
@@ -112,14 +114,25 @@ export function ProfileCard({
 
         <div aria-hidden="true" className="bg-foreground/5 my-4 h-px" />
 
-        <p className="text-primary text-xs font-semibold tracking-wide uppercase">
-          {progression
-            ? t("home.profile.rankLabel", {
-                tier: t(TIER_KEYS[progression.tier]),
-                division: romanDivision(progression.division),
-              })
-            : "—"}
-        </p>
+        {/* the bar runs from the current level toward the next one */}
+        <div className="flex items-baseline justify-between gap-2">
+          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+            {progression
+              ? t("home.profile.rankLabel", {
+                  tier: t(TIER_KEYS[progression.tier]),
+                  division: romanDivision(progression.division),
+                })
+              : "—"}
+          </p>
+          {progression?.next && (
+            <p className="text-muted-foreground/70 text-[10px] font-semibold tracking-wide uppercase">
+              {t("home.profile.rankLabel", {
+                tier: t(TIER_KEYS[progression.next.tier]),
+                division: romanDivision(progression.next.division),
+              })}
+            </p>
+          )}
+        </div>
         <div className="bg-foreground/[0.06] mt-1.5 h-1 overflow-hidden rounded-full">
           {/* Tailwind can't do data-driven widths — inline style it is */}
           <div
@@ -152,19 +165,12 @@ export function ProfileCard({
             </p>
           </div>
           <div className="text-right">
-            <p className="text-muted-foreground text-[11px] font-semibold tracking-wide uppercase">
-              {t("home.profile.multiplierLabel")}
+            <p className="text-muted-foreground flex items-center justify-end gap-1 text-[11px] font-semibold tracking-wide uppercase">
+              <Trophy className="size-3" />
+              {t("home.profile.rank")}
             </p>
-            <p className="mt-0.5 text-lg font-semibold tabular-nums">
-              {progression
-                ? t("home.profile.multiplier", {
-                    value: progression.multiplier.toLocaleString(
-                      currentLocale(),
-                      { maximumFractionDigits: 2 },
-                    ),
-                  })
-                : "—"}
-            </p>
+            {/* leaderboard placeholder — the real ranking lands with it */}
+            <p className="mt-0.5 text-lg font-semibold tabular-nums">#348</p>
           </div>
         </div>
       </div>

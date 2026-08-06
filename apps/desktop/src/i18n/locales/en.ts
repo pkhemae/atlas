@@ -118,8 +118,7 @@ export default {
       streakLabel: "Streak",
       streak_one: "{{count}} day",
       streak_other: "{{count}} days",
-      multiplierLabel: "Multiplier",
-      multiplier: "×{{value}}",
+      rank: "Rank",
     },
     editProfile: {
       title: "Edit profile",

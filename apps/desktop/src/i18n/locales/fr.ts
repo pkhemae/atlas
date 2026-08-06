@@ -128,8 +128,7 @@ export default {
       streakLabel: "Série",
       streak_one: "{{count}} jour",
       streak_other: "{{count}} jours",
-      multiplierLabel: "Multiplicateur",
-      multiplier: "×{{value}}",
+      rank: "Rang",
     },
     editProfile: {
       title: "Modifier le profil",

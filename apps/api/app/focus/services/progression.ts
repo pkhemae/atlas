@@ -35,6 +35,8 @@ export interface Level {
 export interface ProgressionSnapshot {
   xp: number
   level: Level
+  /** The level the current bar fills toward; null at the apex. */
+  nextLevel: Level | null
   xpIntoLevel: number
   /** XP required to leave this level; null at the apex (Diamond III). */
   xpForLevel: number | null
@@ -81,13 +83,15 @@ export const LEVELS: readonly LevelRow[] = LEVEL_XP.map((xpForLevel, i) => ({
 
 export function levelFromXp(
   xp: number
-): Pick<ProgressionSnapshot, 'level' | 'xpIntoLevel' | 'xpForLevel'> {
+): Pick<ProgressionSnapshot, 'level' | 'nextLevel' | 'xpIntoLevel' | 'xpForLevel'> {
   let row = LEVELS[0]!
   for (const candidate of LEVELS) {
     if (xp >= candidate.cumulative) row = candidate
   }
+  const next = LEVELS[row.index] ?? null // index is 1-based: LEVELS[index] IS the next row
   return {
     level: { index: row.index, tier: row.tier, division: row.division },
+    nextLevel: next ? { index: next.index, tier: next.tier, division: next.division } : null,
     xpIntoLevel: xp - row.cumulative,
     xpForLevel: row.xpForLevel,
   }

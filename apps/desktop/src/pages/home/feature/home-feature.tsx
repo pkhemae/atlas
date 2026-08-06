@@ -92,10 +92,15 @@ export function HomeFeature() {
                 ? {
                     tier: snapshot.level.tier,
                     division: snapshot.level.division,
+                    next: snapshot.nextLevel
+                      ? {
+                          tier: snapshot.nextLevel.tier,
+                          division: snapshot.nextLevel.division,
+                        }
+                      : null,
                     xpIntoLevel: snapshot.xpIntoLevel,
                     xpForLevel: snapshot.xpForLevel,
                     streakDays: snapshot.streakDays,
-                    multiplier: snapshot.multiplier,
                   }
                 : null
             }

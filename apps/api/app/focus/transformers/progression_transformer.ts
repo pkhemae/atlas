@@ -7,6 +7,7 @@ export default class ProgressionTransformer extends BaseTransformer<ProgressionS
     return this.pick(this.resource, [
       'xp',
       'level',
+      'nextLevel',
       'xpIntoLevel',
       'xpForLevel',
       'streakDays',
