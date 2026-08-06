@@ -31,7 +31,6 @@ const COLUMN_WIDTH = 112; // w-28 badge column
 const SHAPE_HALF = BADGE_SIZE / 2;
 const PAD_TOP = 64;
 const PAD_BOTTOM = 132; // shape half + the labels hanging below
-const TRIM = SHAPE_HALF + 14; // segments stop short of the pentagons
 
 function waveFraction(i: number) {
   return 0.5 + 0.45 * Math.sin(i * 1.15);
@@ -118,15 +117,10 @@ export function LevelsRoad({
               {levels.slice(1).map((level, i) => {
                 const [ax, ay] = centers[i]!;
                 const [bx, by] = centers[i + 1]!;
-                const length = Math.hypot(bx - ax, by - ay);
-                const ux = (bx - ax) / length;
-                const uy = (by - ay) / length;
-                // trim both ends so the road stops short of the badges
-                const x1 = ax + ux * TRIM;
-                const y1 = ay + uy * TRIM;
-                const x2 = bx - ux * TRIM;
-                const y2 = by - uy * TRIM;
-                const visible = length - TRIM * 2;
+                // center-to-center S-curve with horizontal tangents: the
+                // badges paint over the ends, so the joins can't gap
+                const mx = (ax + bx) / 2;
+                const d = `M ${ax} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${bx} ${by}`;
                 const segment =
                   currentIndex === null || level.index > currentIndex + 1
                     ? "future"
@@ -136,37 +130,34 @@ export function LevelsRoad({
                 return (
                   <Fragment key={level.index}>
                     {segment === "done" ? (
-                      <line
-                        x1={x1}
-                        y1={y1}
-                        x2={x2}
-                        y2={y2}
+                      <path
+                        d={d}
+                        fill="none"
                         stroke={TIER_STROKE[level.tier]}
                         strokeWidth="2.5"
                         strokeLinecap="round"
                       />
                     ) : (
                       <>
-                        <line
-                          x1={x1}
-                          y1={y1}
-                          x2={x2}
-                          y2={y2}
+                        <path
+                          d={d}
+                          fill="none"
                           stroke={DASHED_STROKE}
                           strokeWidth="2.5"
                           strokeLinecap="round"
                           strokeDasharray="1 12"
                         />
                         {segment === "partial" && (
-                          <line
-                            x1={x1}
-                            y1={y1}
-                            x2={x2}
-                            y2={y2}
+                          // pathLength normalizes the curve to 100 units,
+                          // so the dash IS the percentage
+                          <path
+                            d={d}
+                            fill="none"
+                            pathLength={100}
                             stroke={TIER_STROKE[level.tier]}
                             strokeWidth="2.5"
                             strokeLinecap="round"
-                            strokeDasharray={`${(visible * progressPct) / 100} ${visible}`}
+                            strokeDasharray={`${progressPct} 100`}
                           />
                         )}
                       </>
