@@ -75,7 +75,7 @@ export function HomeFeature() {
     : {};
 
   return (
-    <main className="bg-background min-h-svh px-6 pt-12 pb-8">
+    <main className="min-h-svh px-6 pt-12 pb-8">
       <div className="animate-in fade-in slide-in-from-bottom-2 mx-auto flex w-full max-w-2xl items-start gap-8 duration-500">
         {me.data ? (
           <ProfileCard

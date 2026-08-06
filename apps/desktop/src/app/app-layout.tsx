@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { TuyauHTTPError } from "@tuyau/core/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Outlet, useRouteContext } from "@tanstack/react-router";
+import { Target } from "lucide-react";
 import { listen } from "@tauri-apps/api/event";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -93,8 +94,24 @@ export function AppLayout() {
         onLogout={() => logout.mutate()}
         loggingOut={logout.isPending}
       />
-      <div className="pl-52">
-        <Outlet />
+      {/* the layout owns the page background so decorations can sit
+          under the (transparent) pages */}
+      <div className="bg-background relative min-h-svh pl-52">
+        {/* backdrop detail: a huge target peeking from the top-right */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed -top-44 -right-44 z-0"
+        >
+          {/* a shade DARKER than the background — recessed like a shadow,
+              it sinks instead of catching light, in every theme */}
+          <Target
+            className="size-[560px] text-[color-mix(in_srgb,black_12%,var(--background))]"
+            strokeWidth={1.5}
+          />
+        </div>
+        <div className="relative">
+          <Outlet />
+        </div>
       </div>
     </>
   );
