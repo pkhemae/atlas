@@ -20,7 +20,9 @@ export function CalendarHeader({
 
   return (
     <div className="flex items-center justify-between p-4 pb-3">
-      <h3 className="text-[15px] font-semibold">
+      {/* French locales emit lowercase month names — fine mid-sentence,
+          not as a title */}
+      <h3 className="text-[15px] font-semibold capitalize">
         {cursor.toLocaleDateString(currentLocale(), {
           month: "long",
           year: "numeric",
