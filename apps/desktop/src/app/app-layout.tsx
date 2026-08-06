@@ -103,7 +103,7 @@ export function AppLayout() {
           className="pointer-events-none fixed -top-44 -right-44 z-0"
         >
           <Target
-            className="text-foreground/[0.03] size-[560px]"
+            className="text-foreground/[0.02] size-[560px]"
             strokeWidth={1.5}
           />
         </div>
