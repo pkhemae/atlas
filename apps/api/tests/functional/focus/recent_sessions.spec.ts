@@ -107,17 +107,29 @@ test.group('Focus / recent sessions', (group) => {
     assert.deepEqual(data, [])
   })
 
-  test('caps the list at 10', async ({ client, assert }) => {
+  test('caps the list at 3', async ({ client, assert }) => {
     const user = await User.create({ ...CREDENTIALS })
-    for (let daysAgo = 1; daysAgo <= 12; daysAgo++) {
+    for (let daysAgo = 1; daysAgo <= 5; daysAgo++) {
       await seedSession(user.id, daysAgo)
     }
 
     const response = await client.get('/api/v1/focus/sessions/recent').loginAs(user)
 
     const { data } = response.body() as unknown as { data: RecentSessionBody[] }
-    assert.lengthOf(data, 10)
+    assert.lengthOf(data, 3)
     assert.equal(data[0]!.name, 'Seeded 1')
-    assert.equal(data[9]!.name, 'Seeded 10')
+    assert.equal(data[2]!.name, 'Seeded 3')
+  })
+
+  test('excludes sessions older than a week', async ({ client, assert }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    await seedSession(user.id, 2)
+    await seedSession(user.id, 9)
+
+    const response = await client.get('/api/v1/focus/sessions/recent').loginAs(user)
+
+    const { data } = response.body() as unknown as { data: RecentSessionBody[] }
+    assert.lengthOf(data, 1)
+    assert.equal(data[0]!.name, 'Seeded 2')
   })
 })

@@ -21,6 +21,8 @@ export type ScannedRoutes = {
     'active_session': { paramsTuple?: []; params?: {} }
     'recent_sessions': { paramsTuple?: []; params?: {} }
     'abandon_active_session': { paramsTuple?: []; params?: {} }
+    'rename_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'delete_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'pause_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'resume_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'complete_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -60,6 +62,10 @@ export type ScannedRoutes = {
   }
   PATCH: {
     'update_profile': { paramsTuple?: []; params?: {} }
+    'rename_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  DELETE: {
+    'delete_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

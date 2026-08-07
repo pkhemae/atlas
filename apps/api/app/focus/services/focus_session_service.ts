@@ -31,7 +31,7 @@ export interface RecentSession {
   apps: RecentSessionApp[]
 }
 
-const RECENT_LIMIT = 10
+const RECENT_LIMIT = 3
 
 export default class FocusSessionService {
   async start(user: User) {
@@ -59,14 +59,33 @@ export default class FocusSessionService {
     })
   }
 
+  async rename(session: FocusSession, name: string) {
+    session.name = name
+    await session.save()
+    return session
+  }
+
   /**
-   * The home page's session feed: completed sessions only, newest first,
-   * each with its per-app usage (heaviest app first).
+   * Deleting a session erases its focus time everywhere derived —
+   * activity, XP, streaks, rankings all recompute without it (they are
+   * pure reads). App-usage rows follow via the FK cascade.
+   */
+  async remove(session: FocusSession) {
+    await session.delete()
+  }
+
+  /**
+   * The home page's session feed: the last few completed sessions of the
+   * past week, newest first, each with its per-app usage (heaviest
+   * first). Lexicographic bound over Lucid's SQLite timestamp format —
+   * same dialect note as the leaderboard.
    */
   async recentSessions(user: User): Promise<RecentSession[]> {
+    const weekAgo = DateTime.now().minus({ days: 7 }).toFormat('yyyy-MM-dd HH:mm:ss')
     const sessions = await FocusSession.query()
       .where('user_id', user.id)
       .where('status', 'completed')
+      .where('started_at', '>=', weekAgo)
       .orderBy('started_at', 'desc')
       .limit(RECENT_LIMIT)
       .preload('apps', (query) => query.orderBy('seconds', 'desc'))

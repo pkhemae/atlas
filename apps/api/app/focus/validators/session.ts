@@ -5,6 +5,10 @@ import vine from '@vinejs/vine'
  * compile so Tuyau can infer the request type (a validator factory
  * breaks that inference).
  */
+export const renameSessionValidator = vine.create({
+  name: vine.string().trim().minLength(1).maxLength(80),
+})
+
 export const completeSessionValidator = vine.create({
   apps: vine
     .array(

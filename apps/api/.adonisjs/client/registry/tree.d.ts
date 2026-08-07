@@ -25,6 +25,8 @@ export interface ApiDefinition {
   activeSession: typeof routes['active_session']
   recentSessions: typeof routes['recent_sessions']
   abandonActiveSession: typeof routes['abandon_active_session']
+  renameSession: typeof routes['rename_session']
+  deleteSession: typeof routes['delete_session']
   pauseSession: typeof routes['pause_session']
   resumeSession: typeof routes['resume_session']
   completeSession: typeof routes['complete_session']

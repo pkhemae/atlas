@@ -1,6 +1,12 @@
 import { useTranslation } from "react-i18next";
-import { Clock } from "lucide-react";
+import { Ellipsis } from "lucide-react";
 import type { Data } from "@atlas/api/data";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@atlas/ui/components/dropdown-menu";
 import { formatTotal, relativeDate } from "@/lib/focus";
 
 // (named recent-session-card so a future sessions/ui/session-card can
@@ -11,9 +17,16 @@ const TOP_APPS = 4;
 interface RecentSessionCardProps {
   session: Data.Focus.RecentSession;
   icons: Record<string, string | null>;
+  onRename: () => void;
+  onDelete: () => void;
 }
 
-export function RecentSessionCard({ session, icons }: RecentSessionCardProps) {
+export function RecentSessionCard({
+  session,
+  icons,
+  onRename,
+  onDelete,
+}: RecentSessionCardProps) {
   const { t } = useTranslation();
   // shares are of the summed app seconds, so the shown set reads as
   // fractions of the tracked time
@@ -23,11 +36,31 @@ export function RecentSessionCard({ session, icons }: RecentSessionCardProps) {
   return (
     <article className="bg-card rounded-xl p-4">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="truncate text-sm font-semibold">{session.name}</h3>
-        <span className="bg-foreground/[0.04] text-muted-foreground flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium tabular-nums">
-          <Clock aria-hidden="true" className="size-3" />
-          {formatTotal(session.durationSeconds)}
-        </span>
+        <div className="min-w-0">
+          <h3 className="truncate text-sm font-semibold">{session.name}</h3>
+          <p className="text-primary mt-0.5 text-sm font-semibold tabular-nums">
+            {formatTotal(session.durationSeconds)}
+          </p>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              aria-label={t("home.recent.actionsLabel")}
+              className="text-muted-foreground hover:bg-foreground/5 hover:text-foreground flex size-7 shrink-0 items-center justify-center rounded-md transition-colors"
+            >
+              <Ellipsis aria-hidden="true" className="size-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" sideOffset={6} className="min-w-44">
+            <DropdownMenuItem onSelect={onRename}>
+              {t("home.recent.rename")}
+            </DropdownMenuItem>
+            <DropdownMenuItem variant="destructive" onSelect={onDelete}>
+              {t("home.recent.delete")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {topApps.length > 0 && (

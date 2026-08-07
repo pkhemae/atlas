@@ -15,14 +15,22 @@ import {
   EditProfileModal,
   type EditProfileFormState,
 } from "@/pages/home/ui/edit-profile-modal";
+import { DeleteSessionDialog } from "@/pages/home/ui/delete-session-dialog";
 import { ProfileCard } from "@/pages/home/ui/profile-card";
 import { RecentSessions } from "@/pages/home/ui/recent-sessions";
+import { RenameSessionModal } from "@/pages/home/ui/rename-session-modal";
 
 export function HomeFeature() {
   const { t } = useTranslation();
   const me = useMe();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
+  const [renaming, setRenaming] = useState<{ id: string; name: string } | null>(
+    null,
+  );
+  const [deleting, setDeleting] = useState<{ id: string; name: string } | null>(
+    null,
+  );
 
   const activity = useQuery({
     queryKey: ["focus", "activity"],
@@ -80,6 +88,29 @@ export function HomeFeature() {
           bundleIds.map(async (id) => [id, await appIcon(id)] as const),
         ),
       ) as Record<string, string | null>,
+  });
+
+  const renameSession = useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) =>
+      api.patch("/api/v1/focus/sessions/:id", {
+        params: { id },
+        body: { name },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["focus"] });
+      setRenaming(null);
+    },
+  });
+
+  const deleteSession = useMutation({
+    mutationFn: (id: string) =>
+      api.delete("/api/v1/focus/sessions/:id", { params: { id } }),
+    onSuccess: () => {
+      // deletion ripples through everything derived: activity, XP,
+      // rankings — the whole ["focus"] prefix refetches
+      queryClient.invalidateQueries({ queryKey: ["focus"] });
+      setDeleting(null);
+    },
   });
 
   // API contract: absent key = untouched, File = replace, null = remove
@@ -185,9 +216,37 @@ export function HomeFeature() {
             icons={icons.data ?? {}}
             loading={recent.isPending}
             error={recent.isError}
+            onRename={(session) =>
+              setRenaming({ id: session.id, name: session.name })
+            }
+            onDelete={(session) =>
+              setDeleting({ id: session.id, name: session.name })
+            }
           />
         </div>
       </div>
+      <RenameSessionModal
+        open={renaming !== null}
+        initialName={renaming?.name ?? ""}
+        pending={renameSession.isPending}
+        onOpenChange={(open) => {
+          if (!open) setRenaming(null);
+        }}
+        onSubmit={(name) => {
+          if (renaming) renameSession.mutate({ id: renaming.id, name });
+        }}
+      />
+      <DeleteSessionDialog
+        open={deleting !== null}
+        sessionName={deleting?.name ?? ""}
+        pending={deleteSession.isPending}
+        onOpenChange={(open) => {
+          if (!open) setDeleting(null);
+        }}
+        onConfirm={() => {
+          if (deleting) deleteSession.mutate(deleting.id);
+        }}
+      />
       {me.data && (
         <EditProfileModal
           open={editing}

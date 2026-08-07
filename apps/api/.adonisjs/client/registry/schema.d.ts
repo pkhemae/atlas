@@ -211,6 +211,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/abandon_active_session_controller').default['handle']>>>
     }
   }
+  'rename_session': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/focus/sessions/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#focus/validators/session').renameSessionValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#focus/validators/session').renameSessionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/rename_session_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/rename_session_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'delete_session': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/focus/sessions/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/focus/controllers/delete_session_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/focus/controllers/delete_session_controller').default['handle']>>>
+    }
+  }
   'pause_session': {
     methods: ["POST"]
     pattern: '/api/v1/focus/sessions/:id/pause'

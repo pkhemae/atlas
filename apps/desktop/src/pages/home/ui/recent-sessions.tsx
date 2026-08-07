@@ -7,6 +7,8 @@ interface RecentSessionsProps {
   icons: Record<string, string | null>;
   loading: boolean;
   error: boolean;
+  onRename: (session: Data.Focus.RecentSession) => void;
+  onDelete: (session: Data.Focus.RecentSession) => void;
 }
 
 export function RecentSessions({
@@ -14,6 +16,8 @@ export function RecentSessions({
   icons,
   loading,
   error,
+  onRename,
+  onDelete,
 }: RecentSessionsProps) {
   const { t } = useTranslation();
 
@@ -39,7 +43,13 @@ export function RecentSessions({
       className="flex flex-col gap-3"
     >
       {sessions.map((session) => (
-        <RecentSessionCard key={session.id} session={session} icons={icons} />
+        <RecentSessionCard
+          key={session.id}
+          session={session}
+          icons={icons}
+          onRename={() => onRename(session)}
+          onDelete={() => onDelete(session)}
+        />
       ))}
     </section>
   );
