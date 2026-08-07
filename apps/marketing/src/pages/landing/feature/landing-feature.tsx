@@ -6,6 +6,7 @@ import {
 } from "@/pages/landing/feature/github";
 import { CtaSection } from "@/pages/landing/ui/cta-section";
 import { FaqSection } from "@/pages/landing/ui/faq-section";
+import { FeaturesSection } from "@/pages/landing/ui/features-section";
 import { Footer } from "@/pages/landing/ui/footer";
 import { HeroSection } from "@/pages/landing/ui/hero-section";
 import { Navbar } from "@/pages/landing/ui/navbar";
@@ -23,6 +24,7 @@ export function LandingFeature() {
         stars={stars}
       />
       <HeroSection githubUrl={GITHUB_URL} />
+      <FeaturesSection />
       <FaqSection />
       <CtaSection />
       <Footer
