@@ -43,6 +43,33 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class FocusSessionAppSchema extends BaseModel {
+  static $columns = [
+    'bundleId',
+    'createdAt',
+    'focusSessionId',
+    'id',
+    'name',
+    'seconds',
+    'updatedAt',
+  ] as const
+  $columns = FocusSessionAppSchema.$columns
+  @column()
+  declare bundleId: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare focusSessionId: string
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare name: string
+  @column()
+  declare seconds: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class FocusSessionSchema extends BaseModel {
   static $columns = [
     'createdAt',
@@ -50,6 +77,7 @@ export class FocusSessionSchema extends BaseModel {
     'endedAt',
     'id',
     'lastPausedAt',
+    'name',
     'pausedSeconds',
     'startedAt',
     'status',
@@ -67,6 +95,8 @@ export class FocusSessionSchema extends BaseModel {
   declare id: string
   @column.dateTime()
   declare lastPausedAt: DateTime | null
+  @column()
+  declare name: string
   @column()
   declare pausedSeconds: number
   @column.dateTime()

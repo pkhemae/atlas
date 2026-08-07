@@ -96,11 +96,29 @@ const routes = {
     tokens: [{"old":"/api/v1/focus/sessions/active","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions/active","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions/active","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions/active","type":0,"val":"sessions","end":""},{"old":"/api/v1/focus/sessions/active","type":0,"val":"active","end":""}],
     types: placeholder as Registry['active_session']['types'],
   },
+  'recent_sessions': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/focus/sessions/recent',
+    tokens: [{"old":"/api/v1/focus/sessions/recent","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions/recent","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions/recent","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions/recent","type":0,"val":"sessions","end":""},{"old":"/api/v1/focus/sessions/recent","type":0,"val":"recent","end":""}],
+    types: placeholder as Registry['recent_sessions']['types'],
+  },
   'abandon_active_session': {
     methods: ["POST"],
     pattern: '/api/v1/focus/sessions/abandon-active',
     tokens: [{"old":"/api/v1/focus/sessions/abandon-active","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions/abandon-active","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions/abandon-active","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions/abandon-active","type":0,"val":"sessions","end":""},{"old":"/api/v1/focus/sessions/abandon-active","type":0,"val":"abandon-active","end":""}],
     types: placeholder as Registry['abandon_active_session']['types'],
+  },
+  'rename_session': {
+    methods: ["PATCH"],
+    pattern: '/api/v1/focus/sessions/:id',
+    tokens: [{"old":"/api/v1/focus/sessions/:id","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions/:id","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions/:id","type":0,"val":"sessions","end":""},{"old":"/api/v1/focus/sessions/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['rename_session']['types'],
+  },
+  'delete_session': {
+    methods: ["DELETE"],
+    pattern: '/api/v1/focus/sessions/:id',
+    tokens: [{"old":"/api/v1/focus/sessions/:id","type":0,"val":"api","end":""},{"old":"/api/v1/focus/sessions/:id","type":0,"val":"v1","end":""},{"old":"/api/v1/focus/sessions/:id","type":0,"val":"focus","end":""},{"old":"/api/v1/focus/sessions/:id","type":0,"val":"sessions","end":""},{"old":"/api/v1/focus/sessions/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['delete_session']['types'],
   },
   'pause_session': {
     methods: ["POST"],

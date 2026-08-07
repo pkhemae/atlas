@@ -17,6 +17,7 @@ import {
 } from "@/lib/ambient";
 import { stopAllAmbient, syncAmbient } from "@/lib/ambient-engine";
 import { showMainHideDock } from "@/lib/windows";
+import { useAppSampler } from "@/pages/focus/feature/use-app-sampler";
 import { Dock } from "@/pages/focus/ui/dock";
 
 interface SessionPayload {
@@ -30,6 +31,7 @@ export function DockFeature() {
   const [actionFailed, setActionFailed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [ambient, setAmbient] = useState<AmbientState>(loadAmbientState);
+  const sampler = useAppSampler(session?.status === "running");
 
   // the dock window is its own webview: transparent chrome + own token
   useEffect(() => {
@@ -50,6 +52,9 @@ export function DockFeature() {
       const token = await getAuthToken().catch(() => null);
       if (token) setAuthToken(token);
       setSettingsOpen(false);
+      // a start auto-abandons the previous session — its samples must
+      // not leak into the new one
+      sampler.reset();
       setSession(event.payload);
     });
     return () => {
@@ -102,6 +107,7 @@ export function DockFeature() {
   const dismissDock = async (notifyMain: boolean) => {
     setSession(null);
     setSettingsOpen(false);
+    sampler.reset();
     if (notifyMain) await emitTo("main", "focus:completed", null);
     await showMainHideDock();
   };
@@ -175,6 +181,7 @@ export function DockFeature() {
     mutationFn: (id: string) =>
       api.post("/api/v1/focus/sessions/:id/complete", {
         params: { id },
+        body: { apps: sampler.snapshot() },
       }),
     onMutate: () => setActionFailed(false),
     onSuccess: () => dismissDock(true),

@@ -10,14 +10,46 @@ export interface DailyActivity {
   totalSeconds: number
 }
 
+/** One application's share of a session, as submitted by the client. */
+export interface SessionAppUsage {
+  name: string
+  bundleId?: string | null
+  seconds: number
+}
+
+export interface RecentSessionApp {
+  name: string
+  bundleId: string | null
+  seconds: number
+}
+
+export interface RecentSession {
+  id: string
+  name: string
+  startedAt: string
+  durationSeconds: number
+  apps: RecentSessionApp[]
+}
+
+const RECENT_LIMIT = 3
+
 export default class FocusSessionService {
   async start(user: User) {
     await this.abandonActive(user)
+
+    // The default name is per-user sequential. "Session" is deliberately
+    // the same word in English and French, so the stored default reads
+    // natively in every supported language; users will rename later. Two
+    // concurrent starts could mint the same N — harmless (no unique
+    // constraint) and unreachable with a single desktop client per user.
+    const [row] = await FocusSession.query().where('user_id', user.id).count('* as total')
+    const name = `Session ${Number(row!.$extras.total) + 1}`
 
     // explicit nulls so a fresh session serializes every field of the
     // contract instead of omitting the untouched ones
     return FocusSession.create({
       userId: user.id,
+      name,
       status: 'running',
       startedAt: DateTime.now(),
       endedAt: null,
@@ -25,6 +57,46 @@ export default class FocusSessionService {
       pausedSeconds: 0,
       durationSeconds: null,
     })
+  }
+
+  async rename(session: FocusSession, name: string) {
+    session.name = name
+    await session.save()
+    return session
+  }
+
+  /**
+   * Deleting a session erases its focus time everywhere derived —
+   * activity, XP, streaks, rankings all recompute without it (they are
+   * pure reads). App-usage rows follow via the FK cascade.
+   */
+  async remove(session: FocusSession) {
+    await session.delete()
+  }
+
+  /**
+   * The home page's session feed: the last few completed sessions of the
+   * past week, newest first, each with its per-app usage (heaviest
+   * first). Lexicographic bound over Lucid's SQLite timestamp format —
+   * same dialect note as the leaderboard.
+   */
+  async recentSessions(user: User): Promise<RecentSession[]> {
+    const weekAgo = DateTime.now().minus({ days: 7 }).toFormat('yyyy-MM-dd HH:mm:ss')
+    const sessions = await FocusSession.query()
+      .where('user_id', user.id)
+      .where('status', 'completed')
+      .where('started_at', '>=', weekAgo)
+      .orderBy('started_at', 'desc')
+      .limit(RECENT_LIMIT)
+      .preload('apps', (query) => query.orderBy('seconds', 'desc'))
+
+    return sessions.map((session) => ({
+      id: session.id,
+      name: session.name,
+      startedAt: session.startedAt.toISO()!,
+      durationSeconds: session.durationSeconds ?? 0,
+      apps: session.apps.map(({ name, bundleId, seconds }) => ({ name, bundleId, seconds })),
+    }))
   }
 
   /**
@@ -96,12 +168,24 @@ export default class FocusSessionService {
     return session
   }
 
-  async complete(session: FocusSession) {
+  async complete(session: FocusSession, apps?: SessionAppUsage[]) {
     this.#settleCurrentPause(session)
     session.status = 'completed'
     session.endedAt = DateTime.now()
     session.durationSeconds = session.activeSeconds
     await session.save()
+
+    // only a successfully settled session earns usage rows; abandoned
+    // sessions never submit any
+    if (apps?.length) {
+      await session.related('apps').createMany(
+        apps.map(({ name, bundleId, seconds }) => ({
+          name,
+          bundleId: bundleId ?? null,
+          seconds,
+        }))
+      )
+    }
     return session
   }
 

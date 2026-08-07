@@ -4,6 +4,7 @@ import testUtils from '@adonisjs/core/services/test_utils'
 
 import User from '#auth/models/user'
 import FocusSession from '#focus/models/focus_session'
+import FocusSessionApp from '#focus/models/focus_session_app'
 import FocusSessionService from '#focus/services/focus_session_service'
 
 const CREDENTIALS = {
@@ -43,6 +44,163 @@ test.group('Focus / sessions', (group) => {
     assert.equal(data.status, 'running')
     assert.isString(data.id)
     assert.isNull(data.endedAt)
+  })
+
+  test('starts sessions with sequential default names', async ({ client, assert }) => {
+    const user = await User.create({ ...CREDENTIALS })
+
+    const first = await client.post('/api/v1/focus/sessions').loginAs(user)
+    // the first session gets auto-abandoned but still counts in the sequence
+    const second = await client.post('/api/v1/focus/sessions').loginAs(user)
+
+    const firstBody = first.body() as unknown as { data: { name: string } }
+    const secondBody = second.body() as unknown as { data: { name: string } }
+    assert.equal(firstBody.data.name, 'Session 1')
+    assert.equal(secondBody.data.name, 'Session 2')
+  })
+
+  test('complete persists per-app usage rows', async ({ client, assert }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    const service = new FocusSessionService()
+    const session = await service.start(user)
+
+    const response = await client
+      .post(`/api/v1/focus/sessions/${session.id}/complete`)
+      .json({
+        apps: [
+          { name: 'Xcode', bundleId: 'com.apple.dt.Xcode', seconds: 300 },
+          { name: 'Safari', bundleId: 'com.apple.Safari', seconds: 120 },
+        ],
+      })
+      .loginAs(user)
+
+    response.assertStatus(200)
+    const rows = await FocusSessionApp.query()
+      .where('focus_session_id', session.id)
+      .orderBy('seconds', 'desc')
+    assert.lengthOf(rows, 2)
+    assert.equal(rows[0]!.name, 'Xcode')
+    assert.equal(rows[0]!.bundleId, 'com.apple.dt.Xcode')
+    assert.equal(rows[0]!.seconds, 300)
+    assert.equal(rows[1]!.name, 'Safari')
+  })
+
+  test('complete without a body still works', async ({ client, assert }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    const service = new FocusSessionService()
+    const session = await service.start(user)
+
+    const response = await client
+      .post(`/api/v1/focus/sessions/${session.id}/complete`)
+      .loginAs(user)
+
+    response.assertStatus(200)
+    const rows = await FocusSessionApp.query().where('focus_session_id', session.id)
+    assert.lengthOf(rows, 0)
+  })
+
+  test('rejects an invalid apps payload', async ({ client }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    const service = new FocusSessionService()
+    const session = await service.start(user)
+
+    const tooMany = await client
+      .post(`/api/v1/focus/sessions/${session.id}/complete`)
+      .json({
+        apps: Array.from({ length: 41 }, (_, i) => ({
+          name: `App ${i}`,
+          seconds: 10,
+        })),
+      })
+      .loginAs(user)
+    tooMany.assertStatus(422)
+
+    const negative = await client
+      .post(`/api/v1/focus/sessions/${session.id}/complete`)
+      .json({ apps: [{ name: 'Xcode', seconds: -5 }] })
+      .loginAs(user)
+    negative.assertStatus(422)
+  })
+
+  test('renames a session', async ({ client, assert }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    const service = new FocusSessionService()
+    const session = await service.start(user)
+    await service.complete(session)
+
+    const response = await client
+      .patch(`/api/v1/focus/sessions/${session.id}`)
+      .json({ name: 'Deep work' })
+      .loginAs(user)
+
+    response.assertStatus(200)
+    const { data } = response.body() as unknown as { data: { name: string } }
+    assert.equal(data.name, 'Deep work')
+    await session.refresh()
+    assert.equal(session.name, 'Deep work')
+  })
+
+  test('rejects an empty rename and a foreign session', async ({ client }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    const other = await User.create({ ...CREDENTIALS, email: 'grace@atlas.app' })
+    const service = new FocusSessionService()
+    const session = await service.start(user)
+    await service.complete(session)
+
+    const empty = await client
+      .patch(`/api/v1/focus/sessions/${session.id}`)
+      .json({ name: '   ' })
+      .loginAs(user)
+    empty.assertStatus(422)
+
+    const foreign = await client
+      .patch(`/api/v1/focus/sessions/${session.id}`)
+      .json({ name: 'Mine now' })
+      .loginAs(other)
+    foreign.assertStatus(404)
+  })
+
+  test('deletes a settled session along with its app rows', async ({ client, assert }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    const service = new FocusSessionService()
+    const session = await service.start(user)
+    await service.complete(session, [{ name: 'Xcode', seconds: 120 }])
+
+    const response = await client.delete(`/api/v1/focus/sessions/${session.id}`).loginAs(user)
+
+    response.assertStatus(204)
+    assert.isNull(await FocusSession.find(session.id))
+    const apps = await FocusSessionApp.query().where('focus_session_id', session.id)
+    assert.lengthOf(apps, 0)
+  })
+
+  test('refuses to delete an active session', async ({ client, assert }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    const service = new FocusSessionService()
+    const session = await service.start(user)
+
+    const response = await client.delete(`/api/v1/focus/sessions/${session.id}`).loginAs(user)
+
+    response.assertStatus(400)
+    const body = response.body() as unknown as { errors: { code: string }[] }
+    assert.equal(body.errors[0]!.code, 'E_INVALID_SESSION_STATE')
+    assert.isNotNull(await FocusSession.find(session.id))
+  })
+
+  test('does not persist apps when the session is not active', async ({ client, assert }) => {
+    const user = await User.create({ ...CREDENTIALS })
+    const service = new FocusSessionService()
+    const session = await service.start(user)
+    await service.complete(session)
+
+    const response = await client
+      .post(`/api/v1/focus/sessions/${session.id}/complete`)
+      .json({ apps: [{ name: 'Xcode', seconds: 60 }] })
+      .loginAs(user)
+
+    response.assertStatus(400)
+    const rows = await FocusSessionApp.query().where('focus_session_id', session.id)
+    assert.lengthOf(rows, 0)
   })
 
   test('starting abandons the previous active session', async ({ client, assert }) => {

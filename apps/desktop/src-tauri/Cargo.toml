@@ -20,6 +20,8 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = ["macos-private-api"] }
 tauri-plugin-single-instance = "2"
+serde = { version = "1", features = ["derive"] }
+base64 = "0.22"
 # crypto-rust: encrypts the Linux Secret Service D-Bus session — without it
 # the token would cross the session bus in cleartext
 keyring = { version = "3", features = ["apple-native", "windows-native", "sync-secret-service", "crypto-rust"] }
@@ -28,3 +30,16 @@ keyring = { version = "3", features = ["apple-native", "windows-native", "sync-s
 # rev-pinned: unaudited third-party crate with raw AppKit access — a branch
 # pin would silently advance on any `cargo update`
 tauri-nspanel = { git = "https://github.com/ahkohd/tauri-nspanel", rev = "a3122e894383aa068ec5365a42994e3ac94ba1b6" }
+# app-usage sampling + icon rendering — all already in the dependency
+# tree via tauri/wry, so these add no new compilation
+objc2 = "0.6"
+objc2-foundation = { version = "0.3", features = ["NSString", "NSURL", "NSData", "NSDictionary", "NSGeometry"] }
+objc2-app-kit = { version = "0.3", features = [
+  "NSWorkspace",
+  "NSRunningApplication",
+  "NSImage",
+  "NSImageRep",
+  "NSBitmapImageRep",
+  "NSGraphicsContext",
+  "NSGraphics",
+] }

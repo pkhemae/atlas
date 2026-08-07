@@ -101,6 +101,22 @@ export default {
       less: "Moins",
       more: "Plus",
     },
+    recent: {
+      title: "Dernières sessions",
+      ariaLabel: "Dernières sessions",
+      appsLabel: "Applications",
+      empty: "Vos sessions terminées apparaîtront ici.",
+      error: "Impossible de charger vos sessions.",
+      actionsLabel: "Actions de la session",
+      rename: "Renommer la session",
+      renamePlaceholder: "Nom de la session",
+      renameSave: "Enregistrer",
+      delete: "Supprimer la session",
+      deleteTitle: "Supprimer « {{name}} » ?",
+      deleteBody:
+        "Son temps de concentration, son XP et ses applications disparaîtront définitivement.",
+      deleteConfirm: "Supprimer",
+    },
     weekly: {
       ariaLabel: "Concentration hebdomadaire",
       seriesLabel: "Concentration",
