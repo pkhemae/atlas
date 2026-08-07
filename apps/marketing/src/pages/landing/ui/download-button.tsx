@@ -12,12 +12,7 @@ export function DownloadButton({
   ...props
 }: DownloadButtonProps) {
   return (
-    <Button
-      variant="relief"
-      size={size}
-      className={cn("group", className)}
-      {...props}
-    >
+    <Button size={size} className={cn("group", className)} {...props}>
       {children ?? "Download"}
       <span
         className={cn(

@@ -29,12 +29,13 @@ const RIPPLE_BAND = 110;
 const RED: readonly [number, number, number] = [220, 38, 38];
 const BASE_HEAT = 0.2;
 
-// dark-theme grays, like Superset's original palette on a near-black background
+// light grays for the white background — same three-step hierarchy the
+// dark palette had (45/56/68), mirrored around the light end
 function trailGray(): number {
   const r = Math.random();
-  if (r < 0.7) return 45;
-  if (r < 0.92) return 56;
-  return 68;
+  if (r < 0.7) return 210;
+  if (r < 0.92) return 199;
+  return 187;
 }
 
 function glyphStyle(gray: number, alpha: number, heat: number): string {
