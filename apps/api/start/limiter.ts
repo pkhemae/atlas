@@ -35,3 +35,21 @@ export const leaderboardThrottle = limiter.define('leaderboard', (ctx) =>
     .every('1 min')
     .usingKey(`leaderboard_${ctx.auth.user?.id ?? ctx.request.ip()}`)
 )
+
+// 30/min: the debounced search still fires on every typing pause — two
+// name lookups can burn ~15 requests, 20 would 429 legitimate use
+export const userSearchThrottle = limiter.define('userSearch', (ctx) =>
+  limiter
+    .allowRequests(30)
+    .every('1 min')
+    .usingKey(`user_search_${ctx.auth.user?.id ?? ctx.request.ip()}`)
+)
+
+// own limiter, NOT leaderboardThrottle: the profile embeds the weekly
+// leaderboard aggregate, sharing the key would eat that page's budget
+export const userProfileThrottle = limiter.define('userProfile', (ctx) =>
+  limiter
+    .allowRequests(20)
+    .every('1 min')
+    .usingKey(`user_profile_${ctx.auth.user?.id ?? ctx.request.ip()}`)
+)

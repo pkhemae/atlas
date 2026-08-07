@@ -13,6 +13,8 @@ export type ScannedRoutes = {
     'sign_out': { paramsTuple?: []; params?: {} }
     'me.show': { paramsTuple?: []; params?: {} }
     'update_profile': { paramsTuple?: []; params?: {} }
+    'search_users': { paramsTuple?: []; params?: {} }
+    'show_user': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
     'start_session': { paramsTuple?: []; params?: {} }
     'list_activity': { paramsTuple?: []; params?: {} }
     'progression': { paramsTuple?: []; params?: {} }
@@ -30,6 +32,8 @@ export type ScannedRoutes = {
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'me.show': { paramsTuple?: []; params?: {} }
+    'search_users': { paramsTuple?: []; params?: {} }
+    'show_user': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
     'list_activity': { paramsTuple?: []; params?: {} }
     'progression': { paramsTuple?: []; params?: {} }
     'list_levels': { paramsTuple?: []; params?: {} }
@@ -40,6 +44,8 @@ export type ScannedRoutes = {
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'me.show': { paramsTuple?: []; params?: {} }
+    'search_users': { paramsTuple?: []; params?: {} }
+    'show_user': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
     'list_activity': { paramsTuple?: []; params?: {} }
     'progression': { paramsTuple?: []; params?: {} }
     'list_levels': { paramsTuple?: []; params?: {} }

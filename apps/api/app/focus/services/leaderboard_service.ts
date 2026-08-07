@@ -3,19 +3,14 @@ import db from '@adonisjs/lucid/services/db'
 
 import FocusSession from '#focus/models/focus_session'
 import User from '#auth/models/user'
+import { publicUser } from '#auth/services/public_user'
+import type { PublicUser } from '#auth/services/public_user'
 import { calculateProgression } from '#focus/services/progression'
 import type { Level } from '#focus/services/progression'
 
 export type LeaderboardPeriod = 'daily' | 'weekly' | 'monthly'
 
-export interface LeaderboardUser {
-  id: string
-  /** fullName, else "@username" — NEVER the email. */
-  name: string
-  username: string | null
-  avatarUrl: string | null
-  /** Safe initials: fullName words, else username — NEVER email-derived. */
-  initials: string
+export interface LeaderboardUser extends PublicUser {
   level: Level
 }
 
@@ -117,7 +112,7 @@ export default class LeaderboardService {
     const toEntry = (entry: (typeof ranking)[number]): LeaderboardEntry => ({
       rank: entry.rank,
       totalSeconds: entry.totalSeconds,
-      user: publicUser(byId.get(entry.userId)!, levels.get(entry.userId)!),
+      user: { ...publicUser(byId.get(entry.userId)!), level: levels.get(entry.userId)! },
     })
 
     return {
@@ -157,28 +152,4 @@ export default class LeaderboardService {
     }
     return levels
   }
-}
-
-/**
- * Public payload served to OTHER users. NEVER touch user.email and NEVER
- * the model's `initials` getter — its fallback derives from the email.
- */
-function publicUser(user: User, level: Level): LeaderboardUser {
-  return {
-    id: user.id,
-    name: user.fullName ?? (user.username ? `@${user.username}` : '—'),
-    username: user.username,
-    avatarUrl: user.avatarUrl,
-    initials: safeInitials(user),
-    level,
-  }
-}
-
-function safeInitials(user: User): string {
-  if (user.fullName) {
-    const [first, last] = user.fullName.split(' ')
-    if (first && last) return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase()
-    return (first ?? '').slice(0, 2).toUpperCase()
-  }
-  return (user.username ?? '?').slice(0, 2).toUpperCase()
 }

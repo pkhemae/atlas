@@ -17,6 +17,8 @@ export interface ApiDefinition {
     show: typeof routes['me.show']
   }
   updateProfile: typeof routes['update_profile']
+  searchUsers: typeof routes['search_users']
+  showUser: typeof routes['show_user']
   startSession: typeof routes['start_session']
   listActivity: typeof routes['list_activity']
   progression: typeof routes['progression']

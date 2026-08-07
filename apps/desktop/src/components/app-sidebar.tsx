@@ -15,6 +15,7 @@ import {
   AvatarImage,
 } from "@atlas/ui/components/avatar";
 import { cn } from "@atlas/ui/lib/utils";
+import { SidebarSearch } from "@/components/sidebar-search";
 
 interface SidebarUser {
   name: string;
@@ -34,8 +35,9 @@ interface AppSidebarProps {
   loggingOut: boolean;
 }
 
-// the active tab shows a small gradient bar (per-theme token) at the left edge
-const NAV_ITEM =
+// the active tab shows a small gradient bar (per-theme token) at the left
+// edge — exported so sidebar-search wears the same clothes
+export const NAV_ITEM =
   "relative flex h-8 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground data-[status=active]:text-foreground before:absolute before:top-1/2 before:left-0 before:h-4 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-[image:var(--nav-active-bar)] before:opacity-0 before:transition-opacity data-[status=active]:before:opacity-100";
 
 /**
@@ -86,6 +88,7 @@ export function AppSidebar({
             {startError}
           </p>
         )}
+        <SidebarSearch />
         <Link to="/" activeOptions={{ exact: true }} className={NAV_ITEM}>
           <House aria-hidden="true" className="size-4" />
           {t("sidebar.home")}

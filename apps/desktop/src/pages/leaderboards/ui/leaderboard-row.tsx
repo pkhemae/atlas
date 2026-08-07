@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "@tanstack/react-router";
 import {
   Avatar,
   AvatarFallback,
@@ -32,6 +33,10 @@ const MEDAL: Record<number, string> = {
   3: "text-[var(--tier-bronze-glow)]",
 };
 
+// the row's clothes live on the inner element (Link or div) so the
+// parent list's dividers keep landing on the <li> itself
+const ROW = "flex items-center gap-3 px-3 py-3";
+
 interface LeaderboardRowProps {
   entry: LeaderboardEntry;
   isMe: boolean;
@@ -40,16 +45,12 @@ interface LeaderboardRowProps {
 export function LeaderboardRow({ entry, isMe }: LeaderboardRowProps) {
   const { t } = useTranslation();
 
-  return (
-    <li
-      className={cn(
-        "flex items-center gap-3 px-3 py-3",
-        // opaque wash mixed into the PAGE background — the list is
-        // blended, there is no card underneath
-        isMe &&
-          "rounded-lg bg-[color-mix(in_srgb,var(--primary)_5%,var(--background))] shadow-[inset_0_0_0_1px_var(--surface-ring)]",
-      )}
-    >
+  // my own public page would just redirect home — the highlight + "(you)"
+  // already say it's me, so my row stays inert; username-less rows too
+  const clickable = entry.user.username !== null && !isMe;
+
+  const content = (
+    <>
       <span
         className={cn(
           "w-6 shrink-0 text-center text-sm font-semibold tabular-nums",
@@ -86,6 +87,32 @@ export function LeaderboardRow({ entry, isMe }: LeaderboardRowProps) {
       <span className="w-20 shrink-0 text-right text-sm font-semibold tabular-nums">
         {formatTotal(entry.totalSeconds)}
       </span>
+    </>
+  );
+
+  return (
+    <li
+      className={cn(
+        // opaque wash mixed into the PAGE background — the list is
+        // blended, there is no card underneath
+        isMe &&
+          "rounded-lg bg-[color-mix(in_srgb,var(--primary)_5%,var(--background))] shadow-[inset_0_0_0_1px_var(--surface-ring)]",
+      )}
+    >
+      {clickable ? (
+        <Link
+          to="/u/$username"
+          params={{ username: entry.user.username! }}
+          className={cn(
+            ROW,
+            "hover:bg-foreground/[0.03] rounded-lg transition-colors",
+          )}
+        >
+          {content}
+        </Link>
+      ) : (
+        <div className={ROW}>{content}</div>
+      )}
     </li>
   );
 }
