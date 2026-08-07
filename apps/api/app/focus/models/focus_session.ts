@@ -1,11 +1,12 @@
 import { DateTime } from 'luxon'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 
 import { WithPrimaryUuid } from '#core/mixins/with_primary_uuid'
 import { WithTimestamps } from '#core/mixins/with_timestamps'
+import FocusSessionApp from '#focus/models/focus_session_app'
 import User from '#auth/models/user'
 
 // inlined as literals so the tuyau-inferred client type stays a plain
@@ -15,6 +16,9 @@ export type FocusSessionStatus = 'running' | 'paused' | 'completed' | 'abandoned
 export default class FocusSession extends compose(BaseModel, WithTimestamps, WithPrimaryUuid) {
   @column()
   declare userId: string
+
+  @column()
+  declare name: string
 
   @column()
   declare status: FocusSessionStatus
@@ -36,6 +40,9 @@ export default class FocusSession extends compose(BaseModel, WithTimestamps, Wit
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @hasMany(() => FocusSessionApp)
+  declare apps: HasMany<typeof FocusSessionApp>
 
   /**
    * Active (non-paused) time at this instant. For finished sessions this

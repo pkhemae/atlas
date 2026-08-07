@@ -768,7 +768,12 @@ dependencies = [
 name = "desktop"
 version = "0.1.0"
 dependencies = [
+ "base64 0.22.1",
  "keyring",
+ "objc2",
+ "objc2-app-kit",
+ "objc2-foundation",
+ "serde",
  "tauri",
  "tauri-build",
  "tauri-nspanel",

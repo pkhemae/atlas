@@ -101,6 +101,13 @@ export default {
       less: "Moins",
       more: "Plus",
     },
+    recent: {
+      title: "Dernières sessions",
+      ariaLabel: "Dernières sessions",
+      appsLabel: "Applications",
+      empty: "Vos sessions terminées apparaîtront ici.",
+      error: "Impossible de charger vos sessions.",
+    },
     weekly: {
       ariaLabel: "Concentration hebdomadaire",
       seriesLabel: "Concentration",

@@ -11,6 +11,7 @@ import type FocusFocusSessionTransformer from '#app/focus/transformers/focus_ses
 import type FocusLeaderboardTransformer from '#app/focus/transformers/leaderboard_transformer'
 import type FocusLevelTransformer from '#app/focus/transformers/level_transformer'
 import type FocusProgressionTransformer from '#app/focus/transformers/progression_transformer'
+import type FocusRecentSessionTransformer from '#app/focus/transformers/recent_session_transformer'
 
 export namespace Data {
   export namespace Auth {
@@ -39,6 +40,10 @@ export namespace Data {
     export type Progression = InferData<FocusProgressionTransformer>
     export namespace Progression {
       export type Variants = InferVariants<FocusProgressionTransformer>
+    }
+    export type RecentSession = InferData<FocusRecentSessionTransformer>
+    export namespace RecentSession {
+      export type Variants = InferVariants<FocusRecentSessionTransformer>
     }
   }
 }

@@ -189,6 +189,28 @@ export function localKey(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
+/** "37d ago" / "il y a 37 j" — largest sensible unit, locale-aware. */
+export function relativeDate(iso: string, nowMs = Date.now()): string {
+  const then = Date.parse(iso);
+  if (Number.isNaN(then)) return "";
+  const rtf = new Intl.RelativeTimeFormat(currentLocale(), {
+    numeric: "auto",
+    style: "narrow",
+  });
+  const diff = Math.round((then - nowMs) / 1000); // negative = past
+  const abs = Math.abs(diff);
+  if (abs < 3600) return rtf.format(Math.trunc(diff / 60) || 0, "minute");
+  if (abs < 86400) return rtf.format(Math.trunc(diff / 3600), "hour");
+  if (abs < 7 * 86400) return rtf.format(Math.trunc(diff / 86400), "day");
+  if (abs < 30 * 86400) {
+    return rtf.format(Math.trunc(diff / (7 * 86400)), "week");
+  }
+  if (abs < 365 * 86400) {
+    return rtf.format(Math.trunc(diff / (30 * 86400)), "month");
+  }
+  return rtf.format(Math.trunc(diff / (365 * 86400)), "year");
+}
+
 /**
  * Compact XP display used everywhere XP shows ("1.1k", French "1,1k") —
  * below a thousand the raw number reads better.

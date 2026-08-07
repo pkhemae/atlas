@@ -91,6 +91,13 @@ export default {
       less: "Less",
       more: "More",
     },
+    recent: {
+      title: "Recent sessions",
+      ariaLabel: "Recent sessions",
+      appsLabel: "Apps",
+      empty: "Your completed sessions will appear here.",
+      error: "Couldn't load your sessions.",
+    },
     weekly: {
       ariaLabel: "Weekly focus",
       seriesLabel: "Focus",

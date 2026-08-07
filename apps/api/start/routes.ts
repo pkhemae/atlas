@@ -47,6 +47,7 @@ defineRouteGroup('/api/v1/focus', () => {
   // heaviest query in the app: its own tighter limit on top of the group's
   router.get('leaderboard', [focus.Leaderboard, 'handle']).use(leaderboardThrottle)
   router.get('sessions/active', [focus.ActiveSession, 'handle'])
+  router.get('sessions/recent', [focus.RecentSessions, 'handle'])
   router.post('sessions/abandon-active', [focus.AbandonActiveSession, 'handle'])
   router.post('sessions/:id/pause', [focus.PauseSession, 'handle'])
   router.post('sessions/:id/resume', [focus.ResumeSession, 'handle'])

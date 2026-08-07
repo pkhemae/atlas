@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { appIcon } from "@/lib/app-icons";
 import {
   extractApiErrorMessage,
   extractApiFieldErrors,
@@ -15,6 +16,7 @@ import {
   type EditProfileFormState,
 } from "@/pages/home/ui/edit-profile-modal";
 import { ProfileCard } from "@/pages/home/ui/profile-card";
+import { RecentSessions } from "@/pages/home/ui/recent-sessions";
 
 export function HomeFeature() {
   const { t } = useTranslation();
@@ -46,6 +48,38 @@ export function HomeFeature() {
         query: { period: "weekly", anchor: weekKey },
       }),
     retry: false,
+  });
+
+  // refreshed by the ["focus"] invalidation when a session completes
+  const recent = useQuery({
+    queryKey: ["focus", "sessions", "recent"],
+    queryFn: () => api.get("/api/v1/focus/sessions/recent", {}),
+    retry: false,
+  });
+
+  // icons resolve locally through the Rust command (ui/ stays pure);
+  // the lib cache makes re-resolution free
+  const bundleIds = useMemo(
+    () =>
+      [
+        ...new Set(
+          (recent.data?.data ?? []).flatMap((session) =>
+            session.apps.flatMap((app) => (app.bundleId ? [app.bundleId] : [])),
+          ),
+        ),
+      ].sort(),
+    [recent.data],
+  );
+  const icons = useQuery({
+    queryKey: ["app-icons", bundleIds],
+    enabled: bundleIds.length > 0,
+    staleTime: Infinity,
+    queryFn: async () =>
+      Object.fromEntries(
+        await Promise.all(
+          bundleIds.map(async (id) => [id, await appIcon(id)] as const),
+        ),
+      ) as Record<string, string | null>,
   });
 
   // API contract: absent key = untouched, File = replace, null = remove
@@ -89,39 +123,43 @@ export function HomeFeature() {
   return (
     <main className="min-h-svh px-6 pt-12 pb-8">
       <div className="animate-in fade-in slide-in-from-bottom-2 mx-auto flex w-full max-w-2xl items-start gap-8 duration-500">
-        {me.data ? (
-          <ProfileCard
-            fullName={me.data.fullName ?? me.data.email}
-            handle={me.data.username ?? me.data.email.split("@")[0] ?? ""}
-            initials={me.data.initials}
-            bio={me.data.bio}
-            location={me.data.location}
-            avatarUrl={me.data.avatarUrl}
-            bannerUrl={me.data.bannerUrl}
-            memberSince={memberSince(me.data.createdAt)}
-            progression={
-              snapshot
-                ? {
-                    tier: snapshot.level.tier,
-                    division: snapshot.level.division,
-                    next: snapshot.nextLevel
-                      ? {
-                          tier: snapshot.nextLevel.tier,
-                          division: snapshot.nextLevel.division,
-                        }
-                      : null,
-                    xpIntoLevel: snapshot.xpIntoLevel,
-                    xpForLevel: snapshot.xpForLevel,
-                    streakDays: snapshot.streakDays,
-                  }
-                : null
-            }
-            weeklyRank={weeklyBoard.data?.data.me?.rank ?? null}
-            onEditProfile={openEditor}
-          />
-        ) : (
-          <div className="bg-card h-96 w-60 shrink-0 animate-pulse rounded-xl" />
-        )}
+        {/* the page scrolls with the sessions feed — the card stays put,
+            top-12 clearing the fixed drag strip */}
+        <div className="sticky top-12 shrink-0 self-start">
+          {me.data ? (
+            <ProfileCard
+              fullName={me.data.fullName ?? me.data.email}
+              handle={me.data.username ?? me.data.email.split("@")[0] ?? ""}
+              initials={me.data.initials}
+              bio={me.data.bio}
+              location={me.data.location}
+              avatarUrl={me.data.avatarUrl}
+              bannerUrl={me.data.bannerUrl}
+              memberSince={memberSince(me.data.createdAt)}
+              progression={
+                snapshot
+                  ? {
+                      tier: snapshot.level.tier,
+                      division: snapshot.level.division,
+                      next: snapshot.nextLevel
+                        ? {
+                            tier: snapshot.nextLevel.tier,
+                            division: snapshot.nextLevel.division,
+                          }
+                        : null,
+                      xpIntoLevel: snapshot.xpIntoLevel,
+                      xpForLevel: snapshot.xpForLevel,
+                      streakDays: snapshot.streakDays,
+                    }
+                  : null
+              }
+              weeklyRank={weeklyBoard.data?.data.me?.rank ?? null}
+              onEditProfile={openEditor}
+            />
+          ) : (
+            <div className="bg-card h-96 w-60 animate-pulse rounded-xl" />
+          )}
+        </div>
         <div className="min-w-0 flex-1">
           <h2 className="text-muted-foreground mb-2 text-[11px] font-semibold tracking-wide uppercase">
             {t("home.yourActivity")}
@@ -139,6 +177,15 @@ export function HomeFeature() {
               error={activity.isError}
             />
           </div>
+          <h2 className="text-muted-foreground mt-8 mb-2 text-[11px] font-semibold tracking-wide uppercase">
+            {t("home.recent.title")}
+          </h2>
+          <RecentSessions
+            sessions={recent.data?.data ?? []}
+            icons={icons.data ?? {}}
+            loading={recent.isPending}
+            error={recent.isError}
+          />
         </div>
       </div>
       {me.data && (

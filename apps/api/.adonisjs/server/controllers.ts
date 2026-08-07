@@ -23,6 +23,7 @@ export const controllers = {
     ListLevels: () => import('#app/focus/controllers/list_levels_controller'),
     PauseSession: () => import('#app/focus/controllers/pause_session_controller'),
     Progression: () => import('#app/focus/controllers/progression_controller'),
+    RecentSessions: () => import('#app/focus/controllers/recent_sessions_controller'),
     ResumeSession: () => import('#app/focus/controllers/resume_session_controller'),
     StartSession: () => import('#app/focus/controllers/start_session_controller'),
   },

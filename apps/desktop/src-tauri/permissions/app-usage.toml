@@ -1,0 +1,13 @@
+# App-command ACL for the usage-sampling commands: the dock (which owns
+# the running session) may sample the frontmost app; the main window
+# (which displays recent sessions) may render app icons.
+
+[[permission]]
+identifier = "allow-frontmost-app"
+description = "Read the name and bundle id of the frontmost application"
+commands.allow = ["frontmost_app"]
+
+[[permission]]
+identifier = "allow-app-icon"
+description = "Render an installed application's icon as a small PNG"
+commands.allow = ["app_icon"]

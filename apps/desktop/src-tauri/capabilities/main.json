@@ -2,7 +2,9 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "main",
   "description": "Main window: dragging, window swapping and full keychain access",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "core:window:allow-start-dragging",
@@ -12,6 +14,7 @@
     "core:window:allow-set-background-color",
     "allow-get-auth-token",
     "allow-save-auth-token",
-    "allow-delete-auth-token"
+    "allow-delete-auth-token",
+    "allow-app-icon"
   ]
 }

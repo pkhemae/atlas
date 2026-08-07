@@ -36,6 +36,107 @@ async fn delete_auth_token() -> Result<(), String> {
     }
 }
 
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct FrontmostApp {
+    name: String,
+    bundle_id: Option<String>,
+}
+
+// sync on purpose: Tauri v2 runs non-async commands on the main thread,
+// where every AppKit call is unquestionably safe. NSWorkspace needs no
+// permission or prompt in a non-sandboxed app — unlike window titles.
+// Bonus of the dock being a NON-ACTIVATING NSPanel: clicking its controls
+// never makes Atlas the frontmost app, so samples stay the user's real app.
+#[cfg(target_os = "macos")]
+#[tauri::command]
+fn frontmost_app() -> Option<FrontmostApp> {
+    use objc2_app_kit::NSWorkspace;
+
+    let app = NSWorkspace::sharedWorkspace().frontmostApplication()?;
+    let bundle_id = app.bundleIdentifier().map(|s| s.to_string());
+    let name = app
+        .localizedName()
+        .map(|s| s.to_string())
+        .or_else(|| bundle_id.clone())?;
+    Some(FrontmostApp { name, bundle_id })
+}
+
+#[cfg(not(target_os = "macos"))]
+#[tauri::command]
+fn frontmost_app() -> Option<FrontmostApp> {
+    None
+}
+
+/// The app's icon as a small PNG data URL, resolved locally — icons never
+/// leave the machine, which is why only bundle ids are persisted.
+#[cfg(target_os = "macos")]
+#[tauri::command]
+fn app_icon(bundle_id: String) -> Option<String> {
+    use base64::Engine as _;
+    use objc2::rc::autoreleasepool;
+    use objc2::AnyThread;
+    use objc2_app_kit::{
+        NSBitmapImageFileType, NSBitmapImageRep, NSCompositingOperation, NSGraphicsContext,
+        NSWorkspace,
+    };
+    use objc2_foundation::{NSDictionary, NSPoint, NSRect, NSSize, NSString};
+
+    // 64px so the 20px display stays crisp on Retina
+    const ICON_SIDE: f64 = 64.0;
+
+    autoreleasepool(|_| unsafe {
+        let workspace = NSWorkspace::sharedWorkspace();
+        let url =
+            workspace.URLForApplicationWithBundleIdentifier(&NSString::from_str(&bundle_id))?;
+        let path = url.path()?;
+        let icon = workspace.iconForFile(&path);
+
+        // draw into a fixed bitmap: iconForFile returns a multi-rep image
+        // (16..1024px) — re-encoding a picked rep would ship an
+        // unpredictable payload over IPC
+        let rep = NSBitmapImageRep::initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bytesPerRow_bitsPerPixel(
+            NSBitmapImageRep::alloc(),
+            std::ptr::null_mut(),
+            ICON_SIDE as isize,
+            ICON_SIDE as isize,
+            8,
+            4,
+            true,
+            false,
+            objc2_app_kit::NSDeviceRGBColorSpace,
+            0,
+            32,
+        )?;
+
+        let ctx = NSGraphicsContext::graphicsContextWithBitmapImageRep(&rep)?;
+        NSGraphicsContext::saveGraphicsState_class();
+        NSGraphicsContext::setCurrentContext(Some(&ctx));
+        icon.drawInRect_fromRect_operation_fraction(
+            NSRect::new(NSPoint::new(0.0, 0.0), NSSize::new(ICON_SIDE, ICON_SIDE)),
+            NSRect::ZERO,
+            NSCompositingOperation::Copy,
+            1.0,
+        );
+        NSGraphicsContext::restoreGraphicsState_class();
+
+        let png = rep.representationUsingType_properties(
+            NSBitmapImageFileType::PNG,
+            &NSDictionary::new(),
+        )?;
+        Some(format!(
+            "data:image/png;base64,{}",
+            base64::engine::general_purpose::STANDARD.encode(png.to_vec())
+        ))
+    })
+}
+
+#[cfg(not(target_os = "macos"))]
+#[tauri::command]
+fn app_icon(_bundle_id: String) -> Option<String> {
+    None
+}
+
 #[cfg(target_os = "macos")]
 tauri_nspanel::tauri_panel! {
     panel!(DockPanel {
@@ -102,7 +203,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             save_auth_token,
             get_auth_token,
-            delete_auth_token
+            delete_auth_token,
+            frontmost_app,
+            app_icon
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

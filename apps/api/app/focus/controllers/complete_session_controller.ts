@@ -4,13 +4,15 @@ import type { HttpContext } from '@adonisjs/core/http'
 import FocusSession from '#focus/models/focus_session'
 import FocusSessionService from '#focus/services/focus_session_service'
 import FocusSessionTransformer from '#focus/transformers/focus_session_transformer'
+import { completeSessionValidator } from '#focus/validators/session'
 
 @inject()
 export default class CompleteSessionController {
   constructor(private focusSessionService: FocusSessionService) {}
 
-  async handle({ auth, params, response, serialize }: HttpContext) {
+  async handle({ auth, params, request, response, serialize }: HttpContext) {
     const user = auth.getUserOrFail()
+    const { apps } = await request.validateUsing(completeSessionValidator)
 
     const session = await FocusSession.query()
       .where('id', params.id)
@@ -28,7 +30,7 @@ export default class CompleteSessionController {
       })
     }
 
-    await this.focusSessionService.complete(session)
+    await this.focusSessionService.complete(session, apps)
     return serialize(FocusSessionTransformer.transform(session))
   }
 }

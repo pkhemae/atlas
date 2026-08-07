@@ -23,6 +23,7 @@ export interface ApiDefinition {
   listLevels: typeof routes['list_levels']
   leaderboard: typeof routes['leaderboard']
   activeSession: typeof routes['active_session']
+  recentSessions: typeof routes['recent_sessions']
   abandonActiveSession: typeof routes['abandon_active_session']
   pauseSession: typeof routes['pause_session']
   resumeSession: typeof routes['resume_session']
