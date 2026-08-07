@@ -29,4 +29,8 @@ export const controllers = {
     ResumeSession: () => import('#app/focus/controllers/resume_session_controller'),
     StartSession: () => import('#app/focus/controllers/start_session_controller'),
   },
+  users: {
+    SearchUsers: () => import('#app/users/controllers/search_users_controller'),
+    ShowUser: () => import('#app/users/controllers/show_user_controller'),
+  },
 }

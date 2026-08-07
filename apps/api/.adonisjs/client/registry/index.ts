@@ -60,6 +60,18 @@ const routes = {
     tokens: [{"old":"/api/v1/auth/me","type":0,"val":"api","end":""},{"old":"/api/v1/auth/me","type":0,"val":"v1","end":""},{"old":"/api/v1/auth/me","type":0,"val":"auth","end":""},{"old":"/api/v1/auth/me","type":0,"val":"me","end":""}],
     types: placeholder as Registry['update_profile']['types'],
   },
+  'search_users': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/users/search',
+    tokens: [{"old":"/api/v1/users/search","type":0,"val":"api","end":""},{"old":"/api/v1/users/search","type":0,"val":"v1","end":""},{"old":"/api/v1/users/search","type":0,"val":"users","end":""},{"old":"/api/v1/users/search","type":0,"val":"search","end":""}],
+    types: placeholder as Registry['search_users']['types'],
+  },
+  'show_user': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/v1/users/:username',
+    tokens: [{"old":"/api/v1/users/:username","type":0,"val":"api","end":""},{"old":"/api/v1/users/:username","type":0,"val":"v1","end":""},{"old":"/api/v1/users/:username","type":0,"val":"users","end":""},{"old":"/api/v1/users/:username","type":1,"val":"username","end":""}],
+    types: placeholder as Registry['show_user']['types'],
+  },
   'start_session': {
     methods: ["POST"],
     pattern: '/api/v1/focus/sessions',

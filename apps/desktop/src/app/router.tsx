@@ -10,6 +10,7 @@ import { LeaderboardsFeature } from "@/pages/leaderboards/feature/leaderboards-f
 import { LevelsFeature } from "@/pages/levels/feature/levels-feature";
 import { SessionsFeature } from "@/pages/sessions/feature/sessions-feature";
 import { SettingsFeature } from "@/pages/settings/feature/settings-feature";
+import { UserProfileFeature } from "@/pages/user-profile/feature/user-profile-feature";
 
 interface AppRouterContext {
   onLoggedOut: () => void;
@@ -49,12 +50,19 @@ const settingsRoute = createRoute({
   component: SettingsFeature,
 });
 
+const userProfileRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/u/$username",
+  component: UserProfileFeature,
+});
+
 const routeTree = rootRoute.addChildren([
   homeRoute,
   leaderboardsRoute,
   levelsRoute,
   sessionsRoute,
   settingsRoute,
+  userProfileRoute,
 ]);
 
 // in-memory history: a desktop window has no URL bar to sync with

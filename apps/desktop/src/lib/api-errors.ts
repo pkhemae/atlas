@@ -35,6 +35,12 @@ export function extractApiErrorMessage(error: unknown): string {
   return i18n.t("errors.apiUnreachable");
 }
 
+// Domain errors carry a stable `code` — clients switch on it rather
+// than on messages or transport status.
+export function extractApiErrorCode(error: unknown): string | null {
+  return apiErrors(error)[0]?.code ?? null;
+}
+
 // Validation errors carry a `field` — first message per field, for
 // inline display under the matching input.
 export function extractApiFieldErrors(error: unknown): Record<string, string> {

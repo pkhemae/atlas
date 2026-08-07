@@ -67,6 +67,13 @@ export default {
   sidebar: {
     label: "Application",
     startSession: "Start a session",
+    search: {
+      placeholder: "Search users",
+      resultsLabel: "Search results",
+      searching: "Searching…",
+      empty: "No users found.",
+      error: "Couldn't search.",
+    },
     home: "Home",
     leaderboards: "Leaderboards",
     levels: "Levels",
@@ -212,6 +219,12 @@ export default {
     you: "(you)",
     empty: "No focus time ranked for this period yet.",
     error: "Couldn't load the leaderboard.",
+  },
+  profile: {
+    activity: "Activity",
+    notFound: "This user doesn't exist.",
+    backHome: "Back to home",
+    error: "Couldn't load this profile.",
   },
   comingSoon: {
     sessions: "Browse your session history soon.",

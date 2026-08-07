@@ -15,11 +15,13 @@ import {
   leaderboardThrottle,
   profileThrottle,
   registerThrottle,
+  userProfileThrottle,
+  userSearchThrottle,
 } from '#start/limiter'
 import { controllers } from '#generated/controllers'
 import { defineRouteGroup } from '#core/utils/index'
 
-const { auth, focus } = controllers
+const { auth, focus, users } = controllers
 
 router.get('/', () => {
   return { hello: 'world' }
@@ -38,6 +40,13 @@ defineRouteGroup('/api/v1/auth', () => {
     router.patch('me', [auth.UpdateProfile, 'handle']).use(profileThrottle)
   }).use(middleware.auth())
 })
+
+defineRouteGroup('/api/v1/users', () => {
+  // 'search' MUST stay registered before ':username' — Adonis matches in
+  // registration order, the param route would swallow it otherwise
+  router.get('search', [users.SearchUsers, 'handle']).use(userSearchThrottle)
+  router.get(':username', [users.ShowUser, 'handle']).use(userProfileThrottle)
+}).use(middleware.auth())
 
 defineRouteGroup('/api/v1/focus', () => {
   router.post('sessions', [focus.StartSession, 'handle'])

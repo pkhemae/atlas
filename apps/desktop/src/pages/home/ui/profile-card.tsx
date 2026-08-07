@@ -29,7 +29,8 @@ interface ProfileCardProps {
   progression: ProfileProgression | null;
   /** This week's leaderboard position; null while loading or unranked. */
   weeklyRank: number | null;
-  onEditProfile: () => void;
+  /** Absent on public profiles — the card is then read-only. */
+  onEditProfile?: () => void;
 }
 
 export function ProfileCard({
@@ -94,14 +95,16 @@ export function ProfileCard({
           </p>
         )}
 
-        <Button
-          variant="secondary"
-          size="sm"
-          className="mt-3 w-full"
-          onClick={onEditProfile}
-        >
-          {t("home.profile.editProfile")}
-        </Button>
+        {onEditProfile && (
+          <Button
+            variant="secondary"
+            size="sm"
+            className="mt-3 w-full"
+            onClick={onEditProfile}
+          >
+            {t("home.profile.editProfile")}
+          </Button>
+        )}
 
         <div aria-hidden="true" className="bg-foreground/5 my-4 h-px" />
 

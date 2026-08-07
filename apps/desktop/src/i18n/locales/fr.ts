@@ -77,6 +77,13 @@ export default {
   sidebar: {
     label: "Application",
     startSession: "Démarrer une session",
+    search: {
+      placeholder: "Rechercher des utilisateurs",
+      resultsLabel: "Résultats de recherche",
+      searching: "Recherche…",
+      empty: "Aucun utilisateur trouvé.",
+      error: "La recherche a échoué.",
+    },
     home: "Accueil",
     leaderboards: "Classements",
     levels: "Niveaux",
@@ -223,6 +230,12 @@ export default {
     empty:
       "Aucun temps de concentration classé sur cette période pour l'instant.",
     error: "Impossible de charger le classement.",
+  },
+  profile: {
+    activity: "Activité",
+    notFound: "Cet utilisateur n'existe pas.",
+    backHome: "Retour à l'accueil",
+    error: "Impossible de charger ce profil.",
   },
   comingSoon: {
     sessions: "Parcourez bientôt l'historique de vos sessions.",

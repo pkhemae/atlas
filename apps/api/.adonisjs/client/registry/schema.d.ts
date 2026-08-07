@@ -115,6 +115,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/auth/controllers/update_profile_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'search_users': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/users/search'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#users/validators/search').searchUsersValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/users/controllers/search_users_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/users/controllers/search_users_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'show_user': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/users/:username'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { username: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/users/controllers/show_user_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/users/controllers/show_user_controller').default['handle']>>>
+    }
+  }
   'start_session': {
     methods: ["POST"]
     pattern: '/api/v1/focus/sessions'
