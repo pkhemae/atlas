@@ -3,7 +3,11 @@
 /* Make Tailwind scan this app's source. */
 @source "../src";
 
-/* Landing-specific dark palette: near-black neutral background. */
-.dark {
-  --background: #111111;
+/*
+ * Light landing on the shared light tokens; only the brand accent is
+ * overridden — flat Atlas red, same value as the desktop app's primary.
+ */
+:root {
+  --primary: #dc2626;
+  --primary-foreground: #ffffff;
 }
