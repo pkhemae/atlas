@@ -2,9 +2,7 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "main",
   "description": "Main window: dragging, window swapping and full keychain access",
-  "windows": [
-    "main"
-  ],
+  "windows": ["main"],
   "permissions": [
     "core:default",
     "core:window:allow-start-dragging",
